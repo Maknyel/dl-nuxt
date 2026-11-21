@@ -6,7 +6,7 @@ import type { TemplateKey } from '../../utils/site'
 
 export default defineEventHandler(async (event) => {
   // Development only: preview another template with ?template=template-2 (never on a production build).
-  const preview = import.meta.dev ? String(getQuery(event).template ?? '') : ''
+  const preview = import.meta.env.DEV ? String(getQuery(event).template ?? '') : ''
 
   const body = await getCompanyData()
   const company = body?.company

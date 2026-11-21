@@ -1,4 +1,4 @@
-# Porting a Blade view to Nuxt
+# Porting a Blade view to this site (Vue 3)
 
 How the Laravel site's Blade views (`C:\dev\dealer-lion-client-templates`, :8002) become Vue components here. The goal is
 **the same page, pixel for pixel**, on any of the 4 templates.
@@ -67,13 +67,13 @@ How the Laravel site's Blade views (`C:\dev\dealer-lion-client-templates`, :8002
   button does nothing.
 - **Data the Blade reads but the API doesn't return** (see data-map.md "Caveats"): render the same fallback the Blade
   shows.
-- No secrets or API keys in components: anything needing a key is a server route (`server/api/`).
+- No secrets or API keys in the site: everything it ships is public (`config.json` too). Anything needing a key belongs in the Dealer Lion API, called through a site route (`app/site-api/api/site/`).
 
 ## Checking your work
 
-- The dev server runs at http://localhost:3002 (`npm run dev`; it's usually already running, so don't start a second).
+- The dev server runs at http://localhost:3002 (`npm run dev`, Vite; usually already running, so don't start a second).
   `?template=template-2` (to `-4`) on any URL previews another template, in development only.
 - Compare with :8002 at 1280px and 390px wide: Playwright is in `C:/dev/dealer-lion-monolith-frontend/node_modules/playwright`,
   launched with `{ channel: 'msedge' }`. On :8002, switching template needs the dealer's data, so compare template 1 by
   screenshot and templates 2–4 against their Blade markup.
-- `npx nuxt typecheck` in this folder: no errors in your files.
+- `npm run typecheck` in this folder: no errors in your files.

@@ -38,11 +38,8 @@ const vehicle = computed<Record<string, any> | null>(() => data.value?.vehicle ?
 /** The sales site: its inquiry forms have Dealer Info instead of the trade-in (SalesInquiryForm). */
 const { isSales } = useSite()
 const isDemo = computed(() => Boolean(data.value?.isDemo))
-
-if (!vehicle.value && import.meta.server) {
-  const event = useRequestEvent()
-  if (event) setResponseStatus(event, 404, 'Vehicle Not Found')
-}
+// (The Nuxt version also answered an unknown vehicle with HTTP 404 from its server. A static site can't set the status:
+// the page shows Vehicle Not Found, and its title tells search engines.)
 
 /* ── Head ── */
 const requestUrl = useRequestURL()
@@ -102,10 +99,10 @@ useHead(() =>
 /* ── The I'm Interested pop-up ── */
 const interestedOpen = ref(false)
 watch(interestedOpen, (open) => {
-  if (import.meta.client) document.body.style.overflow = open ? 'hidden' : ''
+  if ((typeof window !== 'undefined')) document.body.style.overflow = open ? 'hidden' : ''
 })
 onBeforeUnmount(() => {
-  if (import.meta.client) document.body.style.overflow = ''
+  if ((typeof window !== 'undefined')) document.body.style.overflow = ''
 })
 </script>
 

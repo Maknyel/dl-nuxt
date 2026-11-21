@@ -1,10 +1,9 @@
-# Nuxt
-.nuxt
-.output
-.data
-.nitro
-.cache
+# Build
 dist
+.cache
+
+# The local dealer settings (copy public/config.example.json); each server has its own.
+public/config.json
 
 # Node
 node_modules

@@ -288,7 +288,7 @@ export function createInventorySearch(data: Ref<InventoryResponse | null | undef
   function goToPage(page: number) {
     lastTouched.value = ''
     applyFilters({ page })
-    if (import.meta.client) window.scrollTo({ top: 0, behavior: 'smooth' })
+    if ((typeof window !== 'undefined')) window.scrollTo({ top: 0, behavior: 'smooth' })
   }
   function changePerPage(perPage: string) {
     lastTouched.value = ''
@@ -334,7 +334,7 @@ export function createInventorySearch(data: Ref<InventoryResponse | null | undef
   }
 
   // ── The sidebar's vanilla helpers ──────────────────────────────────────────────────────────────────
-  const isDesktop = () => import.meta.client && window.innerWidth >= DESKTOP
+  const isDesktop = () => (typeof window !== 'undefined') && window.innerWidth >= DESKTOP
 
   /** sfRestorePriceSelection(): a narrowed price slider survives the other filters' clearing. */
   function restorePriceSelection() {
@@ -412,7 +412,7 @@ export function createInventorySearch(data: Ref<InventoryResponse | null | undef
 
   function setMobileOpen(open: boolean) {
     mobileOpen.value = open
-    if (import.meta.client && (window.innerWidth < DESKTOP || !open)) document.body.style.overflow = open ? 'hidden' : ''
+    if ((typeof window !== 'undefined') && (window.innerWidth < DESKTOP || !open)) document.body.style.overflow = open ? 'hidden' : ''
   }
 
   return {
@@ -444,7 +444,8 @@ export function createInventorySearch(data: Ref<InventoryResponse | null | undef
 }
 
 export type InventorySearch = ReturnType<typeof createInventorySearch>
-export const INVENTORY_SEARCH: InjectionKey<InventorySearch> = Symbol('inventory-search')
+// Symbol.for: one key for the whole app, even if this module were ever loaded twice (provide and inject must match).
+export const INVENTORY_SEARCH: InjectionKey<InventorySearch> = Symbol.for('dealer-lion:inventory-search')
 
 /** The page's search, for the inventory components. */
 export function useInventorySearch(): InventorySearch {

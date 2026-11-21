@@ -1,0 +1,14 @@
+{
+  "_comment": "Copy to config.json (next to index.html) and set this dealer's values. Read when the page loads: no rebuild needed. See README.md.",
+  "siteType": "client",
+  "clientCompanyId": "5022",
+  "clientCompanyName": "Dealer Lion Demo - Single",
+  "salesCompanyId": "5026",
+  "salesCompanyName": "Sales Template Live Demo1",
+  "companyId": "",
+  "companyName": "",
+  "apiBase": "http://localhost:8001",
+  "mediaBase": "http://localhost:8000/",
+  "templateOverride": "",
+  "googleMapsKey": ""
+}

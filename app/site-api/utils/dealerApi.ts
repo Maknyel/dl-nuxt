@@ -81,6 +81,28 @@ export function apiPost<T = any>(endpoint: string, args: Record<string, unknown>
   })
 }
 
+/**
+ * A GET to one of the API's public website routes, answered as the API answered: its body, with its status set on the
+ * site route (so an API 404 / 422 reaches the caller as one, as the forms expect). The J.D. Power lookups use this
+ * (website/get/vehicle/models, trims, drivetrain, trade-vin: the key stays on the API, its ADR-1135).
+ */
+export async function apiGetPassthrough(event: H3Event, endpoint: string, query: Record<string, unknown> = {}): Promise<any> {
+  try {
+    const res = await $fetch.raw(apiUrl(endpoint), {
+      method: 'GET',
+      query,
+      timeout: API_TIMEOUT_MS,
+      headers: { Accept: 'application/json' },
+      ignoreResponseError: true,
+    })
+    if (res.status >= 400) setResponseStatus(event, res.status)
+    return res._data ?? { status: 'error', message: 'Empty answer from the API.' }
+  } catch {
+    setResponseStatus(event, 502)
+    return { status: 'error', message: 'The API could not be reached.' }
+  }
+}
+
 /** The dealer's data version, asked at most every VERSION_CHECK_SECONDS; null when the API can't say. */
 export async function siteVersion(): Promise<string | null> {
   const known = getEntry<string>('site:api-version')

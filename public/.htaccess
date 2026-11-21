@@ -1,0 +1,15 @@
+# Apache: every page address (/pre-owned-cars, /view/192144, ...) is the app's index.html; real files (assets,
+# images, config.json) are served as they are. (Nginx: `try_files $uri $uri/ /index.html;`, see README.md.)
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  RewriteRule ^index\.html$ - [L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /index.html [L]
+</IfModule>
+
+# config.json changes per dealer: never cached by the browser.
+<Files "config.json">
+  Header set Cache-Control "no-store"
+</Files>
