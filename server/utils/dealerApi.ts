@@ -47,8 +47,27 @@ export function apiUrl(endpoint: string): string {
   return `${String(apiBase).replace(/\/+$/, '')}/api/v2/${endpoint.replace(/^\/+/, '')}`
 }
 
+export type SiteType = 'client' | 'sales'
+
+/** Which site this is: 'client' (like the Laravel :8002 site) or 'sales' (like :8003). NUXT_SITE_TYPE. */
+export function siteType(): SiteType {
+  return String(useRuntimeConfig().siteType).trim().toLowerCase() === 'sales' ? 'sales' : 'client'
+}
+
+/** The dealer this site serves: NUXT_COMPANY_ID when set, else the site type's own (client 5022 / sales 5026 locally). */
 export function companyId(): number {
-  return Number(useRuntimeConfig().companyId)
+  const config = useRuntimeConfig()
+  const override = String(config.companyId ?? '').trim()
+  if (override) return Number(override)
+  return Number(siteType() === 'sales' ? config.salesCompanyId : config.clientCompanyId)
+}
+
+/** The dealer's name as the Laravel sites send it to the API (their COMPANY_INFO), chosen like companyId(). */
+export function companyName(): string {
+  const config = useRuntimeConfig()
+  const override = String(config.companyName ?? '').trim()
+  if (override) return override
+  return String(siteType() === 'sales' ? config.salesCompanyName : config.clientCompanyName)
 }
 
 /** One live call to the API. */

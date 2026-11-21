@@ -15,11 +15,6 @@ export interface CompanyDataResponse {
   [key: string]: any
 }
 
-/** The Laravel site's `company_name` arg (its COMPANY_INFO). The API matches on company_id; this is informational. */
-function companyName(): string {
-  return String(useRuntimeConfig().companyName || '')
-}
-
 export function baseArgs(extra: Record<string, unknown> = {}): Record<string, unknown> {
   return { company_name: companyName(), company_id: String(companyId()), ...extra }
 }

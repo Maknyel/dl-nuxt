@@ -38,8 +38,12 @@ export type TemplateNav = Record<string, any> & {
 
 export type TemplateKey = 'template-1' | 'template-2' | 'template-3' | 'template-4'
 
+/** 'client' = the Laravel dealer-lion-client-templates site (:8002); 'sales' = dealerlion_sales_template (:8003). */
+export type SiteType = 'client' | 'sales'
+
 /** GET /api/site/layout. */
 export interface SiteLayout {
+  siteType: SiteType
   template: TemplateKey
   templateNav: TemplateNav
   company: Company

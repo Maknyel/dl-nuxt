@@ -17,6 +17,7 @@ export default defineEventHandler(async (event) => {
   const { mediaBase } = useRuntimeConfig()
 
   return {
+    siteType: siteType(),
     template: /^template-[1-4]$/.test(preview) ? (preview as TemplateKey) : templateOf(company),
     templateNav: templateNavOf(company),
     company: slimCompany(company),

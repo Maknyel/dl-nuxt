@@ -14,6 +14,9 @@ export function useSite() {
   const template = computed(() => state.value?.template ?? 'template-1')
   const templateNav = computed(() => state.value?.templateNav ?? {})
   const isMulti = computed(() => company.value.account_type === 'Multi')
+  /** Which site this is (NUXT_SITE_TYPE): 'client' (like :8002) or 'sales' (like :8003). */
+  const siteType = computed(() => state.value?.siteType ?? 'client')
+  const isSales = computed(() => siteType.value === 'sales')
 
   /** The menu, from the dealer's template_nav flags (the same labels, order and pages as the Laravel navs). */
   const menus = computed<MenuItem[]>(() => {
@@ -63,5 +66,5 @@ export function useSite() {
   const logoUrl = (c: Company = company.value): string =>
     c?.logo ? mediaUrl(c.logo, c.id) : DEALER_LION_LOGO
 
-  return { site, company, mainCompany, template, templateNav, isMulti, menus, locations, hasSection, mediaUrl, logoUrl }
+  return { site, company, mainCompany, template, templateNav, isMulti, siteType, isSales, menus, locations, hasSection, mediaUrl, logoUrl }
 }

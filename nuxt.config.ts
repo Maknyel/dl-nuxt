@@ -29,10 +29,18 @@ export default defineNuxtConfig({
   runtimeConfig: {
     // The Dealer Lion API (the Laravel site's URL_API_CORE).
     apiBase: 'http://localhost:8001',
-    // The dealer this site serves (the Laravel site's COMPANY_ID_ENV).
-    companyId: '5022',
-    // The dealer's name as the Laravel site sends it to the API (its COMPANY_INFO).
-    companyName: 'Dealer Lion Demo - Single',
+    // Which site this is (NUXT_SITE_TYPE): 'client' (Dealer Config's dealer website, the Laravel
+    // dealer-lion-client-templates, :8002) or 'sales' (Dealer CRM's, the Laravel dealerlion_sales_template, :8003).
+    // The pages are the same; the forms and a few sections differ (see docs/adr/ADR-0002).
+    siteType: 'client',
+    // The dealer each type serves (the Laravel sites' COMPANY_ID_ENV) and its name as sent to the API (COMPANY_INFO).
+    clientCompanyId: '5022',
+    clientCompanyName: 'Dealer Lion Demo - Single',
+    salesCompanyId: '5026',
+    salesCompanyName: 'Sales Template Live Demo1',
+    // Optional: serve another dealer whatever the type (NUXT_COMPANY_ID / NUXT_COMPANY_NAME). Empty = the type's own.
+    companyId: '',
+    companyName: '',
     // Where the dealer's media (logo, photos) is served from (the Laravel site's MAIN_WEBSITE_URL).
     mediaBase: 'http://localhost:8000/',
     // Template override for local work (the Laravel site's CURRENT_TEMPLATE); empty = the dealer's own template.
