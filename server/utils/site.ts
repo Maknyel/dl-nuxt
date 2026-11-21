@@ -32,7 +32,8 @@ export async function getMainCompany(company: Record<string, any> | undefined): 
       const res = await apiCached<{ company?: any[] }>('websitetemplate/new-get-company-info-main', baseArgs())
       return Array.isArray(res?.company) ? res.company : []
     }
-    if (String(company.sequence_id ?? '').includes('-')) {
+    // The sales site (dealerlion_sales_template) has no sequence-group step: only a main company lists locations.
+    if (siteType() !== 'sales' && String(company.sequence_id ?? '').includes('-')) {
       const res = await apiCached<{ company?: any[] }>('websitetemplate/get-company-sequence-group', baseArgs())
       return Array.isArray(res?.company) ? res.company : []
     }

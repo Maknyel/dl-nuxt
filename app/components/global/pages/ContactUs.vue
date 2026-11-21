@@ -463,7 +463,9 @@ body:has(.ct-page) {
   border-color: #dc2626 !important;
 }
 
-.ct-form button.company-primary-base-background {
+.ct-form button.company-primary-base-background,
+/* The sales site's Demo Only notice sits inside the form card there, so its Close button takes this style too. */
+.ct-form :deep(.demo-notice button.company-primary-base-background) {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;

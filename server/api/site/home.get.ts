@@ -2,7 +2,7 @@
  * GET /api/site/home: the home page's data (the Laravel HomeController@index):
  *  - reviews (first 3) and vehicles (first 6) from new-get-company-data-optimized (cached, shared with the layout);
  *  - the search / budget / category filters from new-search-company-vehicles;
- *  - for a Multi dealer, its locations with their vehicle counts (get-available-companies);
+ *  - for a Multi dealer, its locations with their vehicle counts (get-available-companies; client site only);
  *  - requestcurrentHeroImage (?currentHeroImage=, the hero editor's preview).
  */
 export default defineEventHandler(async (event) => {
@@ -14,7 +14,8 @@ export default defineEventHandler(async (event) => {
     apiCached<Record<string, any>>('websitetemplate/new-search-company-vehicles', baseArgs({ get: [] })).catch(
       () => ({}) as Record<string, any>,
     ),
-    company.account_type === 'Multi'
+    // The sales site's home never asks for the locations (it has no multi-location hero).
+    company.account_type === 'Multi' && siteType() !== 'sales'
       ? apiCached<{ companies?: any[] }>('websitetemplate/get-available-companies', { company_id: String(companyId()) })
           .then((r) => r?.companies ?? [])
           .catch(() => [])

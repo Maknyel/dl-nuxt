@@ -23,7 +23,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
     class="demo-notice fade-in fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4"
     @click.self="open = false"
   >
-    <div class="bg-white rounded-lg w-[420px] max-w-[90vw] shadow-lg overflow-hidden">
+    <div class="bg-white rounded-lg max-w-[90vw] shadow-lg overflow-hidden">
       <div class="relative border-b border-gray-200 px-4 py-3 flex items-center justify-center h-[50px]">
         <span class="text-lg font-semibold">{{ title }}</span>
         <button
