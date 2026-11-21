@@ -8,8 +8,11 @@
  * the character counter, the SMS consent enabling Send Message, and the validation messages after a first submit.
  * It doesn't send anything yet (docs/PORTING.md "Forms are not ported yet").
  */
-const { company, mainCompany, logoUrl } = useSite()
+const { company, mainCompany, logoUrl, isSales } = useSite()
 const demo = isDemoHost(useRequestURL().hostname)
+/** The sales site (:8003): the store select comes after the phone row with names only, and Send Message opens the
+ *  "Demo Only" notice instead of sending. */
+const demoNotice = ref(false)
 
 const isMulti = computed(() => company.value.account_type === 'Multi')
 const noLocations = computed(() => mainCompany.value.length === 0)
@@ -92,7 +95,7 @@ function submit() {
             <input id="vehicle_id" v-model="form.vehicle_id" type="hidden" name="vehicle_id" />
             <div class="p-3">
               <!-- Store Location (Multi only) -->
-              <div v-if="isMulti" class="mb-4">
+              <div v-if="isMulti && !isSales" class="mb-4">
                 <label class="form-label text-sm font-bold">Store Location *</label>
                 <select
                   id="store_location"
@@ -208,6 +211,24 @@ function submit() {
                 </div>
               </div>
 
+              <!-- Store Location (Multi only), the sales site's place for it -->
+              <div v-if="isMulti && isSales" class="mb-4">
+                <label class="form-label text-sm font-bold">Store Location *</label>
+                <select
+                  id="store_location"
+                  v-model="form.store_location"
+                  :class="{ 'input-error': error.store_location }"
+                  required
+                  name="store_location"
+                  class="appearance-none border rounded-md w-full py-2 px-3 text-gray-700 leading-tight focus:outline-hidden"
+                  @change="onchangeFunction(true)"
+                >
+                  <option value="" disabled selected>Select Store Location</option>
+                  <option v-for="loc in mainCompany" :key="loc.id" :value="String(loc.id)">{{ loc.name }}</option>
+                </select>
+                <div v-show="error.store_location" class="text-xs text-red-500">{{ error.store_location }}</div>
+              </div>
+
               <!-- Hidden address fields (used by form submission) -->
               <div style="display: none">
                 <input type="text" name="address" placeholder="Address" />
@@ -249,7 +270,18 @@ function submit() {
                   <UiSmsConsent v-model="smsConsent" />
                 </div>
 
-                <div class="w-full flex gap-2 justify-end mt-2" style="min-height: 51px">
+                <div v-if="isSales" class="w-full flex gap-2 justify-end mt-2">
+                  <button
+                    type="button"
+                    :disabled="!smsConsent"
+                    :class="{ 'opacity-50 cursor-not-allowed': !smsConsent }"
+                    class="flex-1 md:flex-none flex justify-center px-5 py-3 company-primary-base-background rounded-sm text-white focus:outline-hidden focus:ring-2 focus:ring-pink-300"
+                    @click.prevent="smsConsent && (demoNotice = true)"
+                  >
+                    Send Message <Icon name="ion:paper-plane-outline" aria-hidden="true" />
+                  </button>
+                </div>
+                <div v-else class="w-full flex gap-2 justify-end mt-2" style="min-height: 51px">
                   <button
                     v-if="!buttonDisabled"
                     :disabled="demo || !smsConsent"
@@ -267,6 +299,8 @@ function submit() {
                   </button>
                 </div>
               </div>
+
+              <UiDemoNoticeModal v-if="isSales" v-model="demoNotice" />
             </div>
           </div>
         </div>
@@ -299,7 +333,10 @@ function submit() {
     <!-- Multi-location listings -->
     <template v-for="(location, k) in mainCompany" :key="`loc-${k}`">
       <div class="w-full">
-        <h4 class="font-semibold form-label text-xl my-2 lg:text-left text-center">
+        <h4
+          :class="isSales ? 'mb-3.5' : 'my-2'"
+          class="font-semibold form-label text-xl lg:text-left text-center"
+        >
           {{ location.name }}
         </h4>
       </div>

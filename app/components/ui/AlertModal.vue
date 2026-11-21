@@ -17,7 +17,9 @@ const props = withDefaults(
   { show: false, title: '', description: '', bottomDescription: '', logoPath: '', vehicle: null },
 )
 
-const FALLBACK = '/imgfav/dealer-lion-logo.png'
+const { isSales } = useSite()
+// The sales site's alert-component falls back to the black Dealer Lion logo; the client site's to the favicon logo.
+const FALLBACK = isSales.value ? '/media/Dealer Lion Logo - Black.png' : '/imgfav/dealer-lion-logo.png'
 const onImgError = (e: Event) => {
   const img = e.target as HTMLImageElement
   if (!img.src.endsWith(FALLBACK)) img.src = FALLBACK
@@ -58,11 +60,15 @@ function closeThisModal() {
       <!-- Modal Header -->
       <div class="relative border-b border-gray-200 px-4 py-3 flex items-center justify-center h-[50px]">
         <div class="text-lg font-semibold">
-          <img id="alert_modal_img" class="h-auto w-[100px]" :src="logoPath || FALLBACK" @error="onImgError" />
+          <img
+            id="alert_modal_img"
+            :class="isSales ? 'h-[45px] w-auto' : 'h-auto w-[100px]'"
+            :src="logoPath || FALLBACK" @error="onImgError" />
         </div>
         <!-- Close Button Right -->
         <button
-          class="btn-icon-circle on-light absolute right-4 top-1/2 transform -translate-y-1/2 text-2xl leading-none"
+          :class="isSales ? 'text-gray-500 hover:text-gray-800' : 'btn-icon-circle on-light'"
+          class="absolute right-4 top-1/2 transform -translate-y-1/2 text-2xl leading-none"
           @click="closeThisModal"
         >
           &times;
