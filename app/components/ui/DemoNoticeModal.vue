@@ -3,10 +3,14 @@
  * <x-demo-notice-modal> (the sales site's resources/views/components/demo-notice-modal.blade.php): the "Demo Only"
  * pop-up the sales site's forms open instead of sending. Open it with v-model; a click on the backdrop, Escape, the
  * × or Close shuts it.
+ *
+ * `bodyFont`: where the Blade puts the notice outside the page's own block (Sell Us Your Car), it has the Laravel
+ * <body>'s font (frontend-tw's Poppins stack); the Nuxt <body> has Inter.
  */
-withDefaults(defineProps<{ title?: string; message?: string }>(), {
+withDefaults(defineProps<{ title?: string; message?: string; bodyFont?: boolean }>(), {
   title: 'Demo Only',
   message: 'This form is for demo purposes only. Your message has not been sent.',
+  bodyFont: false,
 })
 const open = defineModel<boolean>({ default: false })
 
@@ -21,6 +25,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   <div
     v-show="open"
     class="demo-notice fade-in fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4"
+    :class="{ 'demo-notice--body-font': bodyFont }"
     @click.self="open = false"
   >
     <div class="bg-white rounded-lg max-w-[90vw] shadow-lg overflow-hidden">
@@ -55,6 +60,11 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 </template>
 
 <style scoped>
+.demo-notice--body-font {
+  font-family: Poppins, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+    'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
 .fade-in {
   opacity: 1;
   animation-name: fadeInOpacity;

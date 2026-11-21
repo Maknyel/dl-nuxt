@@ -1039,6 +1039,6 @@ const alertVehicle = { image: '', title: '', vin: '', mileage: '', year: '', mak
     </form>
 
     <UiSwal v-model="swal" @confirm="onDecodeConfirmed" />
-    <UiDemoNoticeModal v-if="isSales" v-model="demoNotice" />
+    <UiDemoNoticeModal v-if="isSales" v-model="demoNotice" body-font />
   </div>
 </template>
