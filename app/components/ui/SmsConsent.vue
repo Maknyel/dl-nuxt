@@ -42,8 +42,10 @@ const checked = defineModel<boolean>({ default: false })
   cursor: pointer;
 }
 
-/* Ticked and focused: no grey border, as on :8002 (the forms plugin's checked state). */
-.sms-consent input[type='checkbox']:checked:focus {
+/* Ticked and focused or hovered: no grey border, as on :8002 (the forms plugin's `:checked:focus, :checked:hover`
+   outranks the Blade's grey border there; v4's `:where()` version doesn't, so it is restated here). */
+.sms-consent input[type='checkbox']:checked:focus,
+.sms-consent input[type='checkbox']:checked:hover {
   border-color: transparent;
 }
 </style>
