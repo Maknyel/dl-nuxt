@@ -29,13 +29,15 @@ definePageMeta({ layout: false })
 const route = useRoute()
 const id = computed(() => String(route.params.id ?? ''))
 
-const { data } = await useFetch(() => `/api/site/vehicle/${encodeURIComponent(id.value)}`, {
-  key: `vehicle-${id.value}`,
-})
-const vehicle = computed<Record<string, any> | null>(() => (data.value?.vehicle as Record<string, any> | null) ?? null)
+// Typed by hand: the template URL would otherwise match the folder's other routes (dealership-list, zip-timezone) too.
+const { data } = await useFetch<{ vehicle: Record<string, any> | null; hours: any[]; isDemo?: boolean }>(
+  () => `/api/site/vehicle/${encodeURIComponent(id.value)}`,
+  { key: `vehicle-${id.value}` },
+)
+const vehicle = computed<Record<string, any> | null>(() => data.value?.vehicle ?? null)
 /** The sales site: its inquiry forms have Dealer Info instead of the trade-in (SalesInquiryForm). */
 const { isSales } = useSite()
-const isDemo = computed(() => Boolean((data.value as { isDemo?: boolean } | null)?.isDemo))
+const isDemo = computed(() => Boolean(data.value?.isDemo))
 
 if (!vehicle.value && import.meta.server) {
   const event = useRequestEvent()
