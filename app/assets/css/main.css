@@ -53,6 +53,8 @@
   /* Tailwind 3's blue-600 (Tailwind 4's is an oklch blue): the forms plugin fills ticked checkboxes and radios and their
      focus ring with it, so the forms look as on :8002. */
   --color-blue-600: #2563eb;
+  /* Tailwind 3's red-500: the forms' error borders and messages (border-red-500, text-red-500). */
+  --color-red-500: #ef4444;
 
   /* Its extra sizes. */
   --text-custom-sm: 0.925rem;
