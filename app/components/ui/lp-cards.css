@@ -1,0 +1,353 @@
+/*
+ * lp-*: the Hours of Operation, Company Information and Visit Our Showroom cards (About Us, Contact Us). The Laravel
+ * site has these once per page (@once in custom-components/contact-us/hour-of-operation and company-map); here every
+ * card component loads this file, unscoped, so the page-level rules (.ct-page ...) reach them as on :8002.
+ */
+
+.lp-card {
+  --lp-p: var(--company-primary-base, #6d28d9);
+  --lp-ink: #16131f;
+  --lp-muted: #6b6880;
+  --lp-line: #e7e7ec;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  height: 100%;
+  padding: 1.75rem;
+  border-radius: 1.25rem;
+  background: #fff;
+  border: 1px solid var(--lp-line);
+  box-shadow: 0 18px 40px -28px rgba(16, 12, 40, 0.35), 0 1px 2px rgba(16, 12, 40, 0.04);
+  color: var(--lp-ink);
+  font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+}
+
+.lp-h {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  font-family: 'Outfit', 'Inter', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.lp-ico {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.75rem;
+  font-size: 1.25rem;
+  color: var(--lp-ink);
+  background: #f6f6f8;
+  border: 1px solid var(--lp-line);
+}
+
+.lp-ico--sm {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.625rem;
+  font-size: 1rem;
+}
+
+.lp-depts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 1rem;
+  align-items: start;
+}
+
+.lp-dept {
+  padding: 1rem 1.25rem 0.5rem;
+  border-radius: 1rem;
+  border: 1px solid var(--lp-line);
+}
+
+.lp-dept-h {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-bottom: 0.75rem;
+  margin-bottom: 0.25rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--lp-line);
+}
+
+/* "Department" is its own flex item: cancel the header's gap so it reads as one word apart. */
+.lp-dept-h .lp-dept-word {
+  margin-left: calc(0.3em - 0.75rem);
+}
+
+/* Contact Us (the hours card is half width there): "Sales" / "Service", as in its mock-up. */
+.ct-page .lp-dept-word {
+  display: none;
+}
+
+.lp-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.65rem 0;
+  font-size: 0.9375rem;
+  border-bottom: 1px solid #f1f1f4;
+}
+
+.lp-row:last-child {
+  border-bottom: 0;
+}
+
+.lp-day {
+  width: 2.5rem;
+  flex-shrink: 0;
+  font-weight: 600;
+}
+
+.lp-fill {
+  flex: 1;
+  height: 0.3rem;
+  border-radius: 9999px;
+  background: #f1f1f4;
+}
+
+.lp-time {
+  flex-shrink: 0;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.lp-note {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: auto;
+  padding: 0.85rem 1rem;
+  border-radius: 0.75rem;
+  font-size: 0.875rem;
+  background: #fafafb;
+  border: 1px dashed #d9d8e0;
+}
+
+.lp-note .ion-icon {
+  flex-shrink: 0;
+  font-size: 1.1rem;
+}
+
+/* Company Information */
+.lp-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lp-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.9rem 1.1rem;
+  border-radius: 1rem;
+  color: var(--lp-ink);
+  border: 1px solid var(--lp-line);
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.lp-item:hover {
+  color: var(--lp-ink);
+  background: #fafafb;
+  border-color: #d9d8e0;
+}
+
+.lp-item-txt {
+  flex: 1;
+  min-width: 0;
+}
+
+.lp-item-txt small {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--lp-muted);
+}
+
+.lp-item-txt strong {
+  display: block;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  line-height: 1.35;
+  overflow-wrap: break-word;
+}
+
+.lp-item > .ion-icon {
+  flex-shrink: 0;
+  color: var(--lp-muted);
+}
+
+.lp-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.85rem 1rem;
+  border-radius: 0.75rem;
+  font-weight: 700;
+  color: #fff;
+  background: color-mix(in srgb, var(--lp-p) 75%, #ffffff);
+  box-shadow: 0 12px 24px -14px color-mix(in srgb, var(--lp-p) 80%, transparent);
+  transition: filter 0.15s;
+}
+
+.lp-btn:hover {
+  color: #fff;
+  filter: brightness(1.08);
+}
+
+.lp-follow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: auto;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--lp-line);
+}
+
+.lp-follow-lbl {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--lp-muted);
+}
+
+.lp-socials {
+  display: flex;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lp-socials a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.75rem;
+  font-size: 1.1rem;
+  color: var(--lp-ink);
+  background: #f6f6f8;
+  border: 1px solid var(--lp-line);
+}
+
+.lp-socials a:hover {
+  color: var(--lp-p);
+}
+
+/* Visit Our Showroom (company-map) */
+.lp-map-info {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 1.25rem;
+}
+
+.lp-map-addr {
+  display: flex;
+  flex-direction: column;
+  padding-right: 1.25rem;
+  line-height: 1.4;
+  border-right: 1px solid var(--lp-line);
+}
+
+.lp-map-addr strong {
+  font-size: 1.0625rem;
+  font-weight: 700;
+}
+
+.lp-map-addr span {
+  color: var(--lp-muted);
+}
+
+.lp-map-quick {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+  font-size: 0.9375rem;
+}
+
+.lp-map-quick > * {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--lp-ink);
+  overflow-wrap: break-word;
+}
+
+.lp-map-quick .ion-icon {
+  flex-shrink: 0;
+  font-size: 1.05rem;
+}
+
+.lp-open {
+  padding: 0.1rem 0.55rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #15803d;
+  background: #dcfce7;
+  border: 1px solid #bbf7d0;
+}
+
+.lp-map-frame {
+  flex: 1;
+  min-height: 13rem;
+  overflow: hidden;
+  border-radius: 1rem;
+  border: 1px solid var(--lp-line);
+}
+
+.lp-map-frame iframe {
+  width: 100%;
+  height: 100%;
+  min-height: 13rem;
+}
+
+.lp-map-ctas {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.lp-btn.lp-btn--ghost {
+  color: color-mix(in srgb, var(--lp-p) 80%, #000000);
+  background: #fff;
+  border: 1.5px solid color-mix(in srgb, var(--lp-p) 70%, #ffffff);
+  box-shadow: none;
+}
+
+.lp-btn.lp-btn--ghost:hover {
+  color: color-mix(in srgb, var(--lp-p) 80%, #000000);
+  background: color-mix(in srgb, var(--lp-p) 6%, #ffffff);
+}
+
+@media (max-width: 520px) {
+  .lp-map-info,
+  .lp-map-ctas {
+    grid-template-columns: 1fr;
+  }
+
+  .lp-map-addr {
+    padding-right: 0;
+    border-right: 0;
+  }
+}

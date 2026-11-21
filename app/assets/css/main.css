@@ -1,0 +1,241 @@
+/*
+ * Tailwind 4, set up to match the Laravel site's Tailwind 3 build (mix-config/frontend.tailwind.config.js and
+ * resources/css/frontend-tw.css), so markup ported from its Blade views lays out the same:
+ * the same breakpoints, centred container, colour tokens, sizes and the forms plugin.
+ */
+@import "tailwindcss";
+@plugin "@tailwindcss/forms";
+
+@theme {
+  /* The Laravel site's screens (not Tailwind's defaults). */
+  --breakpoint-sm: 576px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 992px;
+  --breakpoint-xl: 1200px;
+  --breakpoint-2xl: 1350px;
+
+  /* Its page font (and `font-sans`): the Poppins stack. Poppins itself never loads there (its @import comes after the
+     Tailwind rules, so browsers drop it), so text falls through to the system font (Segoe UI on Windows). The current
+     design's sections set Inter (text) and Outfit (headings) themselves. */
+  --font-sans: Poppins, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-inter: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Outfit", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-poppins: "Poppins", ui-sans-serif, system-ui, sans-serif;
+
+  /* Colour tokens (primary-base, base-100, ...) as the Laravel config defines them, read from CSS variables. */
+  --color-primary-base: var(--primary-base);
+  --color-primary-focus: var(--primary-focus);
+  --color-primary-content: var(--primary-content);
+  --color-secondary-base: var(--secondary-base);
+  --color-secondary-focus: var(--secondary-focus);
+  --color-secondary-content: var(--secondary-content);
+  --color-accent-base: var(--accent-base);
+  --color-accent-focus: var(--accent-focus);
+  --color-accent-content: var(--accent-content);
+  --color-neutral-base: var(--neutral-base);
+  --color-neutral-focus: var(--neutral-focus);
+  --color-neutral-content: var(--neutral-content);
+  --color-base-100: var(--base-100);
+  --color-base-200: var(--base-200);
+  --color-base-300: var(--base-300);
+  --color-base-content: var(--base-content);
+  --color-state-info: var(--state-info);
+  --color-state-success: var(--state-success);
+  --color-state-warning: var(--state-warning);
+  --color-state-error: var(--state-error);
+
+  /* The dealer's own colours (set per site on <body> by the layout). */
+  --color-company-primary: var(--company-primary-base);
+  --color-company-secondary: var(--company-secondary-base);
+  --color-company-dark-primary: var(--company-dark-primary-base);
+
+  /* Tailwind 3's blue-600 (Tailwind 4's is an oklch blue): the forms plugin fills ticked checkboxes and radios and their
+     focus ring with it, so the forms look as on :8002. */
+  --color-blue-600: #2563eb;
+
+  /* Its extra sizes. */
+  --text-custom-sm: 0.925rem;
+  --text-car-button-sm: 0.785rem;
+  --width-85: 23rem;
+  --height-hero: 75vh;
+  --max-height-nav: 80vh;
+}
+
+/*
+ * Its centred container, as the compiled frontend-tw.min.css actually has it (its own CSS overrides the config):
+ * full width with 0.75rem sides, 4rem sides from 768px, no sides from 1350px, and at most 80rem wide from 1280px.
+ */
+@utility container {
+  margin-inline: auto;
+  width: 100%;
+
+  @media (min-width: 80rem) {
+    max-width: 80rem;
+  }
+}
+
+/* Its side padding comes from the site's own CSS, after the compiled Tailwind, so it beats a section's px-* utility on
+   the same element (e.g. the home sections' `container px-10`). Unlayered here for the same result. */
+.container {
+  padding-inline: 0.75rem;
+}
+@media (min-width: 768px) {
+  .container { padding-inline: 4rem; }
+}
+@media (min-width: 1350px) {
+  .container { padding-inline: 0; }
+}
+
+@layer base {
+  /* The Laravel layout's theme variables (its <body> block, which wins over frontend-tw.css's :root values). */
+  :root {
+    --primary-base: #c2c2c2;
+    --primary-focus: #4506cb;
+    --primary-content: #ffffff;
+    --secondary-base: #5b5757;
+    --secondary-focus: #bd0091;
+    --secondary-content: #ffffff;
+    --accent-base: #37cdbe;
+    --accent-focus: #2aa79b;
+    --accent-content: #ffffff;
+    --neutral-base: #ffffff;
+    --neutral-focus: #ccced1;
+    --neutral-content: #000000;
+    --base-100: #ffffff;
+    --base-200: #f9fafb;
+    --base-300: #ec3c3c;
+    --base-content: #ffffff;
+    --state-info: #2094f3;
+    --state-success: #009485;
+    --state-warning: #ff9900;
+    --state-error: #ff5724;
+
+    /* Defaults; the layout sets the dealer's own on <body>. */
+    --company-primary-base: #4b5563;
+    --company-secondary-base: #4b5563;
+    --company-dark-primary-base: #991601;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background: var(--base-100);
+    overflow-y: scroll;
+  }
+
+  textarea {
+    resize: none;
+  }
+
+  /* Tailwind 4's reset makes disabled controls fully opaque; Tailwind 3 left the browser's dimmed look. */
+  select:disabled {
+    opacity: 0.7;
+  }
+
+  /* Tailwind 4 makes buttons default to cursor: default; the Laravel site's Tailwind 3 used pointer. */
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  /* An icon is 1em square, like the Laravel site's ion-icon. */
+  .ion-icon {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    flex-shrink: 0;
+    vertical-align: middle;
+  }
+}
+
+/*
+ * The dealer-colour classes, outside any layer on purpose: in the Laravel site they're an inline <style> after the
+ * compiled Tailwind, so they beat a Tailwind bg-* / text-* utility on the same element. Unlayered CSS does the same
+ * here (it outranks every @layer).
+ */
+.company-primary-base-background { background-color: var(--company-primary-base); }
+.company-secondary-base-background { background-color: var(--company-secondary-base); }
+.company-dark-primary-base-background { background-color: var(--company-dark-primary-base); }
+.company-primary-base-text { color: var(--company-primary-base); }
+.company-secondary-base-text { color: var(--company-secondary-base); }
+.company-dark-primary-base-text { color: var(--company-dark-primary-base); }
+
+/* Template 2's page-wide rule from its template2.min.css (loaded after Tailwind there, so it beats text-* classes):
+   every h4 on a template-2 page is 24px. */
+[data-template="template-2"] h4 {
+  font-size: 24px;
+}
+
+/* The Laravel layout's shared classes, used across the sections. */
+@layer components {
+  /* The platform-wide buttons. */
+  .multi-cta-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    border-radius: 0.25rem;
+    text-decoration: none;
+    transition: opacity 0.15s;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .multi-cta-card:hover { opacity: 0.88; }
+  .multi-cta-icon { font-size: 1.75rem; color: #fff; flex-shrink: 0; }
+  .multi-cta-body { flex: 1; min-width: 0; }
+  .multi-cta-title { color: #fff; font-weight: 700; font-size: 0.9375rem; }
+  .multi-cta-sub { color: rgba(255, 255, 255, 0.65); font-size: 0.75rem; margin-top: 0.125rem; }
+  .multi-cta-arrow {
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.08);
+  }
+  @media (max-width: 640px) {
+    .multi-cta-card { flex-direction: column; text-align: center; padding: 0.85rem 0.75rem; gap: 0.4rem; }
+    .multi-cta-arrow { display: none; }
+  }
+
+  .btn-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.65rem 1.25rem;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition: opacity 0.15s;
+  }
+  .btn-pill:hover { opacity: 0.88; }
+  .btn-pill-light { background: #fff; color: var(--company-primary-base); }
+  .btn-pill-solid { background: var(--company-primary-base); color: #fff; }
+  .btn-pill-outline { background: transparent; color: #fff; border: 1px solid rgba(255, 255, 255, 0.35); }
+
+  .btn-icon-circle {
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border: none;
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .btn-icon-circle:hover { background: rgba(255, 255, 255, 0.16); }
+  .btn-icon-circle.on-light { background: #f3f4f6; color: #6b7280; }
+  .btn-icon-circle.on-light:hover { background: #e5e7eb; color: #111827; }
+
+  .hero-search-btn { width: 2.125rem; height: 2.125rem; }
+}

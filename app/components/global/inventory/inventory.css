@@ -1,0 +1,3142 @@
+/*
+ * The inventory page's styles (/pre-owned-cars), from the Blade views' <style> blocks in the Laravel page's order:
+ * index-live, sidebar-live, multiple-checkbox, top-menu-live, vehicle-lists, pagination-live, index-live's second
+ * block, then srp-theme (last, so it wins). Generated from the Blade CSS; the sections' own rules are scoped with
+ * :where(#car-search-page) (zero specificity, so the cascade is the Laravel page's), srp-theme too (its #car-search-page rules as they are).
+ * <ion-icon> selectors are .ion-icon (the <Icon> SVG). The range sliders' rules are in PriceRange.vue / NumberRange.vue.
+ * srp-theme's body:has(> #car-search-page) is [data-template]:has(> #car-search-page): the page sits in the layout's
+ * div here, not in <body>.
+ */
+
+/* ── index-live (top) ── */
+:where(#car-search-page) .vehicles-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
+  align-items: flex-start;
+}
+
+:where(#car-search-page) .vehicles-layout .sidebar-side {
+  width: 100%;
+}
+
+:where(#car-search-page) .vehicles-layout .vehicles-main {
+  width: 100%;
+  min-width: 0;
+}
+
+@media (min-width: 992px) {
+  :where(#car-search-page) .vehicles-layout {
+    flex-direction: row;
+  }
+
+  :where(#car-search-page) .vehicles-layout .sidebar-side {
+    width: 260px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 8.5rem;
+    align-self: flex-start;
+    max-height: calc(100vh - 8.5rem);
+    overflow-y: auto;
+  }
+
+  :where(#car-search-page) .vehicles-layout .vehicles-main {
+    flex: 1;
+  }
+}
+
+:where(#car-search-page) .upper-menu {
+  position: sticky;
+  top: 9.3rem;
+  z-index: 20;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,.06);
+  padding-bottom: 0.25rem;
+}
+
+@media (max-width: 991px) {
+  :where(#car-search-page) .view-vehicles-page .upper-menu {
+    top: 6.9rem;
+  }
+}
+
+@media (max-width: 574px) {
+  :where(#car-search-page) .view-vehicles-page .top-menu .filter-button {
+    margin-left: auto;
+  }
+
+  :where(#car-search-page) .view-vehicles-page .top-menu {
+    gap: 2px;
+  }
+}
+
+@media (max-width: 991px) {
+  :where(#car-search-page) .vehicles-layout .sidebar-side {
+    display: none;
+  }
+
+  :where(#car-search-page) .vehicles-layout .sidebar-side.sidebar-mobile-open {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 999;
+    background: white;
+    overflow: hidden;
+    padding: 0;
+  }
+}
+
+@media (max-width: 991px) {
+  :where(#car-search-page) .adjust-width-responsive {
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 1199px) {
+  :where(#car-search-page) .view-vehicles-page .upper-menu .vehicle-sort {
+    display: none;
+  }
+}
+
+/* Bottom pagination container inherits top-menu row styles */
+
+:where(#car-search-page) .vehicles-bottom-pagination {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+  margin-bottom: 1rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+/* Hide pagination from the full-width top bar */
+
+:where(#car-search-page) .view-vehicles-page > .container > .upper-menu .pagination-row,
+:where(#car-search-page) .view-vehicles-page > .container > .upper-menu .total-pages,
+:where(#car-search-page) .view-vehicles-page > .container > .upper-menu nav.pagination,
+:where(#car-search-page) .view-vehicles-page > .container > .upper-menu .vehicle-selection {
+  display: none !important;
+}
+
+:where(#car-search-page) .bt-quickbar {
+  margin-bottom: 0.5rem;
+}
+
+:where(#car-search-page) .bt-quickbar.bt-is-fixed {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: var(--quickbar-top, 89px);
+  z-index: 25;
+}
+
+:where(#car-search-page) .bt-quickbar-spacer {
+  display: none;
+}
+
+:where(#car-search-page) .bt-quickbar-spacer.active {
+  display: block;
+}
+
+:where(#car-search-page) .bt-quickbar-inner {
+  background: color-mix(in srgb, var(--company-primary-base) 15%, #111827) !important;
+  border-color: color-mix(in srgb, var(--company-primary-base) 20%, #111827) !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+}
+
+@media (max-width: 991px) {
+  :where(#car-search-page) .bt-quickbar-inner {
+    justify-content: safe center;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  :where(#car-search-page) .bt-quickbar-inner::-webkit-scrollbar {
+    display: none;
+  }
+
+  :where(#car-search-page) .bt-quickbar-inner #bt-chips-container {
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 0;
+    padding-right: 0;
+    width: auto;
+    max-width: none;
+  }
+
+  :where(#car-search-page) .bt-qchip {
+    flex: 0 0 auto;
+  }
+}
+
+:where(#car-search-page) .bt-qchip {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.4rem 1.1rem;
+  color: #ffffff;
+  text-decoration: none;
+  white-space: nowrap;
+  border-radius: 0.75rem;
+  transition: background 0.15s, border-color 0.15s;
+  cursor: pointer;
+  border: 1px solid rgba(255,255,255,.08);
+  background: rgba(255,255,255,.06);
+  flex: 1 1 0;
+  justify-content: center;
+}
+
+:where(#car-search-page) .bt-qchip:hover {
+  background: rgba(255,255,255,.12); border-color: rgba(255,255,255,.18);
+}
+
+:where(#car-search-page) .bt-qchip.active {
+  background: rgba(255,255,255,.14);
+  border-color: rgba(255,255,255,.25);
+}
+
+:where(#car-search-page) .bt-qchip-icon {
+  display: flex;
+  align-items: center;
+  color: rgba(255,255,255,0.7);
+  flex-shrink: 0;
+}
+
+:where(#car-search-page) .bt-qchip-icon svg {
+  width: 44px; height: 22px;
+}
+
+:where(#car-search-page) .bt-qchip.active .bt-qchip-icon {
+  color: #ffffff;
+}
+
+:where(#car-search-page) .bt-qchip-text {
+  display: flex; flex-direction: column; line-height: 1.3;
+}
+
+:where(#car-search-page) .bt-qchip-name {
+  font-size: 0.9rem; font-weight: 700; color: #ffffff;
+}
+
+:where(#car-search-page) .bt-qchip-count {
+  font-size: 0.72rem; color: white; margin-top: 0.1rem; min-height: 0.9rem;
+}
+
+@media (max-width: 639px) {
+  :where(#car-search-page) .bt-qchip {
+    padding: 0.3rem 0.65rem; gap: 0.35rem; border-radius: 0.5rem;
+  }
+
+  :where(#car-search-page) .bt-qchip-name {
+    font-size: 0.72rem;
+  }
+
+  :where(#car-search-page) .bt-qchip-count {
+    font-size: 0.6rem; min-height: 0.75rem;
+  }
+}
+
+:where(#car-search-page) .bt-count-skeleton {
+  display: inline-block;
+  width: 50px;
+  height: 0.4rem;
+  border-radius: 3px;
+  background: linear-gradient(90deg, rgba(255,255,255,.12) 25%, rgba(255,255,255,.22) 50%, rgba(255,255,255,.12) 75%);
+  background-size: 200% 100%;
+  animation: bt-shimmer 1.3s infinite linear;
+  vertical-align: middle;
+}
+
+@keyframes bt-shimmer {
+        0%   { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+    }
+
+/* ── More button + dropdown ── */
+
+:where(#car-search-page) .bt-more-wrap {
+  position: relative;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  padding: 0rem 0.5rem 0rem 0.25rem;
+}
+
+:where(#car-search-page) .bt-qchip-more {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.85rem 1rem;
+  height: auto;
+  color: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  border: 1px solid rgba(255,255,255,.15);
+  background: rgba(255,255,255,.06);
+  border-radius: 0.75rem;
+  transition: background 0.15s;
+}
+
+:where(#car-search-page) .bt-qchip-more:hover {
+  background: rgba(255,255,255,.12);
+}
+
+:where(#car-search-page) .bt-dropdown {
+  display: none;
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: #1f2937;
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 0.5rem;
+  overflow: hidden;
+  z-index: 200;
+  min-width: 200px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.4);
+}
+
+:where(#car-search-page) .bt-more-wrap.open .bt-dropdown {
+  display: block;
+}
+
+:where(#car-search-page) .bt-dropdown .bt-qchip {
+  width: 100%;
+  height: auto;
+  padding: 0.65rem 1rem;
+  border-radius: 0;
+  border-bottom: 1px solid rgba(255,255,255,.05);
+}
+
+:where(#car-search-page) .bt-dropdown .bt-qchip:last-child {
+  border-bottom: none;
+}
+
+/* Chip visibility is controlled entirely by JS in btLayout() */
+
+/* ── sidebar-live ── */
+:where(#car-search-page) .sidebar-refine {
+  background: white;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+}
+
+/* Header */
+
+:where(#car-search-page) .sf-hd {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 1rem 1rem 0.6rem;
+}
+
+:where(#car-search-page) .sf-hd h3 {
+  font-size: 1rem; font-weight: 700; margin: 0 0 0.3rem; color: #000000;
+}
+
+:where(#car-search-page) .sf-hd-line {
+  width: 1.75rem; height: 2px; background: #d1d5db;
+}
+
+:where(#car-search-page) .sf-hd a {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--company-primary-base, #1d4ed8);
+  text-decoration: none;
+  margin-top: 0.15rem;
+  white-space: nowrap;
+}
+
+/* Accordion (open by default) */
+
+:where(#car-search-page) .sf-acc {
+  border-top: 1px solid #f3f4f6;
+}
+
+:where(#car-search-page) .sf-acc-hd {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.8rem 1rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+:where(#car-search-page) .sf-acc-hd span {
+  font-weight: 700; font-size: 0.875rem; color: #000000;
+}
+
+:where(#car-search-page) .sf-acc-hd .ion-icon {
+  font-size: 0.9rem; color: #6b7280; transition: transform 0.2s;
+}
+
+:where(#car-search-page) .sf-acc-hd.is-closed .sf-acc-chevron {
+  transform: rotate(180deg);
+}
+
+:where(#car-search-page) .sf-acc-icon-open {
+  display: none;
+}
+
+:where(#car-search-page) .sf-acc-icon-close {
+  display: inline-block;
+}
+
+:where(#car-search-page) .sf-acc-hd.is-closed .sf-acc-icon-open {
+  display: inline-block;
+}
+
+:where(#car-search-page) .sf-acc-hd.is-closed .sf-acc-icon-close {
+  display: none;
+}
+
+:where(#car-search-page) .sf-acc-body {
+  padding: 0;
+  display: block;
+}
+
+:where(#car-search-page) .sf-acc-body.sf-hidden {
+  display: none;
+}
+
+/* Always show dropdown lists inline — avoids JS-driven flash on load */
+
+:where(#car-search-page) .sf-acc-body .dropdown-content {
+  display: flex !important;
+  flex-direction: column;
+}
+
+/* Collapsed filter rows (Make / Model / etc.) */
+
+:where(#car-search-page) .sf-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.7rem 1rem;
+  cursor: pointer;
+  border-top: 1px solid #f3f4f6;
+  font-size: 0.875rem;
+  color: #374151;
+  font-weight: 500;
+}
+
+:where(#car-search-page) .sf-row .ion-icon {
+  color: #9ca3af; font-size: 1rem;
+}
+
+/* Submit */
+
+:where(#car-search-page) .sf-btn {
+  display: block;
+  width: calc(100% - 2rem);
+  margin: 0.75rem 1rem 0.25rem;
+  padding: 0.7rem;
+  background: var(--company-primary-base, #1d4ed8);
+  color: white;
+  font-weight: 700;
+  font-size: 0.875rem;
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  transition: opacity 0.15s;
+}
+
+:where(#car-search-page) .sf-btn:hover {
+  opacity: 0.9; color: white;
+}
+
+:where(#car-search-page) .sf-submit-btn-mobile {
+  display: none;
+}
+
+:where(#car-search-page) .sf-save {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  padding: 0.5rem 0 0.85rem;
+  font-size: 0.8rem;
+  color: #6b7280;
+  text-decoration: none;
+}
+
+:where(#car-search-page) .sf-save:hover {
+  color: #374151;
+}
+
+/* ── Template builder visibility controls ── */
+
+:where(#car-search-page) .sf-edit-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
+  cursor: pointer;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.375rem;
+  padding: 0.3rem 0.6rem;
+  white-space: nowrap;
+  transition: background 0.15s, color 0.15s;
+  margin-top: 0.15rem;
+}
+
+:where(#car-search-page) .sf-edit-btn:hover {
+  background: #e5e7eb; color: #374151;
+}
+
+:where(#car-search-page) .sf-edit-btn.active {
+  background: #eff6ff; border-color: var(--company-primary-base, #1d4ed8); color: var(--company-primary-base, #1d4ed8);
+}
+
+:where(#car-search-page) .sf-filter-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: white;
+  background: var(--company-primary-base, #1d4ed8);
+  border-radius: 9999px;
+  padding: 0.15rem 0.55rem;
+  margin-bottom: 0.3rem;
+  white-space: nowrap;
+  line-height: 1.4;
+}
+
+:where(#car-search-page) .sf-vis-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem; height: 1.5rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  color: #9ca3af;
+  transition: color 0.15s, background 0.15s;
+  flex-shrink: 0;
+}
+
+:where(#car-search-page) .sf-vis-btn .ion-icon {
+  font-size: 1rem; pointer-events: none;
+}
+
+:where(#car-search-page) .sf-vis-btn:hover {
+  color: #374151; background: #f3f4f6;
+}
+
+:where(#car-search-page) .sf-vis-btn.hidden-section {
+  color: #d1d5db;
+}
+
+body.sf-builder-mode .sf-vis-btn {
+  display: flex;
+}
+
+/* Section hidden state in builder mode */
+
+:where(#car-search-page) .sf-section-hidden .sf-acc-body,
+:where(#car-search-page) .sf-section-hidden .sf-row-body {
+  display: none !important;
+}
+
+:where(#car-search-page) .sf-section-hidden .sf-acc-hd,
+:where(#car-search-page) .sf-section-hidden.sf-row {
+  opacity: 0.45;
+}
+
+:where(#car-search-page) .sf-section-hidden .sf-acc-hd {
+  text-decoration: line-through;
+}
+
+:where(#car-search-page) .sf-section-hidden.sf-row {
+  text-decoration: line-through;
+}
+
+:where(#car-search-page) .sf-hidden-badge {
+  display: none;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: #9ca3af;
+  background: #f3f4f6;
+  border: 1px dashed #d1d5db;
+  border-radius: 0.25rem;
+  padding: 0.1rem 0.4rem;
+  margin-left: 0.4rem;
+}
+
+:where(#car-search-page) .sf-section-hidden .sf-hidden-badge {
+  display: inline-block;
+}
+
+:where(#car-search-page) .sf-mobile-close {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 9999px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  cursor: pointer;
+  color: #6b7280;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+  transition: background 0.15s, color 0.15s;
+}
+
+:where(#car-search-page) .sf-mobile-close:hover {
+  background: #f3f4f6; color: #000000;
+}
+
+/* The popup's close sits at the header's top right. */
+
+:where(#car-search-page) .sidebar-mobile-open .sf-hd {
+  position: relative; padding-right: 3.5rem !important;
+}
+
+:where(#car-search-page) .sidebar-mobile-open .sf-hd .sf-mobile-close {
+  position: absolute; top: 0.85rem; right: 1rem;
+}
+
+@media (max-width: 991px) {
+  :where(#car-search-page) .sf-mobile-close {
+    display: flex;
+  }
+}
+
+/* ── Mobile panel layout: sticky header + scrollable body ── */
+
+@media (max-width: 991px) {
+  /* .sidebar-refine fills the full fixed panel */
+
+  :where(#car-search-page) .sidebar-mobile-open .sidebar-refine {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  /* Header is pinned at the top */
+
+  :where(#car-search-page) .sidebar-mobile-open .sf-hd {
+    flex-shrink: 0;
+    background: white;
+    border-bottom: 1px solid #e5e7eb;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, .06);
+    z-index: 1;
+    padding: 1rem 1rem 0.75rem;
+  }
+
+  /* Only the form content scrolls */
+
+  :where(#car-search-page) .sidebar-mobile-open #submitFilter {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Bottom button row sticks to the bottom of the scroll container */
+
+  :where(#car-search-page) .sidebar-mobile-open #submitFilter .sf-mobile-btn-row {
+    position: sticky;
+    bottom: 0;
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: white;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, .08);
+    z-index: 2;
+  }
+
+  :where(#car-search-page) .sidebar-mobile-open #submitFilter .sf-mobile-btn-row .sf-btn {
+    flex: 1;
+    width: auto;
+    margin: 0;
+    border-radius: 0.5rem;
+    padding: 0.875rem 0.5rem;
+  }
+
+  :where(#car-search-page) .sidebar-mobile-open #submitFilter .sf-submit-btn-mobile {
+    display: block;
+  }
+}
+
+/* ── multiple-checkbox ── */
+:where(#car-search-page) .view-vehicles-page .select-car .widget-content .form-group input[type='checkbox'] {
+  width: 20px !important;
+}
+
+/* ── Body-type circular icon toggle ── */
+
+:where(#car-search-page) .bt-circle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.15s;
+  color: #6b7280;
+}
+
+:where(#car-search-page) .bt-circle .bt-car {
+  display: flex; align-items: center; justify-content: center;
+}
+
+:where(#car-search-page) .bt-circle .bt-car svg {
+  width: 24px; height: 12px;
+}
+
+:where(#car-search-page) .bt-circle .bt-check {
+  display: none;
+}
+
+:where(#car-search-page) .bt-circle.bt-active {
+  background: var(--company-primary-base, #7c3aed);
+  border-color: var(--company-primary-base, #7c3aed);
+  color: white;
+}
+
+:where(#car-search-page) .bt-circle.bt-active .bt-car {
+  display: none;
+}
+
+:where(#car-search-page) .bt-circle.bt-active .bt-check {
+  display: flex; width: 12px; height: 12px;
+}
+
+:where(#car-search-page) .choices input[type='checkbox'] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px !important;
+  height: 20px !important;
+  min-width: 20px;
+  border-radius: 50%;
+  border: 2px solid #d1d5db;
+  background: #fff;
+  cursor: pointer;
+  position: relative;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+:where(#car-search-page) .choices input[type='checkbox']:checked {
+  background: var(--company-primary-base, #7c3aed);
+  border-color: var(--company-primary-base, #7c3aed);
+}
+
+:where(#car-search-page) .choices input[type='checkbox']:checked::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 2px;
+  width: 6px;
+  height: 10px;
+  border: 2px solid #fff;
+  border-top: none;
+  border-left: none;
+  transform: rotate(45deg);
+}
+
+/* ── top-menu-live ── */
+:where(#car-search-page) .inventory-top-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 0.6rem 1rem;
+  /* border-bottom: 1px solid #e5e7eb; */
+  /* margin-bottom: 0.75rem; */
+}
+
+:where(#car-search-page) .inventory-top-left {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  flex: 0 0 auto;
+}
+
+:where(#car-search-page) .inventory-count-num {
+  font-size: 1.4rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--company-primary-base, #1d4ed8);
+}
+
+:where(#car-search-page) .inventory-count {
+  font-size: 1rem;
+  white-space: nowrap;
+}
+
+:where(#car-search-page) .inventory-chips {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+:where(#car-search-page) .inventory-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  border-radius: 9999px;
+  padding: 0.2rem 0.6rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #374151;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+:where(#car-search-page) .inventory-chip:hover {
+  background: #e5e7eb;
+}
+
+:where(#car-search-page) .inventory-chip span {
+  font-size: 0.95rem;
+  line-height: 1;
+  color: #6b7280;
+}
+
+:where(#car-search-page) .inventory-clear-all {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--company-primary-base, #1d4ed8);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+:where(#car-search-page) .inventory-clear-all:hover {
+  text-decoration: underline;
+}
+
+:where(#car-search-page) .inventory-search-form {
+  flex: 1;
+  min-width: 180px;
+  display: flex;
+  justify-content: end;
+}
+
+:where(#car-search-page) .inventory-search-wrap {
+  display: flex;
+  align-items: center;
+}
+
+:where(#car-search-page) .inventory-search-input {
+  border: none;
+  outline: none;
+  width: 100%;
+  font-size: 0.875rem;
+  color: #111827;
+  background: transparent;
+  caret-color: auto;
+}
+
+:where(#car-search-page) .inventory-search-input::placeholder {
+  color: #111827;
+}
+
+:where(#car-search-page) .inventory-search-input:focus {
+  outline: none; box-shadow: none;
+}
+
+:where(#car-search-page) .inventory-top-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  flex: 0 0 auto;
+}
+
+:where(#car-search-page) .inventory-sort {
+  display: flex;
+  align-items: start;
+  gap: 0.1rem;
+  font-size: 0.875rem;
+  flex-direction: row;
+}
+
+:where(#car-search-page) .sort-label {
+  font-size: 10px;
+  color: #000000;
+  white-space: nowrap;
+}
+
+:where(#car-search-page) .sort-select {
+  border: 1px solid #111827;
+  height: 1.75rem;
+  border-radius: 0.375rem;
+  padding: 0.1rem 0.5rem;
+  line-height: 1rem;
+  font-size: 0.875rem;
+  background: white;
+  cursor: pointer;
+  outline: none;
+}
+
+:where(#car-search-page) .view-toggle-group {
+  display: flex;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  overflow: hidden;
+}
+
+:where(#car-search-page) .view-toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2rem;
+  background: white;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  color: #6b7280;
+  transition: background 0.15s, color 0.15s;
+}
+
+:where(#car-search-page) .view-toggle-btn.active,
+:where(#car-search-page) .view-toggle-btn:hover {
+  border: 1px solid var(--company-primary-base, #d1d5db);
+  background: #f3f4f6;
+  color: var(--company-primary-base, #111827);
+}
+
+:where(#car-search-page) .compare-toggle-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.875rem;
+  color: #374151;
+  white-space: nowrap;
+}
+
+:where(#car-search-page) .compare-switch {
+  position: relative;
+  display: inline-block;
+  width: 2.5rem;
+  height: 1.4rem;
+  cursor: pointer;
+}
+
+:where(#car-search-page) .compare-switch input {
+  display: none;
+}
+
+:where(#car-search-page) .compare-slider {
+  position: absolute;
+  inset: 0;
+  background: #d1d5db;
+  border-radius: 9999px;
+  transition: background 0.2s;
+}
+
+:where(#car-search-page) .compare-slider::before {
+  content: '';
+  position: absolute;
+  width: 1rem;
+  height: 1rem;
+  left: 0.2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: white;
+  border-radius: 9999px;
+  transition: transform 0.2s;
+  box-shadow: 0 1px 3px rgba(0,0,0,.2);
+}
+
+:where(#car-search-page) .compare-switch input:checked + .compare-slider {
+  background: var(--company-primary-base, #1d4ed8);
+}
+
+:where(#car-search-page) .compare-switch input:checked + .compare-slider::before {
+  transform: translateY(-50%) translateX(1.1rem);
+}
+
+/* Mobile-only filter button */
+
+:where(#car-search-page) .mobile-filter-btn {
+  display: none;
+}
+
+@media (max-width: 991px) {
+  :where(#car-search-page) .mobile-filter-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    position: relative;
+  }
+
+  :where(#car-search-page) .inventory-top-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.6rem 0.75rem;
+  }
+
+  :where(#car-search-page) .inventory-top-left {
+    width: 100%;
+  }
+
+  :where(#car-search-page) .inventory-search-form {
+    min-width: 0;
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  :where(#car-search-page) .inventory-search-wrap {
+    width: 100%;
+    max-width: none;
+  }
+
+  :where(#car-search-page) .inventory-top-right {
+    width: 100%;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+  }
+
+  :where(#car-search-page) .inventory-sort {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  :where(#car-search-page) #listing-button {
+    display: none;
+  }
+}
+
+@media (max-width: 575px) {
+  :where(#car-search-page) .inventory-count-num {
+    font-size: 1.1rem;
+  }
+
+  :where(#car-search-page) .inventory-sort .sort-select {
+    max-width: 120px; font-size: 0.8rem;
+  }
+
+  :where(#car-search-page) .compare-toggle-wrap {
+    display: none;
+  }
+
+  :where(#car-search-page) .inventory-top-right {
+    gap: 0.4rem;
+  }
+}
+
+/* ── Filter badge button ── */
+
+:where(#car-search-page) .inv-filter-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: var(--company-primary-base, #1d4ed8);
+  color: white;
+  border: none;
+  border-radius: 0.25rem;
+  padding: 0.2rem 0.65rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity 0.15s;
+}
+
+:where(#car-search-page) .inv-filter-badge:hover {
+  opacity: 0.88;
+}
+
+/* ── Filter modal ── */
+
+:where(#car-search-page) .inv-fm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.45);
+  z-index: 1000;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 5rem;
+}
+
+:where(#car-search-page) .inv-fm-box {
+  background: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 16px 48px rgba(0,0,0,.22);
+  width: 100%;
+  max-width: 520px;
+  margin: 0 1rem;
+  overflow: hidden;
+  animation: inv-fm-in .18s ease;
+}
+
+@keyframes inv-fm-in {
+        from { opacity:0; transform:translateY(-12px); }
+        to   { opacity:1; transform:translateY(0); }
+    }
+
+:where(#car-search-page) .inv-fm-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem 0.75rem;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+:where(#car-search-page) .inv-fm-head h4 {
+  margin:0; font-size:1rem; font-weight:700; color:#111827;
+}
+
+:where(#car-search-page) .inv-fm-body {
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+:where(#car-search-page) .inv-fm-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  border-radius: 9999px;
+  padding: 0.3rem 0.75rem;
+  font-size: 0.83rem;
+  font-weight: 500;
+  color: #374151;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.12s;
+}
+
+:where(#car-search-page) .inv-fm-chip:hover {
+  background: #fee2e2; border-color: #fca5a5; color: #b91c1c;
+}
+
+:where(#car-search-page) .inv-fm-chip span {
+  font-size: 1rem; line-height: 1; color: #9ca3af;
+}
+
+:where(#car-search-page) .inv-fm-chip:hover span {
+  color: #ef4444;
+}
+
+:where(#car-search-page) .inv-fm-foot {
+  padding: 0.75rem 1.25rem;
+  border-top: 1px solid #f3f4f6;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+:where(#car-search-page) .inv-fm-clear {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.65rem 1.25rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  background: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #fca5a5;
+  text-decoration: none;
+  transition: background 0.12s;
+}
+
+:where(#car-search-page) .inv-fm-clear:hover {
+  background: #fecaca; color: #991b1b;
+}
+
+:where(#car-search-page) .inv-fm-close {
+  font-size: 1.4rem; line-height: 1;
+}
+
+/* Chip staged for removal */
+
+:where(#car-search-page) .inv-fm-chip-staged {
+  text-decoration: line-through;
+  opacity: 0.45;
+  background: #fee2e2 !important;
+  border-color: #fca5a5 !important;
+  color: #b91c1c !important;
+}
+
+:where(#car-search-page) .inv-fm-chip-staged span {
+  color: #ef4444 !important;
+}
+
+:where(#car-search-page) .hero-search-btn {
+  background-color: var(--company-primary-base);
+}
+
+:where(#car-search-page) .hero-search-btn:hover {
+  opacity: 0.85;
+}
+
+/* ── vehicle-lists ── */
+/* ── Grid layout ─────────────────────────────────────── */
+
+:where(#car-search-page) #car-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+@media (max-width: 767px) {
+  :where(#car-search-page) #car-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  :where(#car-search-page) #car-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* List view override */
+
+:where(#car-search-page) #car-grid.list-view {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 1200px) {
+  :where(#car-search-page) #car-grid.list-view {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+:where(#car-search-page) #car-grid.list-view .car-card {
+  display: flex; flex-direction: row;
+}
+
+:where(#car-search-page) #car-grid.list-view .car-card-img-wrap {
+  width: 180px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+}
+
+:where(#car-search-page) #car-grid.list-view .car-card-img {
+  width: 100%; height: auto;
+}
+
+:where(#car-search-page) #car-grid.list-view .car-card-body {
+  flex: 1; min-width: 0; padding: 1rem;
+}
+
+:where(#car-search-page) #car-grid.list-view .car-card-title {
+  max-width: 100%;
+}
+
+:where(#car-search-page) #car-grid.list-view .ar-stat {
+  font-size: 1.15rem;
+}
+
+/* List view — mobile */
+
+@media (max-width: 640px) {
+  :where(#car-search-page) #car-grid.list-view .car-card-img-wrap {
+    width: 130px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e0e0e0;
+  }
+
+  :where(#car-search-page) #car-grid.list-view .car-card-img {
+    height: 200px;
+    object-fit: cover;
+    padding: 0.25rem;
+  }
+
+  :where(#car-search-page) #car-grid.list-view .car-card-body {
+    padding: 0.6rem 0.75rem; gap: 0.2rem;
+  }
+
+  :where(#car-search-page) #car-grid.list-view .car-card-title {
+    font-size: 0.82rem;
+  }
+
+  :where(#car-search-page) #car-grid.list-view .ar-stat {
+    font-size: 0.82rem;
+  }
+
+  :where(#car-search-page) #car-grid.list-view .car-card-subtitle {
+    font-size: 0.72rem;
+  }
+
+  :where(#car-search-page) #car-grid.list-view .car-card-stats {
+    gap: 0.35rem; font-size: 0.3rem;
+  }
+
+  :where(#car-search-page) #car-grid.list-view .car-card-price {
+    font-size: 0.95rem;
+  }
+
+  :where(#car-search-page) #car-grid.list-view .car-card-monthly {
+    font-size: 0.78rem;
+  }
+
+  :where(#car-search-page) #car-grid.list-view .car-view-arrow {
+    width: 1.6rem; height: 1.6rem; font-size: 0.85rem;
+  }
+}
+
+/* ── Card ────────────────────────────────────────────── */
+
+:where(#car-search-page) .car-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--company-primary-base) 12%, transparent);
+  transition: box-shadow 0.2s, transform 0.2s;
+  display: flex;
+  flex-direction: column;
+}
+
+:where(#car-search-page) .car-card:hover {
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--company-primary-base) 25%, transparent);
+  transform: translateY(-2px);
+}
+
+/* Image section */
+
+:where(#car-search-page) .car-card-img-wrap {
+  position: relative;
+  overflow: hidden;
+  background: #e0e0e0;
+}
+
+:where(#car-search-page) .car-card-img {
+  width: 100%;
+  height: 246px;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s;
+}
+
+@media (max-width: 767px) {
+  :where(#car-search-page) .car-card-img {
+    height: 246px;
+    object-fit: cover;
+  }
+}
+
+:where(#car-search-page) .car-card:hover .car-card-img {
+  transform: scale(1.03);
+}
+
+/* Badge */
+
+:where(#car-search-page) .car-badge {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 0.2rem 0.5rem;
+  border-radius: 0.25rem;
+  z-index: 2;
+  text-transform: uppercase;
+}
+
+/* Heart */
+
+:where(#car-search-page) .car-heart-btn {
+  position: absolute;
+  top: 0.4rem;
+  right: 0.4rem;
+  background: white;
+  border: none;
+  border-radius: 9999px;
+  width: 1.8rem;
+  height: 1.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+  box-shadow: 0 1px 4px rgba(0,0,0,.15);
+  color: #9ca3af;
+  font-size: 1rem;
+  transition: color 0.15s, transform 0.15s;
+}
+
+:where(#car-search-page) .car-heart-btn:hover {
+  color: #ef4444;
+}
+
+:where(#car-search-page) .car-heart-btn.is-fav {
+  color: #ef4444;
+}
+
+:where(#car-search-page) .car-heart-btn.is-fav:hover {
+  color: #b91c1c;
+}
+
+:where(#car-search-page) .car-heart-btn.fav-loading {
+  pointer-events: none; opacity: 0.6;
+}
+
+/* Body */
+
+:where(#car-search-page) .car-card-body {
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  flex: 1;
+}
+
+:where(#car-search-page) .car-card-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #000000;
+  text-decoration: none;
+  line-height: 1.3;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+:where(#car-search-page) .car-card-title:hover {
+  color: var(--company-primary-base, #1d4ed8);
+}
+
+:where(#car-search-page) .ar-stat {
+  font-size: 1.15rem; font-weight: 700; display: flex; align-items: center; gap: 0.3rem;
+}
+
+:where(#car-search-page) .ar-stat .truncate {
+  min-width: 0;
+}
+
+/* Hidden by default; JS reveals it only when the sibling .truncate text is
+       actually clipped (see carSetupColorTruncationWatcher), regardless of view mode,
+       breakpoint, or the value's raw character count. */
+
+:where(#car-search-page) .car-color-info-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  line-height: 0;
+  cursor: pointer;
+  color: rgb(126,34, 206);
+}
+
+:where(#car-search-page) .car-color-info-btn.is-visible {
+  display: inline-flex;
+}
+
+:where(#car-search-page) .car-color-info-btn .ion-icon {
+  font-size: 0.95rem;
+}
+
+/* Single shared tooltip, moved to <body> by JS so it's never clipped by
+       .car-card's overflow: hidden. Positioned in JS via getBoundingClientRect(). */
+
+#car-color-tooltip {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  width: max-content;
+  max-width: 220px;
+  white-space: normal;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #ffffff !important;
+  background: #1f2937;
+  padding: 0.35rem 0.6rem;
+  border-radius: 0.375rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+}
+
+#car-color-tooltip.is-open {
+  display: block;
+}
+
+:where(#car-search-page) .car-card-subtitle {
+  margin-top: 0.15rem;
+  font-size: 0.8rem;
+  color: #000000;
+  margin-bottom: 0.15rem;
+}
+
+/* Stats row */
+
+:where(#car-search-page) .car-card-stats {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  font-size: 0.8rem;
+  color: #000000 !important;
+  padding-top: 0.4rem;
+  margin-top: 0.1rem;
+}
+
+:where(#car-search-page) .car-stat {
+  display: inline-block;
+  align-items: center;
+  gap: 0.4rem;
+  color: #000000 !important;
+  min-width: 0;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Full-width row (e.g. location) */
+
+:where(#car-search-page) .car-card-stats .col-span-2 {
+  flex-basis: 100%; max-width: 100%;
+}
+
+:where(#car-search-page) .car-stat .ion-icon {
+  font-size: 0.95rem;
+  color: #000000 !important;
+  vertical-align: -2px;
+  margin-right: 0.2rem;
+}
+
+:where(#car-search-page) .car-card-stats .car-stat:last-child {
+  justify-content: flex-end;
+}
+
+:where(#car-search-page) .car-stat .ion-icon {
+  font-size: 0.85rem; color: #000000 !important;
+}
+
+/* Color swatch dot */
+
+:where(#car-search-page) .car-color-dot {
+  display: inline-block;
+  width: 0.85rem;
+  height: 0.85rem;
+  border-radius: 9999px;
+  background: #8a8f98;
+  border: 1px solid rgba(0,0,0,.15);
+  flex-shrink: 0;
+}
+
+/* Divider between stats */
+
+:where(#car-search-page) .car-stat-divider {
+  color: #d1d5db;
+  font-weight: 400;
+}
+
+/* Price row */
+
+:where(#car-search-page) .car-card-price-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-top: 0.35rem;
+  border-top: 1px solid #303133;
+  border-bottom: 1px solid #303133;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+:where(#car-search-page) .car-card-price {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #000000;
+}
+
+:where(#car-search-page) .car-card-monthly {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--company-primary-base, #1d4ed8);
+}
+
+/* Special labels */
+
+:where(#car-search-page) .car-special-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #16a34a;
+  letter-spacing: 0.05em;
+}
+
+:where(#car-search-page) .car-was-price {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  text-decoration: line-through;
+}
+
+/* Footer */
+
+:where(#car-search-page) .car-card-footer {
+  margin-top: auto;
+  padding-top: 0.5rem;
+}
+
+:where(#car-search-page) .car-view-details-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  color: #ffffff;
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 0.65rem 1rem;
+  width: 100%;
+  border-radius: 8px;
+  background: var(--company-primary-base, #1d4ed8);
+  transition: filter 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+:where(#car-search-page) .car-view-details-btn:hover {
+  color: #ffffff;
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+:where(#car-search-page) .car-view-details-btn:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+:where(#car-search-page) .car-view-details-btn .car-view-arrow-inline {
+  font-size: 1.05rem;
+  line-height: 1;
+  transition: transform 0.15s ease;
+}
+
+:where(#car-search-page) .car-view-details-btn:hover .car-view-arrow-inline {
+  transform: translateX(3px);
+}
+
+:where(#car-search-page) .car-view-arrow {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: var(--company-primary-base, #1d4ed8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1rem;
+  flex-shrink: 0;
+  transition: opacity 0.15s;
+}
+
+:where(#car-search-page) .car-view-details-btn:hover .car-view-arrow {
+  opacity: 0.85;
+}
+
+:where(#car-search-page) .car-btn-carfax {
+  display: block; margin-top: 0.35rem;
+}
+
+/* ── vehicle-lists (end) ── */
+:where(#car-search-page) .lf4-submit-btn {
+  background-color: var(--company-primary-base);
+}
+
+:where(#car-search-page) .lf4-submit-btn:hover {
+  opacity: 0.9;
+}
+
+:where(#car-search-page) .custom-capitalone-widget-button {
+  align-items: center;
+  border-radius: 3px;
+  display: flex;
+  font-weight: 700;
+  justify-content: center;
+  padding: 4px;
+  text-align: center;
+  width: 100%;
+}
+
+:where(#car-search-page) .car-container {
+  cursor: pointer;
+  transition: box-shadow 0.3s ease;
+}
+
+:where(#car-search-page) .car-container:hover {
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--company-primary-base);
+}
+
+:where(#car-search-page) .car-container:hover ul.car-info {
+  color: var(--company-primary-base);
+}
+
+:where(#car-search-page) .car-container:hover h4.car-name {
+  color: var(--company-primary-base);
+}
+
+:where(#car-search-page) h4.car-name:hover {
+  color: var(--company-primary-base);
+}
+
+@-webkit-keyframes spin {
+        0% {
+            -webkit-transform: rotate(0deg);
+        }
+
+        100% {
+            -webkit-transform: rotate(360deg);
+        }
+    }
+
+@keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+:where(#car-search-page) #overlay-inquiry .overlay-inquiry-loader {
+  border: 16px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 16px solid #3498db;
+  width: 120px;
+  height: 120px;
+  position: fixed;
+  top: calc(50vh - 60px);
+  left: calc(50vw - 60px);
+  -webkit-animation: spin 2s linear infinite;
+  /* Safari */
+  animation: spin 2s linear infinite;
+}
+
+:where(#car-search-page) #overlay-inquiry {
+  background: white;
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  z-index: 51;
+}
+
+/* ── pagination-live ── */
+/* ── Pagination row ─────────────────────────────────── */
+
+:where(#car-search-page) .pg-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 0.75rem 0;
+}
+
+/* ── Page-number list ───────────────────────────────── */
+
+:where(#car-search-page) .pg-list {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  list-style: none;
+  margin: 0; padding: 0;
+  flex-wrap: wrap;
+}
+
+:where(#car-search-page) .pg-list li a,
+:where(#car-search-page) .pg-list li span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  height: 2rem;
+  padding: 0 0.4rem;
+  border-radius: 0.375rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  border: 1px solid #e5e7eb;
+  background: white;
+  color: #374151;
+  cursor: pointer;
+  line-height: 1;
+}
+
+:where(#car-search-page) .pg-list li a:hover {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+  color: #111827;
+}
+
+:where(#car-search-page) .pg-list li.pg-active a {
+  background: var(--company-primary-base, #1d4ed8);
+  border-color: var(--company-primary-base, #1d4ed8);
+  color: white;
+}
+
+:where(#car-search-page) .pg-list li.pg-active a:hover {
+  opacity: 0.9;
+  background: var(--company-primary-base, #1d4ed8);
+  color: white;
+}
+
+:where(#car-search-page) .pg-list li.pg-dots span {
+  border: none;
+  background: transparent;
+  color: #9ca3af;
+  cursor: default;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+}
+
+:where(#car-search-page) .pg-list li.pg-disabled a {
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+:where(#car-search-page) .pg-list li.pg-arrow a {
+  font-size: 1rem;
+  color: #6b7280;
+}
+
+/* ── Per-page selector ──────────────────────────────── */
+
+:where(#car-search-page) .pg-perpage {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8125rem;
+  color: #000000;
+  white-space: nowrap;
+}
+
+:where(#car-search-page) .pg-perpage select {
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  padding: 0.3rem 1.6rem 0.3rem 0.55rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #111827;
+  background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236b7280'/%3E%3C/svg%3E") no-repeat right 0.5rem center;
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+}
+
+:where(#car-search-page) .pg-perpage select:focus {
+  outline: 2px solid var(--company-primary-base, #1d4ed8); outline-offset: 1px;
+}
+
+/* ── index-live (end) ── */
+:where(#car-search-page) .car_title {
+  /* font-family: 'Open Sans'; */
+  font-style: normal;
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 33px;
+  /* identical to box height */
+  display: flex;
+  align-items: center;
+  /* color: #E51436; */
+}
+
+:where(#car-search-page) .search_result_count {
+  /* font-family: 'Open Sans'; */
+  font-style: normal;
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 33px;
+  /* identical to box height */
+  align-items: center;
+  color: #E51436;
+}
+
+:where(#car-search-page) .card_car {
+  position: relative;
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  box-sizing: border-box;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+:where(#car-search-page) .carinfo-label-b {
+  /* font-family: 'Open Sans'; */
+  font-style: normal;
+  font-weight: 700;
+  /* identical to box height */
+  color: #000000;
+}
+
+:where(#car-search-page) .carinfo-label {
+  /* font-family: 'Open Sans'; */
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 22px;
+  /* identical to box height */
+  color: black;
+}
+
+:where(#car-search-page) .price_miles {
+  /* font-family: 'Open Sans'; */
+  font-style: normal;
+  font-weight: 700;
+  font-size: 22px;
+  line-height: 30px;
+  /* identical to box height */
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  color: #000000;
+}
+
+:where(#car-search-page) .button_details {
+  /* font-family: 'Mulish'; */
+  height: 50px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 23px;
+  text-align: left;
+  color: #FFFFFF;
+  /* background: conic-gradient(from -3.29deg at 100% -13%, #E81235 0deg, #FF300D 360deg); */
+  /* box-shadow: 0px 0px 30px rgba(255, 127, 80, 0.5); */
+  border-radius: 3px;
+}
+
+:where(#car-search-page) .button_clear {
+  height: 50px;
+  width: 100%;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 23px;
+  text-align: center;
+  color: #FFFFFF;
+  background: var(--company-secondary-base);
+  border-radius: 3px;
+}
+
+:where(#car-search-page) .button_financing {
+  /* font-family: 'Mulish'; */
+  height: 50px;
+  width: 100%;
+  /* display: flex;
+  align-items: center;
+  justify-content: center; */
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 23px;
+  text-align: center;
+  color: #FFFFFF;
+  background: var(--company-primary-base);
+  ;
+  /* box-shadow: 0px 0px 30px rgba(255, 127, 80, 0.5); */
+  border-radius: 3px;
+}
+
+:where(#car-search-page) .button_reserve {
+  /* font-family: 'Mulish'; */
+  height: 50px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 23px;
+  text-align: center;
+  color: #FFFFFF;
+  background: conic-gradient(from -3.29deg at 100% -13%, #FFA502 0deg, #FF6348 360deg);
+  box-shadow: 0px 0px 30px rgba(255, 127, 80, 0.5);
+  border-radius: 10px;
+}
+
+@media (min-width: 768px) {
+  :where(#car-search-page) .search-container {
+    min-height: 360px;
+  }
+}
+
+:where(#car-search-page) .search-container {
+  min-height: calc(100vh - 5rem);
+}
+
+:where(#car-search-page) .capital-one-prequalification-button {
+  height: 50px;
+}
+
+@media (max-height: 375px) and (max-width: 800px) {
+  :where(#car-search-page) .container {
+    margin: 0px !important;
+    width: 100% !important;
+    max-width: 800px !important;
+  }
+
+  :where(#car-search-page) .sidebar-side.col-span-12 .sidebar {
+    display: none !important;
+  }
+}
+
+/* ── srp-theme (the inventory page theme, last) ── */
+/* Short page on a tall window (as the sell page): the page fills the window, the spare space goes under the
+       content, and the footer sits at the window's bottom. */
+
+[data-template]:has(> #car-search-page) {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+[data-template]:has(> #car-search-page) > #car-search-page {
+  width: 100%; /* auto side margins would shrink it in the flex column */
+  margin-bottom: auto;
+}
+
+[data-template]:has(> #car-search-page) > :last-child {
+  flex-shrink: 0;
+}
+
+#car-search-page {
+  /* The dealer's primary, from Website Settings › Colors (`--company-primary-base`, set once in the layout with its
+  grey default). No second fallback here. */
+  --srp-primary: var(--company-primary-base);
+  /* The buttons (Search, View N Vehicles, the current page): the primary exactly as set, not a darker mix. */
+  --srp-button: var(--srp-primary);
+  --srp-soft: color-mix(in srgb, var(--srp-primary) 8%, #ffffff);
+  --srp-line: #e7e7ec;
+  --srp-field: #dcdce3;
+  --srp-chip: #f3f3f6;
+  --srp-page: #f6f6f8;
+  --srp-ink: #16131f;
+  --srp-muted: #6b6880;
+  --srp-shadow: 0 10px 30px -22px rgba(22, 19, 31, 0.35), 0 1px 2px rgba(22, 19, 31, 0.04);
+  font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+}
+
+body:has(#car-search-page) {
+  background: var(--srp-page, #f6f6f8) !important;
+}
+
+#car-search-page .vehicles-layout {
+  gap: 1.25rem;
+  margin-top: 1rem;
+}
+
+/* The left-column Refine card (ADR-0159): sticks 8px under the pinned nav, measured (`--srp-pin-top`, the script
+       above), and reaches the window's bottom, so the space above it is used and View N Vehicles stays in reach. */
+
+@media (min-width: 992px) {
+  #car-search-page .vehicles-layout .sidebar-side {
+    top: var(--srp-pin-top, 8.5rem);
+    max-height: calc(100vh - var(--srp-pin-top, 8.5rem) - 0.5rem);
+  }
+
+  /* View N Vehicles: 1rem under it to the card's edge, as at its sides (QA: too close to the bottom edge; the
+           sidebar's own margin left 0.25rem). */
+
+  #car-search-page .sf-mobile-btn-row .sf-btn {
+    margin-bottom: 1rem;
+  }
+}
+
+/* ── Browse Inventory: one line (title, Popular chips, search) ───────────────────────── */
+
+:where(#car-search-page) .srp-head {
+  padding-top: 1rem;
+}
+
+/* Scrolls with the page, like everything under the nav (Product: "the browse inventory must be included" in the
+       scroll; it was pinned under the nav before). */
+
+:where(#car-search-page) .srp-head-card {
+  display: grid;
+  /* The title, the search, then the chips at the right (ADR-0163, QA mock-up). Each in its own column, so nothing
+  overlaps: the title and the chips take their whole width (`auto`, `max-content`), so no chip is cut
+  (ADR-0161); the search takes the rest, never under 18rem, wider on wider screens. Below 1280px, where the
+  three don't fit, the chips take their own line (below). */
+  grid-template-columns: auto minmax(18rem, 1fr) max-content;
+  grid-template-areas: "title search chips";
+  align-items: center;
+  gap: 1rem 1.25rem;
+  /* Top/bottom halved (Product: "reduce the padding (top bot)"). */
+  padding: 0.5rem 1.25rem;
+  border-radius: 1rem;
+  background: #fff;
+  border: 1px solid var(--srp-line);
+  box-shadow: var(--srp-shadow);
+}
+
+:where(#car-search-page) .srp-head-top {
+  display: contents;
+}
+
+:where(#car-search-page) .srp-head-top > div:first-child {
+  grid-area: title;
+}
+
+:where(#car-search-page) .srp-head-title {
+  font-family: 'Outfit', 'Inter', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1.15;
+  color: var(--srp-ink);
+  white-space: nowrap;
+}
+
+:where(#car-search-page) .srp-head-sub {
+  margin-top: 0.1rem;
+  font-size: 0.75rem;
+  color: var(--srp-ink);
+  white-space: nowrap;
+}
+
+:where(#car-search-page) .srp-head-sub b {
+  color: var(--srp-ink);
+}
+
+:where(#car-search-page) .srp-head-search {
+  grid-area: search;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 0;
+  /* No magnifier before the text (ADR-0161, QA: "remove the search icon"); the Search button keeps its own. */
+  padding: 0.3rem 0.3rem 0.3rem 1rem;
+  border-radius: 9999px;
+  background: #fff;
+  border: 1.5px solid var(--srp-ink);
+}
+
+:where(#car-search-page) .srp-head-search input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  font-size: 0.8125rem;
+  color: var(--srp-ink);
+}
+
+:where(#car-search-page) .srp-head-search input:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+:where(#car-search-page) .srp-head-search-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-shrink: 0;
+  padding: 0.5rem 1.1rem;
+  border-radius: 9999px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #fff;
+  background: var(--srp-button);
+}
+
+:where(#car-search-page) .srp-head-search-btn:hover {
+  filter: brightness(1.15);
+}
+
+/* The Popular chips: white pills with their icon, name and count. */
+
+#car-search-page .srp-head-chips {
+  grid-area: chips;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start !important;
+  gap: 0.6rem;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  background: transparent !important;
+  border: 0;
+}
+
+#car-search-page .srp-head-chips::-webkit-scrollbar {
+  display: none;
+}
+
+#car-search-page .srp-head-chips #bt-chips-container {
+  margin: 0;
+  padding: 0;
+  width: auto;
+  max-width: none;
+}
+
+/* Phones: the chips wrap and sit centred, instead of one row that scrolls sideways from the left. (No POPULAR
+       label above them since ADR-0162.) */
+
+@media (max-width: 767px) {
+  #car-search-page .srp-head-chips {
+    flex-wrap: wrap;
+    justify-content: center !important;
+    row-gap: 0.5rem;
+    overflow-x: visible;
+  }
+
+  #car-search-page .srp-head-chips #bt-chips-container {
+    width: 100%;
+    justify-content: center;
+  }
+
+  #car-search-page .srp-head-chips #bt-chips-container > div {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+
+#car-search-page .srp-head .bt-qchip {
+  flex-shrink: 0;
+  gap: 0.5rem;
+  padding: 0.35rem 0.45rem 0.35rem 0.8rem;
+  border-radius: 9999px;
+  color: var(--srp-ink);
+  background: #fff;
+  border: 1px solid var(--srp-line);
+  box-shadow: 0 1px 2px rgba(22, 19, 31, 0.05);
+  transition: border-color 0.15s, background 0.15s;
+}
+
+#car-search-page .srp-head .bt-qchip:hover {
+  border-color: #c9c9d2;
+}
+
+/* The All chip (ADR-0162) reads as selected whenever no other chip is. */
+
+#car-search-page .srp-head .bt-qchip.active,
+#car-search-page .srp-head #bt-chips-container:not(:has(.bt-qchip.active)) .bt-qchip-all {
+  background: var(--srp-soft);
+  border-color: color-mix(in srgb, var(--srp-primary) 40%, #ffffff);
+}
+
+#car-search-page .srp-head .bt-qchip-text {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+#car-search-page .srp-head .bt-qchip-name {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--srp-ink);
+  white-space: nowrap;
+}
+
+#car-search-page .srp-head .bt-qchip.active .bt-qchip-name,
+#car-search-page .srp-head #bt-chips-container:not(:has(.bt-qchip.active)) .bt-qchip-all .bt-qchip-name {
+  color: var(--srp-primary);
+}
+
+#car-search-page .srp-head .bt-qchip-count {
+  margin: 0;
+  min-height: 0;
+  padding: 0.1rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--srp-muted);
+  background: var(--srp-chip);
+}
+
+#car-search-page .srp-head .bt-qchip-count:empty {
+  display: none;
+}
+
+#car-search-page .srp-head .bt-count-skeleton {
+  background: var(--srp-chip);
+}
+
+/* Narrower desktops: the chips drop to their own line under the title and search. */
+
+@media (max-width: 1279px) {
+  :where(#car-search-page) .srp-head-card {
+    grid-template-columns: auto minmax(16rem, 1fr);
+    grid-template-areas: "title search" "chips chips";
+  }
+}
+
+/* ── Refine Your Search ──────────────────────────────────────────────────────────────── */
+
+#car-search-page .sidebar-refine {
+  border-radius: 1rem;
+  border: 1px solid var(--srp-line);
+  box-shadow: var(--srp-shadow);
+}
+
+#car-search-page .sf-hd {
+  flex-direction: column;
+  justify-content: center;
+}
+
+#car-search-page .sf-hd h3 {
+  font-family: 'Outfit', 'Inter', sans-serif;
+  font-size: 1.0625rem;
+  line-height: 1.2;
+  color: var(--srp-ink);
+}
+
+:where(#car-search-page) .sf-hd-sub {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--srp-muted);
+}
+
+#car-search-page .sf-acc {
+  border-top-color: var(--srp-line);
+}
+
+#car-search-page .sf-acc-hd span {
+  font-weight: 600;
+  color: var(--srp-ink);
+}
+
+#car-search-page .sf-hd a,
+#car-search-page .sidebar-refine .text-black.text-xs {
+  color: var(--srp-muted);
+}
+
+#car-search-page .sf-btn {
+  border-radius: 0.625rem;
+  padding: 0.75rem;
+  font-weight: 600;
+  background: var(--srp-button);
+  box-shadow: none;
+}
+
+#car-search-page .sf-btn:hover {
+  opacity: 1;
+  filter: brightness(1.15);
+}
+
+#car-search-page #sf-sec-price {
+  position: relative;
+}
+
+/* ── Results: "Showing x–y of N", sort and view on the page ──────────────────────────── */
+
+#car-search-page .vehicles-main {
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+#car-search-page .srp-results-head {
+  position: static;
+  margin: 0 0 1rem;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+#car-search-page .srp-results-head > div {
+  padding: 0 !important;
+  background: transparent !important;
+}
+
+/* The keyword search lives in the Browse card. */
+
+#car-search-page .srp-results-head form:has(.inventory-search-wrap) {
+  display: none;
+}
+
+#car-search-page .inventory-count {
+  font-family: 'Outfit', 'Inter', sans-serif;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--srp-ink);
+}
+
+#car-search-page .inventory-count-num {
+  font-size: inherit;
+  color: inherit;
+}
+
+#car-search-page .sort-select {
+  height: 2.375rem;
+  padding: 0 2rem 0 0.8rem;
+  border: 1px solid var(--srp-ink);
+  border-radius: 0.5rem;
+  font-weight: 500;
+  color: var(--srp-ink);
+  background-color: #fff;
+}
+
+#car-search-page .sort-label {
+  color: var(--srp-muted);
+}
+
+/* Phones and tablets: Sort By takes the room the view and Filters buttons leave, rather than its longest option's
+       width ("Price: High to Low"), which made the row wider than a 320–340px screen (ADR-0173). */
+
+@media (max-width: 1023px) {
+  #car-search-page div:has(> form > .sort-select),
+  #car-search-page form:has(> .sort-select) {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  #car-search-page .sort-select {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+#car-search-page .view-toggle-btn {
+  width: 2.375rem;
+  height: 2.375rem;
+  border: 0 !important;
+  background: transparent;
+  color: var(--srp-muted);
+}
+
+#car-search-page .view-toggle-btn.active {
+  background: var(--srp-soft);
+  color: var(--srp-primary);
+}
+
+#car-search-page .flex.shadow.rounded-lg {
+  box-shadow: none;
+  gap: 0.375rem;
+}
+
+/* Three cards a row on a desktop. */
+
+#car-search-page #car-grid {
+  gap: 1.25rem;
+}
+
+@media (min-width: 1024px) {
+  #car-search-page #car-grid:not(.list-view) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* ── Vehicle cards ────────────────────────────────────────────────────────────────────── */
+
+#car-search-page .car-card {
+  padding: 0.6rem;
+  border: 1px solid var(--srp-line);
+  border-radius: 1rem;
+  background: #fff;
+  box-shadow: var(--srp-shadow);
+}
+
+/* Hover (ADR-0164, QA): a black outline and a clear shadow. It was a light grey edge and a faint shadow. */
+
+#car-search-page .car-card:hover {
+  border-color: var(--srp-ink);
+  box-shadow: 0 16px 32px -14px rgba(22, 19, 31, 0.4);
+}
+
+#car-search-page .car-card-img-wrap {
+  border-radius: 0.75rem;
+  overflow: hidden;
+  background: #e9e9ed;
+}
+
+#car-search-page #car-grid:not(.list-view) .car-card-img {
+  height: 265px; /* Taller photos (Product). */
+  object-fit: cover;
+}
+
+/* Large screens: the photo keeps the 1440px proportion (8:5) as the card widens, instead of a fixed 265px that
+       crops the car harder the wider the card gets. */
+
+@media (min-width: 1440px) {
+  #car-search-page #car-grid:not(.list-view) .car-card-img {
+    height: auto;
+    aspect-ratio: 8 / 5;
+  }
+}
+
+#car-search-page .car-card-body {
+  padding: 0.85rem 0.4rem 0.35rem;
+  gap: 0;
+}
+
+/* The top line: the price at the left, the miles at the right. */
+
+:where(#car-search-page) .car-card-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+#car-search-page .car-card-price-block {
+  margin: 0;
+  min-width: 0;
+}
+
+:where(#car-search-page) .car-card-price-lbl {
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--srp-primary, #6d28d9);
+}
+
+#car-search-page .car-card-price-block .car-card-price {
+  font-family: 'Outfit', 'Inter', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1.15;
+  color: var(--srp-primary) !important;
+}
+
+:where(#car-search-page) .car-card-miles {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 0.35rem;
+  margin: 0 0 0.2rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--srp-ink, #16131f);
+}
+
+:where(#car-search-page) .car-card-miles .ion-icon {
+  font-size: 0.95rem;
+  color: var(--srp-primary, #6d28d9);
+}
+
+:where(#car-search-page) .car-card-condition {
+  margin-left: 0.25rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: #15803d;
+}
+
+#car-search-page .car-card-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--srp-ink);
+}
+
+#car-search-page .car-card-title:hover {
+  color: var(--srp-primary);
+}
+
+#car-search-page .car-card-subtitle {
+  margin: 0.1rem 0 0;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #3d3a4b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#car-search-page .car-card-stats {
+  padding-top: 0;
+  margin-top: 0.75rem;
+}
+
+#car-search-page .car-color-chip {
+  gap: 0.4rem;
+  padding: 0.35rem 0.6rem;
+  border-radius: 9999px;
+  font-size: 0.75rem !important;
+  font-weight: 600;
+  color: var(--srp-ink);
+  background: #fff;
+  border: 1px solid var(--srp-line);
+}
+
+:where(#car-search-page) .car-swatch {
+  width: 0.8rem;
+  height: 0.8rem;
+  border-radius: 9999px;
+  flex-shrink: 0;
+  border: 1px solid rgba(22, 19, 31, 0.15);
+}
+
+:where(#car-search-page) .car-chip-lbl {
+  font-weight: 500;
+  color: var(--srp-muted, #6b6880);
+}
+
+/* No location line on the card (the mock-up's); kept in the markup, hidden. */
+
+#car-search-page .car-card-loc {
+  display: none;
+}
+
+/* View vehicle, back under the colour chips (ADR-0169, QA: "restore the previous button"; the mock-up had hidden it).
+       Full width, in the dealer's primary as set (`--srp-button`, ADR-0165), rounded like the page's other buttons.
+       The chips' `margin-top: auto` keeps the chips and the button together at the card's bottom, so the footer drops
+       its own auto margin. */
+
+#car-search-page .car-card-footer {
+  margin-top: 0;
+  padding-top: 0.75rem;
+}
+
+#car-search-page .car-card-footer .car-view-btn {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  border-radius: 0.625rem;
+  background: var(--srp-button);
+  color: #fff;
+  font-weight: 600;
+  transition: background-color 0.15s;
+}
+
+/* Hover: a lighter shade of the primary, not `filter` (ADR-0173). A filter makes the link the containing block of
+       its stretched `::after` (below), so the click area shrank to the button on hover, the hover ended, and it grew
+       back: the pointer flickered between the arrow and the hand. */
+
+#car-search-page .car-card-footer .car-view-btn:hover {
+  opacity: 1;
+  background: color-mix(in srgb, var(--srp-button) 85%, #ffffff);
+}
+
+/* The whole card opens the vehicle page (ADR-0173, QA: "anywhere on the card is clickable"). View vehicle's link is
+       stretched over the card (an empty `::after` covering it), so a click anywhere follows the same link: one real
+       link, so open-in-new-tab, the status bar and keyboard focus behave as a link should. The colour chips' info
+       buttons sit above it and still open their tooltip; the photo and title keep their own links. */
+
+#car-search-page #car-grid .car-card {
+  position: relative;
+}
+
+/* No lift on hover (ADR-0173): the base stylesheet's `translateY(-2px)` moved the card under a still pointer at its
+       edge, so hover kept switching on and off. The outline and shadow show the hover. */
+
+#car-search-page #car-grid .car-card:hover {
+  transform: none;
+}
+
+#car-search-page #car-grid .car-card .car-view-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+#car-search-page #car-grid .car-card .car-color-info-btn {
+  position: relative;
+  z-index: 2;
+}
+
+/* List view keeps its row layout; the photo at the left. */
+
+#car-search-page #car-grid.list-view .car-card-img-wrap {
+  width: 220px;
+}
+
+/* ── Cards, third pass: the trim line in the title, a label over the miles, the Trim level block ── */
+
+#car-search-page .car-card-title-sub {
+  font-weight: 600;
+  color: var(--srp-primary);
+}
+
+/* A long title wraps to two lines rather than cutting off. */
+
+#car-search-page .car-card-title {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  white-space: normal;
+  text-overflow: clip;
+  max-width: 100%;
+}
+
+/* The miles at the card's right, with the Mileage label centred over the value (Product). */
+
+:where(#car-search-page) .car-card-miles-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+:where(#car-search-page) .car-card-miles-block .car-card-miles {
+  margin: 0.2rem 0 0;
+}
+
+:where(#car-search-page) .car-card-miles-lbl {
+  text-align: center;
+}
+
+#car-search-page .car-card-head {
+  align-items: flex-end;
+}
+
+#car-search-page .car-card-price-block .car-card-price {
+  color: var(--srp-ink) !important;
+}
+
+:where(#car-search-page) .car-card-specs {
+  margin-top: 0.75rem;
+}
+
+:where(#car-search-page) .car-card-specs-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin-top: 0.3rem;
+  padding: 0.55rem 0.7rem;
+  border-radius: 0.5rem;
+  background: var(--srp-chip, #f3f3f6);
+}
+
+:where(#car-search-page) .car-card-specs-grid > div {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+:where(#car-search-page) .car-card-specs-grid span {
+  font-size: 0.625rem;
+  color: var(--srp-muted, #6b6880);
+}
+
+:where(#car-search-page) .car-card-specs-grid strong {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--srp-ink, #16131f);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Pagination: a white card ─────────────────────────────────────────────────────────── */
+
+#car-search-page .vehicles-bottom-pagination {
+  margin-top: 0.5rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--srp-line) !important;
+  border-radius: 1rem;
+  background: #fff;
+  box-shadow: var(--srp-shadow);
+}
+
+#car-search-page .pg-list {
+  gap: 0.375rem;
+}
+
+#car-search-page .pg-list li a,
+#car-search-page .pg-list li span {
+  min-width: 2.125rem;
+  height: 2.125rem;
+  border-radius: 0.5rem;
+  border-color: var(--srp-line);
+  color: var(--srp-ink);
+}
+
+#car-search-page .pg-list li.pg-active a {
+  border-color: transparent;
+  background: var(--srp-button);
+  color: #fff;
+}
+
+#car-search-page .pg-list li.pg-dots span {
+  box-shadow: none;
+}
+
+#car-search-page .pg-perpage select {
+  border-radius: 0.5rem;
+  border-color: var(--srp-ink);
+}
+
+/* ── Phones ───────────────────────────────────────────────────────────────────────────── */
+
+@media (max-width: 767px) {
+  :where(#car-search-page) .srp-head-card {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "title" "search" "chips";
+    gap: 0.75rem;
+    padding: 0.625rem 1rem;
+  }
+
+  :where(#car-search-page) .srp-head-title {
+    font-size: 1.375rem;
+  }
+
+  #car-search-page #car-grid:not(.list-view) .car-card-img {
+    height: 225px;
+  }
+}
+
+/* Side padding (QA: as the reference site, :8004): the containers keep their 1280px cap, centered — no full-width
+       16px gutter. Same on the home (template-1 theme) and vehicle (vdp-theme) pages. */
+
+/* ══ The sales inventory mock-up (layout only) ══════════════════════════════════════════════════════════════════
+       Each vehicle is its own white card (ADR-0164, QA mock-up): rounded, a light edge and a soft shadow, with a
+       0.75rem gap between cards on the page's grey. They were cells of one white panel with a primary edge, split
+       by thin lines. "Vehicle price" / "Vehicle miles" centred over the price (in the primary) and the miles; the
+       title's trim, body and drive in grey; Trim details above the colours; the pagination in a card with the
+       primary edge, its page numbers centred. */
+
+#car-search-page #car-grid-wrapper {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+#car-search-page #car-grid:not(.list-view) {
+  gap: 0.75rem;
+}
+
+/* The card's own look is the general rule above (`.car-card`: 1rem rounding, the light edge, the shadow, white),
+       no longer overridden here. */
+
+/* The pagination's page numbers in the bar's centre, Show N per page at its right (desktop). */
+
+@media (min-width: 768px) {
+  #car-search-page .pg-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  }
+
+  #car-search-page .pg-row .pg-perpage {
+    justify-self: end;
+  }
+}
+
+/* Price and miles: each label centred over its value; the price in the primary. */
+
+#car-search-page .car-card-head {
+  align-items: flex-end;
+}
+
+#car-search-page .car-card-price-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#car-search-page .car-card-price-block .car-card-price {
+  color: color-mix(in srgb, var(--srp-primary) 85%, #000000) !important;
+}
+
+#car-search-page .car-card-miles-block {
+  align-items: center;
+}
+
+#car-search-page .car-card-price-lbl {
+  color: color-mix(in srgb, var(--srp-primary) 75%, #ffffff);
+}
+
+#car-search-page .car-card-condition {
+  margin-left: 0.4rem;
+  color: #15803d;
+}
+
+/* The title: year, make and model dark; the trim, body and drive grey. */
+
+#car-search-page .car-card-title {
+  text-align: left;
+  font-weight: 500;
+}
+
+#car-search-page .car-card-title-sub {
+  font-weight: 400;
+  color: var(--srp-muted) !important;
+}
+
+/* Trim details: three small tiles, the label above the value. */
+
+#car-search-page .car-card-specs {
+  margin: 0.6rem 0 0.75rem;
+}
+
+#car-search-page .car-card-specs-grid {
+  gap: 0.4rem;
+  padding: 0;
+  background: none;
+}
+
+#car-search-page .car-card-specs-grid > div {
+  padding: 0.45rem 0.6rem;
+  border-radius: 0.5rem;
+  background: #f6f6f8;
+  border: 1px solid #eeeef2;
+}
+
+#car-search-page .car-card-specs-grid span {
+  font-size: 0.5625rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ── Per item (the mock-up's card detail) ── */
+
+/* Price and miles: two equal halves, each label centred over its value; the labels grey, the price primary. */
+
+#car-search-page #car-grid:not(.list-view) .car-card-head {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: end;
+  gap: 0.5rem;
+  margin: 0.6rem 0 0.4rem;
+}
+
+#car-search-page #car-grid:not(.list-view) .car-card-head > :only-child {
+  grid-column: 1 / -1;
+}
+
+#car-search-page .car-card-price-block,
+#car-search-page .car-card-miles-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+#car-search-page .car-card-head .car-card-price-lbl {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--srp-muted);
+}
+
+#car-search-page .car-card-price-block .car-card-price {
+  font-size: 1.75rem;
+  color: color-mix(in srgb, var(--srp-primary) 70%, #2a1660) !important;
+}
+
+#car-search-page .car-card-miles {
+  justify-content: center;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+@media (max-width: 639px) {
+  #car-search-page .car-card-price-block .car-card-price {
+    font-size: 1.4rem;
+  }
+
+  #car-search-page .car-card-miles {
+    font-size: 0.9375rem;
+  }
+}
+
+/* The title: year, make and model dark; the trim, body and drive in a muted primary. */
+
+#car-search-page .car-card-title {
+  font-size: 1.1875rem;
+  font-weight: 600;
+}
+
+/* Every card's title takes two lines' height (ADR-0168, QA: the cards aligned), so a one-line title leaves the same
+       room as a two-line one and the trim details start level across the row. Two lines is the title's most (the
+       clamp above); the 1.3 line height is its own. Grid view, desktop. */
+
+@media (min-width: 768px) {
+  #car-search-page #car-grid:not(.list-view) .car-card-title {
+    min-height: calc(2 * 1.3em);
+  }
+}
+
+#car-search-page .car-card-title-sub {
+  font-weight: 500;
+  color: color-mix(in srgb, var(--srp-primary) 45%, #6b6880) !important;
+}
+
+/* Trim details: the label in a muted primary; borderless tiles, the label above the value. */
+
+#car-search-page .car-card-specs > .car-card-price-lbl {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: color-mix(in srgb, var(--srp-primary) 55%, #6b6880);
+}
+
+#car-search-page .car-card-specs-grid {
+  gap: 0.5rem;
+  margin-top: 0.4rem;
+}
+
+/* Phones: the trim details two across (Trim and Body, then Drivetrain), matching the colour chips below. */
+
+@media (max-width: 767px) {
+  #car-search-page .car-card-specs-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* An odd tile out (e.g. Drivetrain as the third) takes the full row. */
+
+  #car-search-page .car-card-specs-grid > div:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+
+  /* Each tile's label and value centred. */
+
+  #car-search-page .car-card-specs-grid > div {
+    align-items: center;
+    text-align: center;
+  }
+
+  /* The "Trim details" heading above them, centred too. */
+
+  #car-search-page .car-card-specs > .car-card-price-lbl {
+    text-align: center;
+  }
+
+  /* And the vehicle title (year, make, model, then the trim line). */
+
+  #car-search-page #car-grid:not(.list-view) .car-card-title {
+    text-align: center;
+  }
+
+  /* The pagination: the page numbers centred, "Show 12 per page" centred under them. */
+
+  :where(#car-search-page) #pagination-wrapper .pg-row {
+    flex-direction: column;
+    justify-content: center;
+  }
+}
+
+#car-search-page .car-card-specs-grid > div {
+  padding: 0.6rem 0.75rem;
+  border: 0;
+  border-radius: 0.625rem;
+  background: #f6f6f8;
+}
+
+#car-search-page .car-card-specs-grid span {
+  font-size: 0.625rem;
+  color: var(--srp-muted);
+}
+
+/* Every card the same (ADR-0167, QA mock-up): Trim and Body side by side, then Drivetrain across the full width
+       below. Each value on one line, in full, at the same size in every card: no ellipsis, no second line. Each
+       column is at least its text's width and shares what's left evenly (`minmax(max-content, 1fr)`): two short
+       values are equal halves; a long one ("Truck 1500 Crew Cab") takes the width it needs from its neighbour (QA:
+       "take up the space of the trim width"). An odd tile out (Drivetrain as the third, or a lone second) takes the
+       full row. Phones keep their own rules (centred, the ellipsis). */
+
+#car-search-page .car-card-specs-grid strong {
+  font-size: 0.875rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (min-width: 768px) {
+  #car-search-page #car-grid:not(.list-view) .car-card-specs-grid {
+    grid-template-columns: repeat(2, minmax(max-content, 1fr));
+  }
+
+  #car-search-page #car-grid:not(.list-view) .car-card-specs-grid > div:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+
+  #car-search-page #car-grid:not(.list-view) .car-card-specs-grid strong {
+    white-space: nowrap;
+    overflow: visible;
+    text-overflow: clip;
+  }
+}
+
+/* The colour chips at the card's bottom in every card (ADR-0167, QA: aligned along the row's bottom). The cards in a
+       row share the tallest one's height and the body fills it (vehicle-lists: flex columns), so the space a shorter
+       title or trim details leave goes above the chips, not under them. The 0.75rem gap above them stays, as padding. */
+
+#car-search-page #car-grid:not(.list-view) .car-card-stats {
+  margin-top: auto;
+  padding-top: 0.75rem;
+}
+
+/* The colours: borderless chips, a larger swatch, "Ext" / "Int" grey and the colour bold. */
+
+#car-search-page .car-color-chip {
+  gap: 0.5rem;
+  padding: 0.45rem 0.6rem;
+  border: 0 !important;
+  border-radius: 9999px;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(22, 19, 31, 0.06);
+  font-size: 0.875rem;
+}
+
+#car-search-page .car-color-chip .car-swatch {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+#car-search-page .car-color-chip .car-chip-lbl {
+  font-weight: 500;
+  color: var(--srp-muted);
+}
+
+#car-search-page .car-color-chip .car-chip-lbl + .font-normal {
+  font-weight: 700 !important;
+  color: var(--srp-ink);
+}
+
+/* The pagination: a white card with no outline (ADR-0164, QA: "remove the outline"; it had the primary edge); the
+       current page dark. */
+
+#car-search-page .vehicles-bottom-pagination {
+  border: 0 !important;
+}
+
+#car-search-page .pg-list li.pg-active a {
+  color: #fff;
+  background: #141226;
+  border-color: #141226;
+}

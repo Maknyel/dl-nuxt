@@ -1,0 +1,4343 @@
+/*
+ * The vehicle page's CSS, copied unchanged from the Laravel Blade views' inline <style> blocks, in the order the page
+ * has them (generated from the Blade; `ion-icon` selectors became `.ion-icon`, the <Icon> class):
+ *  - vdp-theme.blade.php (the page theme)
+ *  - view-vehicle-header.blade.php
+ *  - view-vehicle-information.blade.php
+ *  - show.blade.php: Vehicle Highlights
+ *  - show.blade.php: About This Vehicle + Reviews
+ *  - show.blade.php: the closing legacy block (only .car_title is still used, by the I'm Interested pop-up), kept
+ *    inside @scope (.show-vehicle) so its generic selectors (.shadow, .btn, table) never reach the nav / footer.
+ * Unlayered, as the Blade's blocks came after the compiled Tailwind, so they beat utilities the same way.
+ */
+
+/* ── vdp-theme.blade.php (the page theme) ── */
+.show-vehicle {
+    --vdp-primary: var(--company-primary-base, #6d28d9);
+    --vdp-deep: color-mix(in srgb, var(--vdp-primary) 70%, #0b0817);
+    --vdp-soft: color-mix(in srgb, var(--vdp-primary) 7%, #ffffff);
+    --vdp-line: #e7e7ec;
+    --vdp-ink: #16131f;
+    --vdp-muted: #6b6880;
+    --vdp-card-shadow: 0 10px 30px -22px rgba(16, 12, 40, 0.35), 0 1px 2px rgba(16, 12, 40, 0.04);
+    font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    padding-bottom: 2rem;
+}
+
+body:has(.show-vehicle) {
+    background: #f6f6f8 !important;
+}
+
+/* The page's white cards. */
+.show-vehicle .vdp-band,
+.show-vehicle .vdp-gallery,
+.show-vehicle .vdp-price-panel,
+.show-vehicle .vdp-pay,
+.show-vehicle .vdp-mkt,
+.show-vehicle .vdp-hl-details-card,
+.show-vehicle .vdp-about-row,
+.show-vehicle .vdp-footer-cta {
+    border: 1px solid var(--vdp-line);
+    border-radius: 1rem;
+    background: #fff;
+    box-shadow: var(--vdp-card-shadow);
+}
+
+/* ── Title band: a white card ───────────────────────────────────────────────────────── */
+/* Sticks under the nav (57px) while scrolling, so the scrolled view is the same band as the top view. */
+.show-vehicle .vdp-band {
+    position: sticky;
+    top: 57px;
+    z-index: 40;
+    padding: 0.75rem 1rem;
+    margin: 1rem 0;
+    color: var(--vdp-ink);
+}
+
+.show-vehicle .vdp-band-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.show-vehicle .vdp-band-back,
+.show-vehicle .vdp-band-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    flex-shrink: 0;
+    padding: 0.5rem 0.9rem;
+    border-radius: 0.625rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: background 0.15s, filter 0.15s;
+}
+
+/* Back to Inventory and Call Us: outlined. */
+.show-vehicle .vdp-band-back,
+.show-vehicle .vdp-band-btn--white {
+    color: var(--vdp-ink);
+    background: #fff;
+    border: 1px solid #d9d9e0;
+}
+
+.show-vehicle .vdp-band-back:hover,
+.show-vehicle .vdp-band-btn--white:hover {
+    color: var(--vdp-ink);
+    background: #f4f4f6;
+}
+
+.show-vehicle .vdp-band-main {
+    flex: 1;
+    min-width: 0;
+}
+
+.show-vehicle .vdp-band-title {
+    margin: 0;
+    font-family: 'Outfit', 'Inter', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 800;
+    line-height: 1.2;
+    color: var(--vdp-ink);
+}
+
+.show-vehicle .vdp-band-title-sub {
+    font-weight: 700;
+    color: var(--vdp-primary);
+}
+
+/* The VIN and miles pills beside the title. */
+.show-vehicle .vdp-band-pills {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+.show-vehicle .vdp-band-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    height: 2.125rem;
+    padding: 0 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--vdp-ink);
+    background: #f4f4f6;
+    border: 1px solid var(--vdp-line);
+    white-space: nowrap;
+}
+
+.show-vehicle .vdp-band-pill > .ion-icon {
+    font-size: 0.9rem;
+    color: var(--vdp-muted);
+}
+
+.show-vehicle .vdp-band-pill-lbl {
+    font-weight: 500;
+    color: var(--vdp-muted);
+}
+
+.show-vehicle .vdp-copy.vdp-copy--pill {
+    width: 1.375rem;
+    height: 1.375rem;
+    margin: 0 -0.35rem 0 0;
+    font-size: 0.8rem;
+}
+
+.show-vehicle .vdp-band-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-shrink: 0;
+}
+
+/* I'm Interested: the deep primary. */
+.show-vehicle .vdp-band-btn--primary {
+    color: #fff;
+    background: var(--vdp-deep);
+    border: 1px solid var(--vdp-deep);
+}
+
+.show-vehicle .vdp-band-btn--primary:hover {
+    color: #fff;
+    filter: brightness(1.15);
+}
+
+@media (max-width: 1023px) {
+    .show-vehicle .vdp-band-row {
+        flex-wrap: wrap;
+    }
+
+    .show-vehicle .vdp-band-main {
+        order: 3;
+        flex-basis: 100%;
+    }
+
+    .show-vehicle .vdp-band-pills {
+        order: 4;
+    }
+
+    .show-vehicle .vdp-band-actions {
+        margin-left: auto;
+    }
+}
+
+@media (max-width: 640px) {
+    .show-vehicle .vdp-band {
+        padding: 1rem;
+    }
+
+    .show-vehicle .vdp-band-back span,
+    .show-vehicle .vdp-band-btn--white span {
+        display: none;
+    }
+
+    /* Phones: the title on one line, its size following the screen width (about 17px at 390px), with an
+       ellipsis only for an unusually long name; the miles pill right under it. */
+    .show-vehicle .vdp-band-title {
+        font-size: clamp(0.9375rem, 4.4vw, 1.375rem);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .show-vehicle .vdp-band-pills {
+        margin-top: -0.6rem;
+    }
+
+    /* Phones: the title and the miles pill centred. */
+    .show-vehicle .vdp-band-title {
+        text-align: center;
+    }
+
+    .show-vehicle .vdp-band-pills {
+        flex-basis: 100%;
+        justify-content: center;
+    }
+
+    .show-vehicle .vdp-band-back,
+    .show-vehicle .vdp-band-btn {
+        padding: 0.55rem 0.8rem;
+    }
+}
+
+/* ── Gallery ────────────────────────────────────────────────────────────────────────── */
+.show-vehicle .vdp-gallery {
+    padding: 0.625rem;
+    align-self: start;
+}
+
+.show-vehicle .vdp-main-img-wrap {
+    border-radius: 0.75rem;
+    overflow: hidden;
+    background: #ececf0;
+}
+
+.show-vehicle .vdp-gallery-tags {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    z-index: 3;
+    display: flex;
+    gap: 0.4rem;
+}
+
+.show-vehicle .vdp-gallery-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: 9999px;
+    font-size: 0.71875rem;
+    font-weight: 700;
+    color: var(--vdp-ink);
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(4px);
+}
+
+.show-vehicle .vdp-gallery-tags .vdp-gallery-counter {
+    position: static;
+    padding: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    border-radius: 0;
+}
+
+/* The special tag moves to the top right, clear of Inspected and the count. */
+.show-vehicle .vdp-gallery-badge {
+    left: auto;
+    right: 0.75rem;
+}
+
+.show-vehicle .vdp-thumbs {
+    gap: 0.5rem;
+    margin-top: 0.625rem;
+}
+
+.show-vehicle .vdp-thumb,
+.show-vehicle .vdp-thumb-more {
+    border-radius: 0.625rem;
+    background: #ececf0;
+}
+
+.show-vehicle .vdp-thumb.active {
+    border-color: var(--vdp-deep);
+}
+
+.show-vehicle .vdp-thumb-more {
+    background: var(--vdp-deep);
+}
+
+/* ── Price + form panel ─────────────────────────────────────────────────────────────── */
+.show-vehicle .vdp-price-top {
+    border-bottom: 0;
+    padding-bottom: 0.5rem;
+}
+
+.show-vehicle .vdp-price-line {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+}
+
+.show-vehicle .vdp-price-top:not(.vdp-price-top--grid) {
+    text-align: center;
+}
+
+.show-vehicle .vdp-contact-form-title {
+    text-align: center;
+}
+
+/* The mock-up's panel ends at Carfax: Get Pre-Approved lives in the payment card under it. */
+.show-vehicle .vdp-price-panel a.vdp-action-btn.vdp-panel-btn {
+    display: none !important;
+}
+
+.show-vehicle .vdp-price-panel a[href*="carfax.com"] {
+    grid-column: 1 / -1;
+}
+
+.show-vehicle .vdp-price-main {
+    font-family: 'Outfit', 'Inter', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--vdp-ink);
+}
+
+.show-vehicle .vdp-price-pill {
+    padding: 0.2rem 0.6rem;
+    border-radius: 9999px;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    color: #15803d;
+    background: #dcfce7;
+}
+
+.show-vehicle .vdp-vh-grid {
+    gap: 0.5rem;
+    border-bottom: 0;
+    padding-top: 0.5rem;
+}
+
+.show-vehicle .vdp-vh-item {
+    position: relative;
+    padding: 0.55rem 0.6rem;
+    border-radius: 0.625rem;
+    background: #f7f7f9;
+    border: 1px solid var(--vdp-line);
+}
+
+.show-vehicle .vdp-vh-icon {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.5rem;
+    color: var(--vdp-primary);
+    background: var(--vdp-soft);
+}
+
+.show-vehicle .vdp-vh-icon .ion-icon {
+    color: var(--vdp-primary);
+}
+
+.show-vehicle .vdp-vh-val {
+    font-weight: 700;
+    color: var(--vdp-ink);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.show-vehicle .vdp-vh-lbl {
+    color: var(--vdp-muted);
+}
+
+/* The copy buttons (VIN, Stock #). */
+.show-vehicle .vdp-copy {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 1.75rem;
+    height: 1.75rem;
+    margin-left: auto;
+    border-radius: 0.4rem;
+    font-size: 0.9rem;
+    color: var(--vdp-muted);
+    background: transparent;
+    transition: background 0.15s, color 0.15s;
+}
+
+.show-vehicle .vdp-copy:hover {
+    color: var(--vdp-ink);
+    background: #ececf0;
+}
+
+.show-vehicle .vdp-copy.is-copied {
+    color: #15803d;
+}
+
+.show-vehicle .vdp-copy--inline {
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-left: 0.35rem;
+    vertical-align: middle;
+}
+
+.show-vehicle .vdp-contact-form-title {
+    font-family: 'Outfit', 'Inter', sans-serif;
+    letter-spacing: 0.01em;
+    color: var(--vdp-ink);
+}
+
+.show-vehicle .vdp-contact-form input[type="text"],
+.show-vehicle .vdp-contact-form input[type="email"],
+.show-vehicle .vdp-contact-form input[type="tel"],
+.show-vehicle .vdp-contact-form select,
+.show-vehicle .vdp-contact-form textarea {
+    border: 1px solid #dcdce3;
+    border-radius: 0.625rem;
+    background: #fff;
+    font-size: 0.875rem;
+}
+
+.show-vehicle .vdp-contact-form input:focus,
+.show-vehicle .vdp-contact-form select:focus,
+.show-vehicle .vdp-contact-form textarea:focus {
+    border-color: color-mix(in srgb, var(--vdp-primary) 55%, #ffffff);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--vdp-primary) 14%, transparent);
+    outline: none;
+}
+
+.show-vehicle .vdp-contact-form input[type="checkbox"] {
+    accent-color: var(--vdp-deep);
+    border-radius: 0.25rem;
+}
+
+/* Submit and Get Pre-Approved: the deep primary. */
+.show-vehicle .vdp-contact-form button.vdp-action-btn,
+.show-vehicle a.vdp-action-btn.vdp-panel-btn {
+    border: 0;
+    border-radius: 0.625rem;
+    color: #fff;
+    background: var(--vdp-deep);
+    box-shadow: none;
+}
+
+.show-vehicle .vdp-contact-form button.vdp-action-btn:hover,
+.show-vehicle a.vdp-action-btn.vdp-panel-btn:hover {
+    color: #fff;
+    filter: brightness(1.15);
+}
+
+.show-vehicle .vdp-price-panel a[href*="carfax.com"] {
+    border-radius: 0.625rem !important;
+    border-color: var(--vdp-line) !important;
+}
+
+/* ── Estimate My Monthly Payment ────────────────────────────────────────────────────── */
+/* Market Price Comparison and the payment card, side by side (one column under 1100px). */
+.show-vehicle .vdp-money-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
+    margin: 1.25rem 0;
+    align-items: stretch;
+}
+
+@media (max-width: 1099px) {
+    .show-vehicle .vdp-money-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+.show-vehicle .vdp-pay,
+.show-vehicle .vdp-mkt {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    padding: 1.25rem;
+}
+
+.show-vehicle .vdp-pay-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 12.5rem;
+    gap: 1rem;
+    margin-top: 0.9rem;
+}
+
+@media (max-width: 560px) {
+    .show-vehicle .vdp-pay-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.show-vehicle .vdp-pay .vdp-pay-row {
+    margin-top: 0;
+}
+
+.show-vehicle .vdp-pay .vdp-pay-down {
+    margin-top: 0.6rem;
+}
+
+.show-vehicle .vdp-pay .vdp-pay-table {
+    margin-top: 0.6rem;
+    border: 0;
+    border-radius: 0;
+}
+
+.show-vehicle .vdp-pay .vdp-pay-line {
+    padding: 0.35rem 0.4rem;
+    font-size: 0.75rem;
+}
+
+.show-vehicle .vdp-pay .vdp-pay-tier {
+    padding: 0.5rem 0.3rem;
+}
+
+.show-vehicle .vdp-pay .vdp-pay-tier strong {
+    font-size: 0.8125rem;
+}
+
+.show-vehicle .vdp-pay-note {
+    margin-top: auto !important;
+    padding-top: 0.75rem;
+}
+
+/* ── Market Price Comparison ── */
+.show-vehicle .vdp-mkt-body {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    align-items: center;
+    gap: 1rem;
+}
+
+.show-vehicle .vdp-mkt-gauge {
+    grid-column: 1;
+    grid-row: 1;
+    width: 100%;
+    max-width: 17rem;
+    margin: 0.75rem auto 0;
+    overflow: visible;
+}
+
+.show-vehicle .vdp-mkt-gauge-lbls {
+    position: relative;
+    grid-column: 1;
+    grid-row: 1;
+    align-self: stretch;
+    pointer-events: none;
+}
+
+.show-vehicle .vdp-mkt-gauge-lbls span {
+    position: absolute;
+    font-size: 0.625rem;
+    font-weight: 600;
+    color: var(--vdp-muted);
+}
+
+.show-vehicle .vdp-mkt-badge {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: 9999px;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    color: #15803d;
+    background: #dcfce7;
+}
+
+.show-vehicle .vdp-mkt-badge--fair-price {
+    color: #a16207;
+    background: #fef9c3;
+}
+
+.show-vehicle .vdp-mkt-badge--high-price,
+.show-vehicle .vdp-mkt-badge--overpriced {
+    color: #b91c1c;
+    background: #fee2e2;
+}
+
+.show-vehicle .vdp-mkt-diff {
+    margin-top: 0.5rem;
+    font-family: 'Outfit', 'Inter', sans-serif;
+    font-size: 1.75rem;
+    font-weight: 800;
+    line-height: 1.1;
+    color: var(--vdp-ink);
+}
+
+.show-vehicle .vdp-mkt-diff small {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8125rem;
+    font-weight: 600;
+}
+
+.show-vehicle .vdp-mkt-note {
+    margin: 0.4rem 0 0;
+    font-size: 0.75rem;
+    line-height: 1.45;
+    color: var(--vdp-muted);
+}
+
+.show-vehicle .vdp-mkt-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.show-vehicle .vdp-mkt-stats > div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    padding: 0.6rem 0.7rem;
+    border-radius: 0.5rem;
+    background: #f4f4f6;
+}
+
+.show-vehicle .vdp-mkt-stats span {
+    font-size: 0.5625rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--vdp-muted);
+}
+
+.show-vehicle .vdp-mkt-stats strong {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--vdp-ink);
+    white-space: nowrap;
+}
+
+@media (max-width: 560px) {
+    .show-vehicle .vdp-mkt-body {
+        grid-template-columns: 1fr;
+    }
+
+    .show-vehicle .vdp-mkt-stats {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.show-vehicle .vdp-pay-hd {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.125rem;
+}
+
+.show-vehicle .vdp-pay-title {
+    margin: 0;
+    font-family: 'Outfit', 'Inter', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--vdp-ink);
+}
+
+.show-vehicle .vdp-pay-sub {
+    margin: 0.1rem 0 0;
+    font-size: 0.8125rem;
+    color: var(--vdp-muted);
+}
+
+.show-vehicle .vdp-pay-tiers {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 0.5rem;
+}
+
+@media (max-width: 640px) {
+    .show-vehicle .vdp-pay-tiers {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+.show-vehicle .vdp-pay-tier {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.1rem;
+    padding: 0.65rem 0.4rem;
+    border-radius: 0.625rem;
+    border: 1px solid var(--vdp-line);
+    background: #fff;
+    color: var(--vdp-ink);
+    transition: border-color 0.15s, background 0.15s;
+}
+
+.show-vehicle .vdp-pay-tier strong {
+    font-size: 0.875rem;
+    font-weight: 700;
+}
+
+.show-vehicle .vdp-pay-tier small {
+    font-size: 0.71875rem;
+    color: var(--vdp-muted);
+}
+
+.show-vehicle .vdp-pay-tier:hover {
+    border-color: #c9c9d2;
+}
+
+.show-vehicle .vdp-pay-tier.is-on {
+    color: #fff;
+    background: var(--vdp-deep);
+    border-color: var(--vdp-deep);
+}
+
+.show-vehicle .vdp-pay-tier.is-on small {
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.show-vehicle .vdp-pay-eyebrow {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--vdp-muted);
+}
+
+.show-vehicle .vdp-pay-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 1.125rem;
+}
+
+.show-vehicle .vdp-pay-terms {
+    display: inline-flex;
+    gap: 0.25rem;
+    padding: 0.25rem;
+    border-radius: 0.625rem;
+    background: #f1f1f4;
+}
+
+.show-vehicle .vdp-pay-term {
+    padding: 0.4rem 0.85rem;
+    border-radius: 0.45rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--vdp-muted);
+}
+
+.show-vehicle .vdp-pay-term.is-on {
+    color: var(--vdp-ink);
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(16, 12, 40, 0.12);
+}
+
+.show-vehicle .vdp-pay-down {
+    margin-top: 1rem;
+}
+
+.show-vehicle .vdp-pay-down-val {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: var(--vdp-ink);
+}
+
+.show-vehicle .vdp-pay-down input[type="range"] {
+    width: 100%;
+    margin-top: 0.5rem;
+    accent-color: var(--vdp-deep);
+}
+
+.show-vehicle .vdp-pay-table {
+    margin-top: 1rem;
+    border: 1px solid var(--vdp-line);
+    border-radius: 0.75rem;
+    overflow: hidden;
+}
+
+.show-vehicle .vdp-pay-line {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 0.75rem;
+    padding: 0.6rem 0.9rem;
+    font-size: 0.8125rem;
+    color: var(--vdp-muted);
+    border-bottom: 1px solid var(--vdp-line);
+}
+
+.show-vehicle .vdp-pay-line:last-child {
+    border-bottom: 0;
+}
+
+.show-vehicle .vdp-pay-line.is-on {
+    background: var(--vdp-soft);
+    color: var(--vdp-ink);
+    font-weight: 600;
+}
+
+.show-vehicle .vdp-pay-line-amt {
+    font-weight: 700;
+    color: var(--vdp-ink);
+}
+
+.show-vehicle .vdp-pay-note {
+    margin: 0.75rem 0 0;
+    font-size: 0.71875rem;
+    color: var(--vdp-muted);
+}
+
+.show-vehicle .vdp-pay-summary {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.3rem;
+    padding: 1rem;
+    border-radius: 0.875rem;
+    color: #fff;
+    background: var(--vdp-deep);
+}
+
+.show-vehicle .vdp-pay-eyebrow--light {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.show-vehicle .vdp-pay-amount {
+    font-family: 'Outfit', 'Inter', sans-serif;
+    font-size: 2.125rem;
+    font-weight: 800;
+    line-height: 1.1;
+}
+
+.show-vehicle .vdp-pay-amount small {
+    font-size: 1rem;
+    font-weight: 600;
+    opacity: 0.75;
+}
+
+.show-vehicle .vdp-pay-meta {
+    font-size: 0.8125rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.show-vehicle .vdp-pay-cta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1rem;
+    padding: 0.7rem 1rem;
+    border-radius: 0.625rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--vdp-ink);
+    background: #fff;
+    transition: filter 0.15s;
+}
+
+.show-vehicle .vdp-pay-cta:hover {
+    color: var(--vdp-ink);
+    filter: brightness(0.96);
+}
+
+/* ── Vehicle Details: three titled groups ───────────────────────────────────────────── */
+.show-vehicle .vdp-section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    padding-bottom: 0;
+    border-bottom: 0;
+    font-family: 'Outfit', 'Inter', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--vdp-ink);
+}
+
+.show-vehicle .vdp-section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--vdp-line);
+}
+
+.show-vehicle .vdp-details-groups {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+    align-items: start;
+}
+
+@media (max-width: 900px) {
+    .show-vehicle .vdp-details-groups {
+        grid-template-columns: 1fr;
+    }
+}
+
+.show-vehicle .vdp-details-group {
+    padding: 0.875rem 1rem 0.5rem;
+    border-radius: 0.75rem;
+    border: 1px solid var(--vdp-line);
+    background: #fafafb;
+}
+
+.show-vehicle .vdp-details-group-hd {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding-bottom: 0.6rem;
+    margin-bottom: 0.15rem;
+    border-bottom: 1px solid var(--vdp-line);
+    font-family: 'Outfit', 'Inter', sans-serif;
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: var(--vdp-ink);
+}
+
+.show-vehicle .vdp-tile-sm {
+    width: 1.875rem;
+    height: 1.875rem;
+    border-radius: 0.5rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 1rem;
+    color: var(--vdp-primary);
+    background: var(--vdp-soft);
+}
+
+/* The spec count at the header's right. */
+.show-vehicle .vdp-details-count {
+    margin-left: auto;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    color: var(--vdp-muted);
+}
+
+/* The specs: small grey tiles, two a row, the label above the value. */
+.show-vehicle .vdp-details-tiles {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+    padding: 0.75rem 0 0.5rem;
+}
+
+.show-vehicle .vdp-details-group .vdp-details-row {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 0.15rem;
+    min-width: 0;
+    padding: 0.55rem 0.7rem;
+    border: 0;
+    border-radius: 0.5rem;
+    background: #f4f4f6;
+}
+
+.show-vehicle .vdp-details-group .vdp-details-row--id {
+    grid-column: 1 / -1;
+}
+
+.show-vehicle .vdp-details-group .vdp-details-label {
+    font-size: 0.625rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--vdp-muted);
+}
+
+.show-vehicle .vdp-details-group .vdp-details-val {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    max-width: 100%;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: var(--vdp-ink);
+    text-align: left;
+}
+
+.show-vehicle .vdp-details-text {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.show-vehicle .vdp-details-swatch {
+    width: 0.7rem;
+    height: 0.7rem;
+    flex-shrink: 0;
+    border-radius: 9999px;
+    border: 1px solid rgba(22, 19, 31, 0.15);
+}
+
+.show-vehicle .vdp-details-val .vdp-copy--inline {
+    margin-left: 0.1rem;
+}
+
+/* ── About + Ready to drive it? ──────────────────────────────────────────────────────── */
+.show-vehicle .vdp-about-row {
+    grid-template-columns: minmax(0, 1fr) 20rem !important;
+    gap: 0;
+    align-items: center;
+}
+
+@media (max-width: 900px) {
+    .show-vehicle .vdp-about-row {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+.show-vehicle .vdp-about-panel {
+    border-right: 0 !important;
+    border-bottom: 0 !important;
+}
+
+.show-vehicle .vdp-about-panel strong[style*="color"] {
+    color: var(--vdp-primary) !important;
+}
+
+.show-vehicle .vdp-about-panel strong[style*="#008a00"] {
+    color: #15803d !important;
+}
+
+.show-vehicle .vdp-about-panel p:has(> br:only-child) {
+    display: none;
+}
+
+.show-vehicle .vdp-about-panel p {
+    margin-bottom: 0.6rem;
+}
+
+.show-vehicle .vdp-drive-cta {
+    margin: 1.25rem;
+    padding: 1.25rem;
+    border-radius: 0.875rem;
+    color: #fff;
+    background: var(--vdp-deep);
+}
+
+.show-vehicle .vdp-drive-cta-title {
+    font-family: 'Outfit', 'Inter', sans-serif;
+    font-size: 1.125rem;
+    font-weight: 700;
+}
+
+.show-vehicle .vdp-drive-cta-text {
+    margin: 0.25rem 0 1rem;
+    font-size: 0.8125rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.show-vehicle .vdp-drive-cta-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    width: 100%;
+    padding: 0.65rem 1rem;
+    border-radius: 0.625rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: filter 0.15s, background 0.15s;
+}
+
+.show-vehicle .vdp-drive-cta-btn + .vdp-drive-cta-btn {
+    margin-top: 0.6rem;
+}
+
+.show-vehicle .vdp-drive-cta-btn--white {
+    color: var(--vdp-ink);
+    background: #fff;
+}
+
+.show-vehicle .vdp-drive-cta-btn--white:hover {
+    color: var(--vdp-ink);
+    filter: brightness(0.96);
+}
+
+.show-vehicle .vdp-drive-cta-btn--ghost {
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+.show-vehicle .vdp-drive-cta-btn--ghost:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* ── Trust bar: a white card, icons in soft tiles ───────────────────────────────────── */
+.show-vehicle .vdp-footer-cta {
+    background: #fff !important;
+    border-color: var(--vdp-line) !important;
+    color: var(--vdp-ink);
+}
+
+.show-vehicle .vdp-cta-icon {
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 0.75rem;
+    color: var(--vdp-primary);
+    background: var(--vdp-soft);
+}
+
+.show-vehicle .vdp-cta-text strong {
+    font-family: 'Outfit', 'Inter', sans-serif;
+    color: var(--vdp-ink);
+}
+
+.show-vehicle .vdp-cta-text small {
+    color: var(--vdp-muted);
+    opacity: 1;
+}
+/* ══ Third pass (the vehicle page mock-up with Market / Visit Our Dealership) ══════════════════════════════════
+   Later rules here override the ones above. The mock-up's buttons are the dealer's primary (not the deep shade). */
+
+/* Title band: I'm Interested in the primary. */
+.show-vehicle .vdp-band-btn--primary {
+    background: var(--vdp-primary);
+    border-color: var(--vdp-primary);
+    box-shadow: 0 8px 18px -10px color-mix(in srgb, var(--vdp-primary) 70%, transparent);
+}
+
+/* Gallery: the photo in its own white card; the thumbnails in a second card with arrows. */
+.show-vehicle .vdp-gallery {
+    padding: 0;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+}
+
+.show-vehicle .vdp-main-img-wrap {
+    border: 0.75rem solid #fff;
+    border-radius: 1rem;
+    box-shadow: 0 0 0 1px var(--vdp-line), var(--vdp-card-shadow);
+}
+
+.show-vehicle .vdp-gallery-tag {
+    color: #fff;
+    background: rgba(22, 19, 31, 0.78);
+}
+
+.show-vehicle .vdp-thumbs-card {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 0.9rem;
+    padding: 0.75rem;
+    border-radius: 1rem;
+    background: #fff;
+    border: 1px solid var(--vdp-line);
+    box-shadow: var(--vdp-card-shadow);
+}
+
+.show-vehicle .vdp-thumbs-card .vdp-thumbs {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+    justify-content: center;
+}
+
+.show-vehicle .vdp-thumbs-nav {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 9999px;
+    color: var(--vdp-ink);
+    background: #fff;
+    border: 1px solid var(--vdp-line);
+    box-shadow: 0 2px 6px rgba(16, 12, 40, 0.08);
+}
+
+.show-vehicle .vdp-thumb.active {
+    border-color: var(--vdp-ink);
+}
+
+/* Price: Share beside it. */
+.show-vehicle .vdp-share-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.8rem;
+    border-radius: 9999px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--vdp-primary);
+    background: #fff;
+    border: 1px solid color-mix(in srgb, var(--vdp-primary) 35%, #ffffff);
+    transition: background 0.15s;
+}
+
+.show-vehicle .vdp-share-btn:hover {
+    background: var(--vdp-soft);
+}
+
+.show-vehicle .vdp-share-btn.is-copied {
+    color: #15803d;
+    border-color: #86efac;
+}
+
+/* Spec tiles: white, outlined, a square icon; the copy button beside the value. */
+.show-vehicle .vdp-vh-item {
+    background: #fff;
+    border: 1px solid var(--vdp-line);
+    box-shadow: 0 1px 2px rgba(16, 12, 40, 0.04);
+}
+
+.show-vehicle .vdp-vh-icon {
+    color: var(--vdp-ink);
+    background: #fff;
+    border: 1px solid var(--vdp-line);
+}
+
+.show-vehicle .vdp-vh-icon .ion-icon {
+    color: var(--vdp-ink);
+}
+
+.show-vehicle .vdp-vh-val:has(.vdp-copy) {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.show-vehicle .vdp-vh-val:has(.vdp-copy) > span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.show-vehicle .vdp-vh-val .vdp-copy--inline {
+    flex-shrink: 0;
+    width: 1.25rem;
+    height: 1.25rem;
+    margin: 0;
+    font-size: 0.75rem;
+    border: 1px solid var(--vdp-line);
+}
+
+/* The form: dark field edges; Submit a light primary button with an arrow. */
+.show-vehicle .vdp-contact-form input[type="text"],
+.show-vehicle .vdp-contact-form input[type="email"],
+.show-vehicle .vdp-contact-form input[type="tel"],
+.show-vehicle .vdp-contact-form select,
+.show-vehicle .vdp-contact-form textarea {
+    border: 1px solid var(--vdp-ink);
+}
+
+.show-vehicle .vdp-contact-form button.vdp-action-btn {
+    color: var(--vdp-primary);
+    background: color-mix(in srgb, var(--vdp-primary) 9%, #ffffff);
+    border: 1px solid color-mix(in srgb, var(--vdp-primary) 40%, #ffffff);
+}
+
+.show-vehicle .vdp-contact-form button.vdp-action-btn::after {
+    content: ' \2192';
+}
+
+.show-vehicle .vdp-contact-form button.vdp-action-btn:hover {
+    color: var(--vdp-primary);
+    filter: none;
+    background: color-mix(in srgb, var(--vdp-primary) 15%, #ffffff);
+}
+
+/* Get Pre-Qualified (back, beside Carfax), in the primary. */
+.show-vehicle .vdp-price-panel a.vdp-action-btn.vdp-panel-btn {
+    display: flex !important;
+    color: #fff;
+    background: var(--vdp-primary);
+}
+
+.show-vehicle .vdp-price-panel a[href*="carfax.com"] {
+    grid-column: auto;
+}
+
+/* ── The row under the gallery ── */
+.show-vehicle .vdp-money-row:has(.vdp-visit) {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+}
+
+.show-vehicle .vdp-money-row--solo {
+    grid-template-columns: minmax(0, 1fr) !important;
+}
+
+@media (max-width: 1099px) {
+    .show-vehicle .vdp-money-row:has(.vdp-visit) {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Visit Our Dealership. */
+.show-vehicle .vdp-visit {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    padding: 1.25rem;
+    border: 1px solid var(--vdp-line);
+    border-radius: 1rem;
+    background: #fff;
+    box-shadow: var(--vdp-card-shadow);
+}
+
+.show-vehicle .vdp-visit-map {
+    position: relative;
+    flex: 1;
+    min-height: 18rem;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    border: 1px solid var(--vdp-line);
+    background: #eef0f3;
+}
+
+.show-vehicle .vdp-visit-map iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+
+.show-vehicle .vdp-visit-card {
+    position: absolute;
+    left: 0.75rem;
+    right: 0.75rem;
+    bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.7rem 0.9rem;
+    border-radius: 0.75rem;
+    background: #fff;
+    box-shadow: 0 10px 24px -12px rgba(16, 12, 40, 0.4);
+}
+
+.show-vehicle .vdp-visit-card strong {
+    display: block;
+    font-size: 0.875rem;
+    color: var(--vdp-ink);
+}
+
+.show-vehicle .vdp-visit-card small {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--vdp-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.show-vehicle .vdp-visit-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    flex-shrink: 0;
+    padding: 0.5rem 0.9rem;
+    border-radius: 0.5rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #fff;
+    background: var(--vdp-primary);
+}
+
+.show-vehicle .vdp-visit-btn:hover {
+    color: #fff;
+    filter: brightness(1.1);
+}
+
+/* Market Price Comparison (real data only). */
+.show-vehicle .vdp-mkt-body {
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    flex: 1;
+}
+
+.show-vehicle .vdp-mkt-gauge-wrap {
+    min-width: 0;
+}
+
+.show-vehicle .vdp-mkt-gauge {
+    max-width: 22rem;
+    margin: 0.5rem auto 0;
+}
+
+.show-vehicle .vdp-mkt-lbl {
+    font-family: 'Inter', sans-serif;
+    font-size: 7px;
+    font-weight: 500;
+    fill: var(--vdp-muted);
+}
+
+/* Estimate My Monthly Payment. */
+.show-vehicle .vdp-pay .vdp-pay-tier.is-on {
+    color: var(--vdp-primary);
+    background: color-mix(in srgb, var(--vdp-primary) 9%, #ffffff);
+    border-color: var(--vdp-primary);
+}
+
+.show-vehicle .vdp-pay .vdp-pay-tier.is-on small {
+    color: var(--vdp-primary);
+}
+
+.show-vehicle .vdp-pay-grid {
+    grid-template-columns: minmax(0, 1fr) 13.5rem;
+    align-items: start;
+}
+
+/* Phones: the summary under the term and down payment. */
+@media (max-width: 640px) {
+    .show-vehicle .vdp-pay-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.show-vehicle .vdp-pay .vdp-pay-row {
+    gap: 0.75rem;
+}
+
+.show-vehicle .vdp-pay .vdp-pay-terms {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.5rem;
+    padding: 0;
+    background: transparent;
+}
+
+.show-vehicle .vdp-pay .vdp-pay-term {
+    padding: 0.45rem 0.5rem;
+    border-radius: 9999px;
+    color: var(--vdp-ink);
+    background: #fff;
+    border: 1px solid var(--vdp-line);
+}
+
+.show-vehicle .vdp-pay .vdp-pay-term.is-on {
+    color: #fff;
+    background: var(--vdp-primary);
+    border-color: var(--vdp-primary);
+    box-shadow: none;
+}
+
+.show-vehicle .vdp-pay .vdp-pay-down {
+    margin-top: 1rem;
+}
+
+.show-vehicle .vdp-pay-down input[type="range"] {
+    accent-color: var(--vdp-primary);
+}
+
+.show-vehicle .vdp-pay-summary {
+    color: var(--vdp-primary);
+    background: #fff;
+    border: 1.5px solid color-mix(in srgb, var(--vdp-primary) 45%, #ffffff);
+    box-shadow: 0 10px 24px -16px color-mix(in srgb, var(--vdp-primary) 60%, transparent);
+}
+
+.show-vehicle .vdp-pay-summary .vdp-pay-eyebrow,
+.show-vehicle .vdp-pay-summary .vdp-pay-amount {
+    color: var(--vdp-primary);
+}
+
+.show-vehicle .vdp-pay-summary .vdp-pay-meta {
+    color: color-mix(in srgb, var(--vdp-primary) 80%, #ffffff);
+}
+
+.show-vehicle .vdp-pay-summary .vdp-pay-cta {
+    margin-top: 0.6rem;
+    color: #fff;
+    background: var(--vdp-primary);
+}
+
+.show-vehicle .vdp-pay-summary .vdp-pay-cta:hover {
+    color: #fff;
+    filter: brightness(1.1);
+}
+
+/* Vehicle Details: no bar before the title (ADR-0178, QA); it had a 4px primary bar. */
+
+.show-vehicle .vdp-details-group .vdp-details-row {
+    padding: 0.6rem 0.8rem;
+}
+
+.show-vehicle .vdp-details-group .vdp-details-val {
+    font-size: 0.9375rem;
+}
+
+/* About: the name with Now Available; the description in two lines; three highlights; Ready to drive it? white. */
+.show-vehicle .vdp-about-row {
+    align-items: start;
+}
+
+.show-vehicle .vdp-about-name {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin: 0.25rem 0 0.4rem;
+    font-family: 'Outfit', 'Inter', sans-serif;
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--vdp-ink);
+}
+
+.show-vehicle .vdp-about-badge {
+    padding: 0.15rem 0.6rem;
+    border-radius: 9999px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: var(--vdp-primary);
+    background: var(--vdp-soft);
+}
+
+.show-vehicle .vdp-about-desc {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: var(--vdp-ink);
+}
+
+.show-vehicle .vdp-about-desc.is-open {
+    display: block;
+}
+
+.show-vehicle .vdp-about-desc p {
+    display: inline;
+    margin: 0 0.25rem 0 0;
+}
+
+.show-vehicle .vdp-about-desc.is-open p {
+    display: block;
+    margin: 0 0 0.6rem;
+}
+
+.show-vehicle .vdp-about-more {
+    margin-top: 0.2rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--vdp-primary);
+}
+
+.show-vehicle .vdp-about-tiles {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+@media (max-width: 900px) {
+    .show-vehicle .vdp-about-tiles {
+        grid-template-columns: 1fr;
+    }
+}
+
+.show-vehicle .vdp-about-tile {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.7rem;
+    padding: 0.8rem 0.9rem;
+    border-radius: 0.75rem;
+    background: #f7f7f9;
+    border: 1px solid var(--vdp-line);
+}
+
+.show-vehicle .vdp-about-tile strong {
+    display: block;
+    font-size: 0.875rem;
+    color: var(--vdp-ink);
+}
+
+.show-vehicle .vdp-about-tile small {
+    display: block;
+    margin-top: 0.1rem;
+    font-size: 0.75rem;
+    color: var(--vdp-muted);
+}
+
+.show-vehicle .vdp-drive-cta {
+    color: var(--vdp-ink);
+    background: #fff;
+    border: 1px solid var(--vdp-line);
+    box-shadow: var(--vdp-card-shadow);
+}
+
+.show-vehicle .vdp-drive-cta-text {
+    color: var(--vdp-muted);
+}
+
+.show-vehicle .vdp-drive-cta-btn--white {
+    color: #fff;
+    background: var(--vdp-primary);
+}
+
+.show-vehicle .vdp-drive-cta-btn--white:hover {
+    color: #fff;
+    filter: brightness(1.1);
+}
+
+.show-vehicle .vdp-drive-cta-btn--ghost {
+    color: var(--vdp-ink);
+    border: 1px solid var(--vdp-ink);
+}
+
+.show-vehicle .vdp-drive-cta-btn--ghost:hover {
+    color: var(--vdp-ink);
+    background: #f4f4f6;
+}
+
+/* ══ Fourth pass (the mock-up: a pill title, a gradient price header, Get Pre-Approved, a stepped estimator) ══════ */
+.show-vehicle {
+    --vdp-grad: linear-gradient(120deg, color-mix(in srgb, var(--vdp-primary) 82%, #ffffff), var(--vdp-primary));
+}
+
+/* Title: a centred pill, as wide as its contents. */
+.show-vehicle .vdp-band {
+    width: fit-content;
+    max-width: 100%;
+    margin: 1rem auto;
+    padding: 0.5rem 0.6rem;
+    border-radius: 1.25rem;
+}
+
+.show-vehicle .vdp-band-main {
+    flex: 0 1 auto;
+}
+
+.show-vehicle .vdp-band-btn--primary {
+    color: #fff;
+    background: var(--vdp-grad);
+    border-color: transparent;
+}
+
+@media (max-width: 1023px) {
+    .show-vehicle .vdp-band {
+        width: auto;
+    }
+
+    .show-vehicle .vdp-band-main {
+        flex: 1 1 100%;
+    }
+}
+
+/* Price header: a primary gradient inside the card's top. */
+.show-vehicle .vdp-price-panel {
+    padding-top: 0.75rem;
+}
+
+.show-vehicle .vdp-price-hero {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    margin: 0 0.75rem 0.75rem;
+    padding: 1rem 3.75rem 1rem 1.25rem;
+    border-radius: 0.875rem;
+    color: #fff;
+    background: var(--vdp-grad);
+    box-shadow: 0 12px 24px -16px color-mix(in srgb, var(--vdp-primary) 70%, transparent);
+}
+
+.show-vehicle .vdp-price-hero-main {
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    gap: 0.15rem;
+}
+
+.show-vehicle .vdp-price-hero-lbl {
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.show-vehicle .vdp-price-hero .vdp-price-main {
+    font-size: 2.125rem;
+    line-height: 1.05;
+    color: #fff;
+}
+
+.show-vehicle .vdp-price-hero .vdp-price-monthly,
+.show-vehicle .vdp-price-hero .vdp-price-monthly small {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.show-vehicle .vdp-price-hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    width: fit-content;
+    padding: 0.2rem 0.55rem;
+    border-radius: 9999px;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    color: #15803d;
+    background: #fff;
+}
+
+.show-vehicle .vdp-price-hero-mkt {
+    flex: 1;
+    min-width: 0;
+}
+
+.show-vehicle .vdp-price-hero-mkt-top {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.show-vehicle .vdp-price-hero-diff {
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.show-vehicle .vdp-price-hero-bar {
+    position: relative;
+    height: 0.375rem;
+    margin: 0.7rem 0 0.35rem;
+    border-radius: 9999px;
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.show-vehicle .vdp-price-hero-fill {
+    position: absolute;
+    inset: 0 auto 0 0;
+    border-radius: inherit;
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.6), #4ade80);
+}
+
+.show-vehicle .vdp-price-hero-dot {
+    position: absolute;
+    top: 50%;
+    width: 0.875rem;
+    height: 0.875rem;
+    border-radius: 50%;
+    background: #fff;
+    border: 3px solid #22c55e;
+    transform: translate(-50%, -50%);
+}
+
+.show-vehicle .vdp-price-hero-scale {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.625rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.75);
+}
+
+/* Share: a round icon at the header's right. */
+.show-vehicle .vdp-share-btn.vdp-share-btn--icon {
+    position: absolute;
+    top: 50%;
+    right: 1rem;
+    width: 2.25rem;
+    height: 2.25rem;
+    padding: 0;
+    justify-content: center;
+    border-radius: 50%;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    transform: translateY(-50%);
+}
+
+.show-vehicle .vdp-share-btn.vdp-share-btn--icon span {
+    display: none;
+}
+
+.show-vehicle .vdp-share-btn.vdp-share-btn--icon:hover,
+.show-vehicle .vdp-share-btn.vdp-share-btn--icon.is-copied {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.show-vehicle .vdp-price-loc-wrap {
+    margin: 0 0.75rem 0.75rem;
+}
+
+/* The market card under the price header: verdict, the gap to the market average, and where the price sits. */
+.show-vehicle .vdp-mkt-card {
+    --mkt-tone: #16a34a;
+    margin: 0 0.75rem 0.75rem;
+    padding: 0.9rem 1rem 0.8rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.875rem;
+    background: #fff;
+}
+
+.show-vehicle .vdp-mkt-card.is-at { --mkt-tone: #65a30d; }
+.show-vehicle .vdp-mkt-card.is-over { --mkt-tone: #d97706; }
+.show-vehicle .vdp-mkt-card.is-above { --mkt-tone: #dc2626; }
+
+.show-vehicle .vdp-mkt-top {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.show-vehicle .vdp-mkt-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--mkt-tone);
+    background: color-mix(in srgb, var(--mkt-tone) 12%, #fff);
+}
+
+.show-vehicle .vdp-mkt-diff {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.show-vehicle .vdp-mkt-bar {
+    position: relative;
+    height: 0.4rem;
+    margin: 0.8rem 0 0.4rem;
+    border-radius: 9999px;
+    background: linear-gradient(90deg, #ef4444, #f59e0b 33%, #84cc16 66%, #22c55e);
+}
+
+.show-vehicle .vdp-mkt-dot {
+    position: absolute;
+    top: 50%;
+    width: 0.95rem;
+    height: 0.95rem;
+    border-radius: 50%;
+    background: #fff;
+    border: 3px solid var(--mkt-tone);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    transform: translate(-50%, -50%);
+}
+
+.show-vehicle .vdp-mkt-scale {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: #6b7280;
+}
+
+.show-vehicle .vdp-mkt-avg {
+    margin-top: 0.35rem;
+    font-size: 0.6875rem;
+    color: #9ca3af;
+}
+
+@media (max-width: 520px) {
+    .show-vehicle .vdp-price-hero {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .show-vehicle .vdp-share-btn.vdp-share-btn--icon {
+        top: 1.5rem;
+        transform: none;
+    }
+}
+
+/* Submit and Carfax, side by side. */
+.show-vehicle .vdp-submit-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.6rem;
+    align-items: stretch;
+}
+
+.show-vehicle .vdp-submit-row.has-carfax {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.show-vehicle .vdp-carfax {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.75rem;
+    overflow: hidden;
+    border-radius: 0.625rem;
+    background: #fff;
+    border: 1px solid var(--vdp-line);
+    transition: box-shadow 0.15s;
+}
+
+.show-vehicle .vdp-carfax:hover {
+    box-shadow: 0 2px 8px rgba(16, 12, 40, 0.1);
+}
+
+.show-vehicle .vdp-carfax img {
+    height: 2.5rem;
+    max-width: 100%;
+}
+
+/* ── The row under the gallery: Get Pre-Approved and the estimator ── */
+.show-vehicle .vdp-money-row {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.75fr);
+}
+
+@media (max-width: 1099px) {
+    .show-vehicle .vdp-money-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+.show-vehicle .vdp-pre {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    padding: 1.25rem;
+    border: 1px solid var(--vdp-line);
+    border-radius: 1rem;
+    background: #fff;
+    box-shadow: var(--vdp-card-shadow);
+}
+
+.show-vehicle .vdp-pre-form {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.7rem 0.75rem;
+    margin-top: 1rem;
+}
+
+@media (max-width: 420px) {
+    .show-vehicle .vdp-pre-form {
+        grid-template-columns: 1fr;
+    }
+}
+
+.show-vehicle .vdp-pre-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    min-width: 0;
+    margin: 0;
+}
+
+.show-vehicle .vdp-pre-field > span {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--vdp-ink);
+}
+
+.show-vehicle .vdp-pre-field b {
+    color: #dc2626;
+}
+
+.show-vehicle .vdp-pre-field input,
+.show-vehicle .vdp-pre-field select {
+    width: 100%;
+    height: 2.5rem;
+    padding: 0 0.7rem;
+    border-radius: 0.5rem;
+    font-size: 0.8125rem;
+    color: var(--vdp-ink);
+    background: #fff;
+    border: 1px solid var(--vdp-ink);
+}
+
+.show-vehicle .vdp-pre-field select {
+    appearance: none;
+    padding-right: 2rem;
+    background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%236b6880' stroke-width='2'%3E%3Cpath d='M5 8l5 5 5-5'/%3E%3C/svg%3E") no-repeat right 0.65rem center / 0.9rem;
+}
+
+.show-vehicle .vdp-pre-field input:focus,
+.show-vehicle .vdp-pre-field select:focus {
+    outline: none;
+    border-color: var(--vdp-primary);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--vdp-primary) 18%, transparent);
+}
+
+.show-vehicle .vdp-pre-field input:user-invalid,
+.show-vehicle .vdp-pre-field select:user-invalid {
+    border-color: #dc2626;
+}
+
+.show-vehicle .vdp-pre-btn,
+.show-vehicle .vdp-pay-cta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.7rem 1rem;
+    border-radius: 0.625rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #fff;
+    background: var(--vdp-grad);
+    transition: filter 0.15s;
+}
+
+.show-vehicle .vdp-pre-btn {
+    grid-column: 1 / -1;
+    margin-top: 0.35rem;
+}
+
+.show-vehicle .vdp-pre-btn:hover,
+.show-vehicle .vdp-pay-cta:hover {
+    color: #fff;
+    filter: brightness(1.08);
+}
+
+/* The estimator: three numbered steps, then the payment and its breakdown. */
+.show-vehicle .vdp-pay-grid {
+    grid-template-columns: minmax(0, 1fr) 13.5rem;
+    gap: 1.25rem;
+    margin-top: 1rem;
+}
+
+@media (max-width: 640px) {
+    .show-vehicle .vdp-pay-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.show-vehicle .vdp-pay-step + .vdp-pay-step {
+    margin-top: 1rem;
+}
+
+.show-vehicle .vdp-pay-step > .vdp-pay-eyebrow,
+.show-vehicle .vdp-pay-step .vdp-pay-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-bottom: 0.45rem;
+}
+
+.show-vehicle .vdp-pay-eyebrow i {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.125rem;
+    height: 1.125rem;
+    border-radius: 50%;
+    font-style: normal;
+    font-size: 0.625rem;
+    color: var(--vdp-primary);
+    background: color-mix(in srgb, var(--vdp-primary) 12%, #ffffff);
+}
+
+.show-vehicle .vdp-pay .vdp-pay-tier.is-on {
+    color: var(--vdp-primary);
+    background: color-mix(in srgb, var(--vdp-primary) 9%, #ffffff);
+    border-color: color-mix(in srgb, var(--vdp-primary) 55%, #ffffff);
+}
+
+.show-vehicle .vdp-pay .vdp-pay-tier.is-on small {
+    color: var(--vdp-primary);
+}
+
+.show-vehicle .vdp-pay-terms {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0;
+    background: none;
+}
+
+.show-vehicle .vdp-pay-term {
+    padding: 0.5rem;
+    border-radius: 9999px;
+    color: var(--vdp-ink);
+    background: #fff;
+    border: 1px solid var(--vdp-line);
+}
+
+.show-vehicle .vdp-pay-term.is-on {
+    color: #fff;
+    background: var(--vdp-grad);
+    border-color: transparent;
+    box-shadow: none;
+}
+
+.show-vehicle .vdp-pay-down .vdp-pay-eyebrow {
+    margin-bottom: 0;
+}
+
+.show-vehicle .vdp-pay-down input[type="range"] {
+    accent-color: var(--vdp-primary);
+}
+
+.show-vehicle .vdp-pay-down-ends {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.6875rem;
+    color: var(--vdp-muted);
+}
+
+.show-vehicle .vdp-pay .vdp-pay-summary {
+    justify-content: flex-start;
+    gap: 0.2rem;
+    padding: 1rem;
+    border-radius: 0.875rem;
+    color: var(--vdp-ink);
+    background: color-mix(in srgb, var(--vdp-primary) 4%, #ffffff);
+    border: 1px solid color-mix(in srgb, var(--vdp-primary) 35%, #ffffff);
+}
+
+.show-vehicle .vdp-pay-summary > .vdp-pay-eyebrow {
+    color: var(--vdp-primary);
+}
+
+.show-vehicle .vdp-pay .vdp-pay-amount {
+    color: var(--vdp-primary);
+}
+
+.show-vehicle .vdp-pay-break {
+    margin: 0.6rem 0 0;
+    font-size: 0.75rem;
+}
+
+.show-vehicle .vdp-pay-break > div {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.3rem 0;
+    border-bottom: 1px dashed var(--vdp-line);
+}
+
+.show-vehicle .vdp-pay-break dt {
+    font-weight: 500;
+    color: var(--vdp-muted);
+}
+
+.show-vehicle .vdp-pay-break dd {
+    margin: 0;
+    font-weight: 600;
+    color: var(--vdp-ink);
+}
+
+.show-vehicle .vdp-pay-break > .is-total {
+    border-bottom: 0;
+}
+
+.show-vehicle .vdp-pay-break > .is-total dt,
+.show-vehicle .vdp-pay-break > .is-total dd {
+    font-weight: 800;
+    color: var(--vdp-ink);
+}
+
+.show-vehicle .vdp-pay .vdp-pay-cta {
+    margin-top: auto;
+}
+
+/* Spacing (QA: as the reference site, :8004): the page's blocks keep their own gaps — no halved spacing. The pinned
+   title pill keeps a full-width page-coloured backdrop over its 1rem margin, so the page doesn't show beside or
+   under it while scrolling: a huge spread shadow clipped to the band's height, the page's colour. */
+.show-vehicle .vdp-band {
+    box-shadow: var(--vdp-card-shadow), 0 0 0 100vmax #f6f6f8;
+    clip-path: inset(-1rem -100vmax);
+}
+
+/* The title band spans the section's width (ADR-0176, QA: aligned with the section under it), not a centred pill
+   as wide as its contents. Three columns: Back to Inventory at the left edge, the title at the band's centre (QA:
+   "the vehicle title is center"), the miles pill, Call Us and I'm Interested (.vdp-band-end) at the right edge.
+   The two outer columns share the rest equally (1fr each), so the title is centred on the band whatever the
+   buttons' widths. Each outer column is at least its contents, so a long title wraps (centred) rather than running
+   under the buttons. Desktop; below 1024px the band wraps as before and .vdp-band-end steps aside. */
+.show-vehicle .vdp-band-end {
+    display: contents;
+}
+
+@media (min-width: 1024px) {
+    .show-vehicle .vdp-band {
+        width: auto;
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    .show-vehicle .vdp-band-row {
+        display: grid;
+        grid-template-columns: minmax(max-content, 1fr) auto minmax(max-content, 1fr);
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .show-vehicle .vdp-band-back {
+        justify-self: start;
+    }
+
+    .show-vehicle .vdp-band-main {
+        text-align: center;
+    }
+
+    .show-vehicle .vdp-band-end {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 1rem;
+        min-width: 0;
+    }
+}
+
+/* Side padding (QA: as the reference site, :8004): the containers keep their 1280px cap, centered — no full-width
+   16px gutter. Same on the home (template-1 theme) and inventory (srp-theme) pages. */
+
+/* ══ The sales vehicle page mock-up (layout only) ═══════════════════════════════════════════════════════════════
+   The price header: just the price, centred (no "Our price"), Share at the right. The row under the gallery opens
+   with "Financing Made Simple", the home page's dark financing card. */
+.show-vehicle .vdp-price-hero:not(.has-mkt) {
+    justify-content: center;
+    padding: 1.1rem 3.75rem;
+    background: linear-gradient(120deg, color-mix(in srgb, var(--vdp-primary) 62%, #ffffff), color-mix(in srgb, var(--vdp-primary) 85%, #ffffff));
+}
+
+.show-vehicle .vdp-price-hero:not(.has-mkt) .vdp-price-hero-main {
+    align-items: center;
+    text-align: center;
+}
+
+.show-vehicle .vdp-price-hero .vdp-price-hero-lbl {
+    display: none;
+}
+
+.show-vehicle .vdp-promo {
+    position: relative;
+    display: flex;
+    min-height: 20rem;
+    overflow: hidden;
+    border-radius: 1rem;
+    background: color-mix(in srgb, var(--vdp-primary) 24%, #0e0a1f);
+    box-shadow: 0 18px 40px -20px rgba(14, 10, 31, 0.7);
+}
+
+.show-vehicle .vdp-promo-img {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 75%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 40% center;
+}
+
+/* The photo fades into the dark card from the left. */
+.show-vehicle .vdp-promo::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(90deg,
+        color-mix(in srgb, var(--vdp-primary) 24%, #0e0a1f) 30%,
+        color-mix(in srgb, color-mix(in srgb, var(--vdp-primary) 24%, #0e0a1f) 55%, transparent) 65%,
+        transparent 100%);
+}
+
+.show-vehicle .vdp-promo-body {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1rem;
+    padding: 2rem;
+    max-width: 22rem;
+    color: #fff;
+}
+
+.show-vehicle .vdp-promo-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    width: fit-content;
+    padding: 0.35rem 0.8rem;
+    border-radius: 9999px;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.show-vehicle .vdp-promo-title {
+    margin: 0;
+    font-family: 'Outfit', 'Inter', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1.1;
+    color: #fff;
+}
+
+.show-vehicle .vdp-promo-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 0.9375rem;
+}
+
+.show-vehicle .vdp-promo-list li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.show-vehicle .vdp-promo-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: fit-content;
+    margin-top: 0.5rem;
+    padding: 0.75rem 1.4rem;
+    border-radius: 0.625rem;
+    font-weight: 700;
+    color: color-mix(in srgb, var(--vdp-primary) 85%, #000000);
+    background: #fff;
+    box-shadow: 0 10px 24px -10px rgba(0, 0, 0, 0.45), 0 0 0 3px rgba(255, 255, 255, 0.14);
+    transition: filter 0.15s;
+}
+
+.show-vehicle .vdp-promo-btn:hover {
+    color: color-mix(in srgb, var(--vdp-primary) 85%, #000000);
+    filter: brightness(0.96);
+}
+
+@media (max-width: 640px) {
+    .show-vehicle .vdp-promo-img {
+        width: 100%;
+        opacity: 0.45;
+    }
+
+    .show-vehicle .vdp-promo-body {
+        padding: 1.5rem;
+    }
+}
+/* ══ The VDP mock-up (QA, the latest pass) ══════════════════════════════════════════════════════════════════════
+   1. The top is one white card: the gallery, its thumbnails and the price panel inside it, instead of three cards. */
+.show-vehicle .vdp-main-grid {
+    padding: 0.875rem;
+    border: 1px solid var(--vdp-line);
+    border-radius: 1rem;
+    background: #fff;
+    box-shadow: var(--vdp-card-shadow);
+}
+
+.show-vehicle .vdp-main-img-wrap {
+    border: 0;
+}
+
+.show-vehicle .vdp-thumbs-card,
+.show-vehicle .vdp-price-panel {
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.show-vehicle .vdp-thumbs-card {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+/* 2. Appearance & ID: VIN and Stock # side by side, two a row as the other specs. */
+.show-vehicle .vdp-details-group .vdp-details-row--id {
+    grid-column: auto;
+}
+
+/* Half width, so the VIN keeps to one line (the mock-up): a touch smaller, never wrapped. */
+.show-vehicle .vdp-details-group .vdp-details-row--id .vdp-details-text {
+    font-size: 0.8125rem;
+    white-space: nowrap;
+}
+
+/* The thumbnails are square (QA), the whole car shown in each (contain, on the gallery's grey) instead of cropped;
+   "+N Photos" square too. */
+.show-vehicle .vdp-thumb,
+.show-vehicle .vdp-thumb-more {
+    aspect-ratio: 1 / 1;
+}
+
+.show-vehicle .vdp-thumb img {
+    object-fit: contain;
+}
+
+/* "+N Photos" takes the same 2px border as the photos (transparent), so all five are the same size. */
+.show-vehicle .vdp-thumb-more {
+    border: 2px solid transparent;
+}
+
+/* The thumbnail strip scrolls (ADR-0175, QA): every photo in one row, five in view, a thin scrollbar under them,
+   and the strip slides by dragging (mouse, view-vehicle-information's script) or swiping (touch). Starts at the
+   left, not centred, so the first photo is always first. */
+.show-vehicle .vdp-thumbs-card .vdp-thumbs {
+    justify-content: flex-start;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    padding-bottom: 0.5rem;
+    cursor: grab;
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--vdp-ink) 30%, transparent) transparent;
+}
+
+.show-vehicle .vdp-thumbs-card .vdp-thumbs::-webkit-scrollbar {
+    height: 6px;
+}
+
+.show-vehicle .vdp-thumbs-card .vdp-thumbs::-webkit-scrollbar-thumb {
+    border-radius: 9999px;
+    background: color-mix(in srgb, var(--vdp-ink) 30%, transparent);
+}
+
+.show-vehicle .vdp-thumbs-card .vdp-thumbs::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* Five across, whatever the photo count: each a fifth of the strip, less the gaps (0.5rem). */
+.show-vehicle .vdp-thumbs-card .vdp-thumb {
+    flex: 0 0 calc((100% - 2rem) / 5);
+}
+
+.show-vehicle .vdp-thumbs-card .vdp-thumbs.is-dragging {
+    cursor: grabbing;
+    user-select: none;
+}
+
+/* Financing Made Simple (QA, as the home card): the couple photo across the whole card, the couple kept in view
+   at the right, under a dark purple tint — strong at the left behind the text, nearly clear at the right. */
+.show-vehicle .vdp-promo-img {
+    width: 100%;
+    opacity: 1;
+    object-position: 70% center;
+}
+
+.show-vehicle .vdp-promo::before {
+    background: linear-gradient(90deg, rgba(30, 18, 64, 0.94) 0%, rgba(38, 22, 80, 0.82) 38%, rgba(46, 26, 96, 0.38) 68%, rgba(46, 26, 96, 0.12) 100%);
+}
+
+/* About This Vehicle (QA's design): the heading and its line across the whole card, over Ready to drive it?; the
+   card beside the vehicle's name, not the heading; the one plain sentence in the body text. */
+.show-vehicle .vdp-about-heading {
+    grid-column: 1 / -1;
+    margin: 0 0 0.75rem;
+    padding: 1.5rem 1.5rem 0;
+}
+
+/* Under the heading, so its own top padding goes; Ready to drive it? starts level with the vehicle's name. */
+.show-vehicle .vdp-about-heading ~ .vdp-about-panel {
+    padding-top: 0;
+}
+
+.show-vehicle .vdp-about-heading ~ .vdp-drive-cta {
+    margin-top: 0;
+}
+
+/* The description, collapsed (QA: "do not cut the letters, just the text"): whole lines only, never half a line —
+   the first two paragraphs, each to two lines ending in "…", the rest hidden; a description with no paragraphs, to
+   three lines. Same font, spacing and paragraphs as when it's open. Read more shows it all. */
+.show-vehicle .vdp-about-desc {
+    display: block;
+    -webkit-line-clamp: unset;
+    max-height: none;
+    overflow: visible;
+}
+
+.show-vehicle .vdp-about-desc p {
+    display: block;
+    margin: 0 0 0.6rem;
+}
+
+.show-vehicle .vdp-about-desc:not(.is-open) p {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+}
+
+/* Everything after the second paragraph with text (the description's empty <p><br></p> spacers don't count; the one
+   between the two stays, as when open). */
+.show-vehicle .vdp-about-desc:not(.is-open) p:not(:has(> br:only-child)) ~ p:not(:has(> br:only-child)) ~ p {
+    display: none;
+}
+
+.show-vehicle .vdp-about-desc:not(.is-open):not(:has(p)) {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+}
+
+/* Appearance & ID (QA): the VIN on one line, its column as wide as it needs; Stock # (and Interior Color above it)
+   take the rest of the row. */
+.show-vehicle .vdp-details-group:has(.vdp-details-row--id) .vdp-details-tiles {
+    grid-template-columns: max-content minmax(0, 1fr);
+}
+
+/* The price panel's tiles (QA): the VIN on one line, in full — its column as wide as it needs (Mileage and Ext. Color
+   above it share it), Drivetrain, Int. Color and Stock # take the rest. On a phone the VIN tile takes the whole row. */
+.show-vehicle .vdp-vh-grid:has(.vdp-copy[aria-label="Copy VIN"]) {
+    grid-template-columns: max-content minmax(0, 1fr);
+}
+
+.show-vehicle .vdp-vh-item:has(.vdp-copy[aria-label="Copy VIN"]) .vdp-vh-val > span {
+    overflow: visible;
+    text-overflow: clip;
+}
+
+@media (max-width: 640px) {
+    .show-vehicle .vdp-vh-grid:has(.vdp-copy[aria-label="Copy VIN"]) {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+
+    .show-vehicle .vdp-vh-item:has(.vdp-copy[aria-label="Copy VIN"]) {
+        grid-column: 1 / -1;
+    }
+}
+
+/* 3. Ready to drive it?: Schedule Test Drive is the dark button. */
+.show-vehicle .vdp-drive-cta-btn--white,
+.show-vehicle .vdp-drive-cta-btn--white:hover {
+    color: #fff;
+    background: #141626;
+}
+
+/* ══ Photo lightbox (ADR-0177, the UI designer's mock-up) ════════════════════════════════════════════════════════
+   Over the page, which shows blurred and dimmed behind it: the title and a "1 / N" pill at the top left, a round
+   white close at the top right; the photo in a rounded light-grey frame (the whole car, contained) with round white
+   prev / next just outside its sides; the thumbnails in a row underneath, the current one outlined in white. */
+.show-vehicle .vdp-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem 4.5rem;
+    user-select: none;
+}
+
+.show-vehicle .vdp-lightbox.hidden {
+    display: none;
+}
+
+.show-vehicle .vdp-lb-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(18, 14, 34, 0.62);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+}
+
+.show-vehicle .vdp-lb-dialog {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    width: min(100%, 62rem);
+    max-height: 100%;
+}
+
+.show-vehicle .vdp-lb-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.show-vehicle .vdp-lb-title {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-width: 0;
+    font-family: 'Outfit', 'Inter', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
+}
+
+.show-vehicle .vdp-lb-title-text {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.show-vehicle .vdp-lb-count {
+    flex-shrink: 0;
+    padding: 0.15rem 0.55rem;
+    border-radius: 9999px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.18);
+}
+
+.show-vehicle .vdp-lb-close,
+.show-vehicle .vdp-lb-nav {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border-radius: 9999px;
+    color: var(--vdp-ink);
+    background: #fff;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+    transition: background-color 0.15s;
+}
+
+.show-vehicle .vdp-lb-close {
+    width: 2.25rem;
+    height: 2.25rem;
+    font-size: 1.15rem;
+}
+
+.show-vehicle .vdp-lb-close:hover,
+.show-vehicle .vdp-lb-nav:hover {
+    background: #f1f1f4;
+}
+
+.show-vehicle .vdp-lb-stage {
+    position: relative;
+}
+
+.show-vehicle .vdp-lb-frame {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: min(68vh, 40rem);
+    border-radius: 1rem;
+    overflow: hidden;
+    background: #e9e9ed;
+}
+
+.show-vehicle .vdp-lb-frame .zoom-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.show-vehicle .vdp-lb-nav {
+    position: absolute;
+    top: 50%;
+    width: 2.75rem;
+    height: 2.75rem;
+    font-size: 1.15rem;
+    transform: translateY(-50%);
+}
+
+.show-vehicle .vdp-lb-nav--prev {
+    left: -3.75rem;
+}
+
+.show-vehicle .vdp-lb-nav--next {
+    right: -3.75rem;
+}
+
+.show-vehicle .vdp-lb-thumbs {
+    display: flex;
+    justify-content: safe center;
+    gap: 0.5rem;
+    overflow-x: auto;
+    padding-bottom: 0.25rem;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.35) transparent;
+}
+
+.show-vehicle .vdp-lb-thumb {
+    flex: 0 0 auto;
+    width: 4.5rem;
+    height: 3.25rem;
+    padding: 0;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    border: 2px solid transparent;
+    background: #e9e9ed;
+    opacity: 0.65;
+    transition: opacity 0.15s, border-color 0.15s;
+}
+
+.show-vehicle .vdp-lb-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.show-vehicle .vdp-lb-thumb:hover {
+    opacity: 0.9;
+}
+
+.show-vehicle .vdp-lb-thumb.active {
+    opacity: 1;
+    border-color: #fff;
+}
+
+/* Narrow screens: no room beside the frame, so prev / next sit just inside its edges. */
+@media (max-width: 767px) {
+    .show-vehicle .vdp-lightbox {
+        padding: 1rem;
+    }
+
+    .show-vehicle .vdp-lb-frame {
+        height: min(60vh, 26rem);
+    }
+
+    .show-vehicle .vdp-lb-nav--prev {
+        left: 0.6rem;
+    }
+
+    .show-vehicle .vdp-lb-nav--next {
+        right: 0.6rem;
+    }
+}
+
+/* ── view-vehicle-header.blade.php ── */
+.vdp-action-bar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #e5e7eb;
+    margin-bottom: 0.75rem;
+    position: sticky;
+    top: 57px;
+    z-index: 40;
+    background: white;
+}
+
+
+.vdp-action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.25rem;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    border: 2px solid #d1d5db;
+    background: white;
+    color: #374151;
+    transition: all 0.15s;
+    white-space: nowrap;
+}
+
+.vdp-action-btn:hover {
+    border-color: #9ca3af;
+    color: #111827;
+}
+
+.vdp-action-btn.primary {
+    background: var(--company-primary-base, #1d4ed8);
+    border-color: var(--company-primary-base, #1d4ed8);
+    color: white;
+    justify-content: center;
+}
+
+.vdp-action-btn.primary:hover {
+    opacity: 0.9;
+    color: white;
+}
+
+.vdp-action-btn .ion-icon {
+    font-size: 1rem;
+}
+
+.vdp-action-btns {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    justify-content: space-between;
+    width: 100%;
+    flex-shrink: 0;
+}
+
+.vdp-action-bar .vdp-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+    text-align: center;
+    line-height: 1.3;
+}
+
+.vdp-breadcrumb {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    font-size: 0.8rem;
+    color: #6b7280;
+    margin-bottom: 1rem;
+}
+
+.vdp-breadcrumb a {
+    color: #6b7280;
+    text-decoration: none;
+}
+
+.vdp-breadcrumb a:hover {
+    color: var(--company-primary-base, #1d4ed8);
+}
+
+.vdp-breadcrumb .active {
+    color: var(--company-primary-base, #1d4ed8);
+    font-weight: 500;
+}
+
+.vdp-breadcrumb .ion-icon {
+    font-size: 0.75rem;
+    color: #9ca3af;
+}
+
+.vdp-interested-short {
+    display: none;
+}
+
+#vdp-scroll-grid {
+    display: none;
+    opacity: 0;
+    transform: translateY(-8px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+#vdp-scroll-grid.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ---- Clean modern scroll strip ---- */
+#vdp-scroll-grid.is-visible {
+    display: flex;
+}
+
+.vdp-mini {
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+}
+
+.vdp-mini-img {
+    width: 4rem;
+    height: 4rem;
+    flex-shrink: 0;
+    object-fit: cover;
+    border-radius: 0.6rem;
+    background: #f3f4f6;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.vdp-mini-body {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    min-width: 0;
+    gap: 1.25rem;
+}
+
+/* price block */
+.vdp-mini-price {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    flex-shrink: 0;
+}
+
+.vdp-mini-main {
+    font-size: 1.1rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: #111827;
+    line-height: 1;
+}
+
+.vdp-mini-sub {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.vdp-mini-label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--company-primary-base, #1d4ed8);
+}
+
+.vdp-mini-label span {
+    font-weight: 400;
+    color: #9ca3af;
+}
+
+.vdp-mini-great-price {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    background: #dcfce7;
+    color: #16a34a;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 0.1rem 0.45rem;
+    border-radius: 999px;
+}
+
+.vdp-mini-below-market {
+    font-size: 0.7rem;
+    color: #6b7280;
+}
+
+/* vertical divider between sections */
+.vdp-mini-divider {
+    width: 2px;
+    height: 2.5rem;
+    align-self: center;
+    background: #d1d5db;
+    border-radius: 999px;
+    flex-shrink: 0;
+}
+
+/* spec chips */
+.vdp-mini-specs {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.vdp-mini-spec {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+/* pill divider between each spec */
+.vdp-mini-spec+.vdp-mini-spec::before {
+    content: "";
+    position: absolute;
+    left: -0.625rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 2px;
+    height: 2.5rem;
+    background: #d1d5db;
+    border-radius: 999px;
+}
+
+.vdp-mini-spec-val {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.vdp-mini-spec-val--lg {
+    font-size: 1.4rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1;
+}
+
+.vdp-mini-spec-lbl {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #9ca3af;
+}
+
+/* location pinned right */
+.vdp-mini-loc {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    margin-left: auto;
+    flex-shrink: 0;
+    max-width: 40%;
+    padding: 0.35rem 0.6rem;
+    border-radius: 0.5rem;
+    transition: background 0.15s;
+}
+
+.vdp-mini-loc:hover {
+    background: #f3f4f6;
+}
+
+.vdp-mini-loc-icon {
+    width: 1.9rem;
+    height: 1.9rem;
+    background: #f3f4f6;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 1rem;
+    color: var(--company-primary-base, #1d4ed8);
+}
+
+.vdp-mini-loc-val {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #111827;
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.vdp-mini-loc-lbl {
+    font-size: 0.68rem;
+    color: #6b7280;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ---- Responsive scroll strip ---- */
+/* Tablet / small desktop: tighten spacing, drop the least useful spec */
+@media (max-width: 900px) {
+    .vdp-mini {
+        gap: 0.75rem;
+    }
+
+    .vdp-mini-body {
+        gap: 0.9rem;
+    }
+
+    .vdp-mini-specs {
+        gap: 0.9rem;
+    }
+
+    .vdp-mini-opt--style {
+        display: none;
+    }
+
+    .vdp-mini-loc {
+        max-width: 32%;
+    }
+}
+
+/* Large phones: keep image + price + mileage + location */
+@media (max-width: 640px) {
+    .vdp-mini-body {
+        gap: 0.75rem;
+    }
+
+    .vdp-mini-specs {
+        gap: 0.75rem;
+    }
+
+    .vdp-mini-main {
+        font-size: 1rem;
+    }
+
+    .vdp-mini-img {
+        width: 3.25rem;
+        height: 3.25rem;
+    }
+
+    .vdp-mini-opt--drivetrain {
+        display: none;
+    }
+
+    .vdp-mini-loc {
+        max-width: 45%;
+    }
+
+    .vdp-mini-loc-lbl {
+        display: none;
+    }
+}
+
+/* Small phones: price + location only, hide remaining specs */
+@media (max-width: 460px) {
+    .vdp-mini {
+        gap: 0.6rem;
+    }
+
+    .vdp-mini-body {
+        gap: 0.6rem;
+    }
+
+    .vdp-mini-opt--mileage {
+        display: none;
+    }
+
+    .vdp-mini-main {
+        font-size: 0.95rem;
+    }
+
+    .vdp-mini-loc-icon {
+        display: none;
+    }
+
+    .vdp-mini-loc {
+        max-width: 55%;
+        padding: 0.25rem 0.35rem;
+    }
+}
+
+@media (max-width: 640px) {
+    .vdp-action-bar {
+        gap: 0.5rem;
+    }
+
+    .vdp-action-btn:not(.primary) {
+        flex: 0 0 auto;
+        padding: 0.6rem 0.75rem;
+    }
+
+    .vdp-action-btn.primary {
+        padding: 0.6rem 0.75rem;
+        font-size: 0.8rem;
+    }
+
+    .responsive-mobile-label {
+        display: none;
+    }
+
+    .vdp-interested-full {
+        display: none;
+    }
+
+    .vdp-interested-short {
+        display: inline;
+    }
+}
+
+/* ── view-vehicle-information.blade.php ── */
+/* ── Title strip ──────────────────────────────── */
+.vdp-title-wrap {
+    margin-bottom: 1rem;
+}
+
+.vdp-title-row {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #e5e7eb;
+    position: sticky;
+    top: 105px;
+    z-index: 40;
+    background: white;
+}
+
+.vdp-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #111827;
+    line-height: 1.2;
+    margin: 0 0 0.3rem;
+}
+
+.vdp-specs {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 0.25rem 0;
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.vdp-specs span {
+    display: inline-flex;
+    align-items: center;
+}
+
+.vdp-specs span::after {
+    content: '•';
+    margin: 0 0.4rem;
+    color: #d1d5db;
+}
+
+.vdp-specs span:last-child::after {
+    display: none;
+}
+
+.vdp-save-share {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.vdp-save-share button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: white;
+    border: 1.5px solid #374151;
+    cursor: pointer;
+    color: #374151;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.45rem 1rem;
+    border-radius: 9999px;
+    transition: background 0.15s, color 0.15s;
+    white-space: nowrap;
+}
+
+.vdp-save-share button .ion-icon {
+    font-size: 1rem;
+}
+
+.vdp-save-share button:hover {
+    background: #f3f4f6;
+}
+
+/* ── Two-column layout ───────────────────────── */
+.vdp-main-grid {
+    display: grid;
+    grid-template-columns: 6fr 4fr;
+    gap: 1.5rem;
+    align-items: start;
+    margin-bottom: 1.5rem;
+}
+
+.vdp-right-col {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    min-width: 0;
+}
+
+@media (max-width: 991px) {
+    .vdp-main-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ── Gallery ─────────────────────────────────── */
+.vdp-gallery {
+    position: relative;
+}
+
+.vdp-gallery-badge {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    background: #16a34a;
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    padding: 0.2rem 0.55rem;
+    border-radius: 0.25rem;
+    z-index: 5;
+    text-transform: uppercase;
+}
+
+.vdp-gallery-actions {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    display: flex;
+    gap: 0.4rem;
+    z-index: 5;
+}
+
+.vdp-gallery-icon-btn {
+    width: 2rem;
+    height: 2rem;
+    background: white;
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, .2);
+    font-size: 1rem;
+    color: #374151;
+}
+
+.vdp-gallery-icon-btn:hover {
+    background: #f3f4f6;
+}
+
+.vdp-main-img-wrap {
+    position: relative;
+    background: #e0e0e0;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    aspect-ratio: 4/3;
+}
+
+.vdp-main-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    cursor: pointer;
+    background: #e0e0e0;
+}
+
+.vdp-gallery-counter {
+    position: absolute;
+    bottom: 0.75rem;
+    left: 0.75rem;
+    background: rgba(0, 0, 0, .55);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.2rem 0.6rem;
+    border-radius: 9999px;
+    z-index: 5;
+}
+
+/* Thumbnails */
+.vdp-thumbs {
+    display: flex;
+    gap: 0.4rem;
+    margin-top: 0.5rem;
+}
+
+.vdp-thumb {
+    flex: 1;
+    aspect-ratio: 4/3;
+    border-radius: 0.25rem;
+    overflow: hidden;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: border-color 0.15s;
+    background: #e0e0e0;
+}
+
+.vdp-thumb.active {
+    border-color: var(--company-primary-base, #1d4ed8);
+}
+
+.vdp-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.vdp-thumb-more {
+    flex: 1;
+    aspect-ratio: 4/3;
+    border-radius: 0.25rem;
+    overflow: hidden;
+    cursor: pointer;
+    position: relative;
+    background: #111;
+}
+
+.vdp-thumb-more img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.5;
+}
+
+.vdp-thumb-more-lbl {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+/* Sale Pending ribbon */
+.vdp-sale-pending {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100px;
+    height: 100px;
+    overflow: hidden;
+    z-index: 10;
+}
+
+.vdp-sale-pending span {
+    position: absolute;
+    transform: rotate(45deg);
+    background: var(--company-primary-base, #1d4ed8);
+    color: white;
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-align: center;
+    width: 140px;
+    right: -35px;
+    top: 25px;
+    padding: 2px 0;
+}
+
+/* ── Price panel ─────────────────────────────── */
+.vdp-price-panel {
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    background: white;
+}
+
+.vdp-price-top {
+    padding: 1.25rem 1.25rem 1rem;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.vdp-price-top--grid {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    text-align: center;
+    width: 100%;
+}
+.vdp-price-loc-wrap {
+    display: flex;
+    justify-content: center;
+}
+.vdp-price-location {
+    text-decoration: none;
+    width: fit-content;
+}
+.vdp-price-location > div:not(.vdp-vh-icon) {
+    flex: none;
+    text-align: left;
+}
+@media (min-width: 768px) {
+    .vdp-price-top--grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem 0.5rem;
+        align-items: end;
+        text-align: left;
+    }
+    .vdp-price-loc-wrap {
+        justify-content: flex-start;
+    }
+    .vdp-price-location > div:not(.vdp-vh-icon) {
+        flex: 1;
+    }
+}
+
+.vdp-price-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 0.4rem;
+}
+
+.vdp-price-main {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #111827;
+    line-height: 1;
+}
+
+.vdp-price-monthly {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--company-primary-base, #1d4ed8);
+}
+
+.vdp-price-monthly small {
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: #6b7280;
+    display: block;
+    text-align: right;
+}
+
+.vdp-great-price {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    background: #dcfce7;
+    color: #16a34a;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.2rem 0.5rem;
+    border-radius: 0.25rem;
+    margin-bottom: 0.25rem;
+}
+
+.vdp-below-market {
+    font-size: 0.8rem;
+    color: #6b7280;
+    margin-top: 0.2rem;
+}
+
+.vdp-panel-btns {
+    padding: 0.75rem 1.25rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+/* Box model (padding/radius/font/bg) comes from the global
+   .btn-pill / .btn-pill-light classes; this just keeps the
+   icon+title/subtitle+arrow layout this button needs. */
+.vdp-panel-btn { gap: 0.75rem; }
+
+.vdp-panel-btn.outline {
+    border: 1.5px solid var(--company-primary-base, #1d4ed8);
+    color: var(--company-primary-base, #1d4ed8);
+    background: white;
+}
+
+.vdp-panel-btn.outline:hover {
+    background: #f0f4ff;
+    color: var(--company-primary-base, #1d4ed8);
+}
+
+.vdp-panel-btn-icon {
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, .2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.vdp-panel-btn.outline .vdp-panel-btn-icon {
+    background: #111827;
+    color: white;
+    border-radius: 50%;
+}
+
+.vdp-panel-btn-text {
+    flex: 1;
+}
+
+.vdp-panel-btn-text strong {
+    display: block;
+}
+
+.vdp-panel-btn-text small {
+    font-weight: 400;
+    opacity: 0.85;
+}
+
+.vdp-panel-btn .ion-icon.arrow {
+    margin-left: auto;
+    font-size: 1rem;
+}
+
+.vdp-have-questions {
+    padding: 0.75rem 1.25rem;
+    border-top: 1px solid #f3f4f6;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.vdp-have-questions-text strong {
+    display: block;
+    font-size: 0.875rem;
+    color: #111827;
+}
+
+.vdp-have-questions-text span {
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+
+.vdp-have-questions-phone {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.vdp-phone-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.vdp-phone-link {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--company-primary-base, #1d4ed8);
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.vdp-phone-label {
+    font-size: 0.7rem;
+    color: #6b7280;
+    white-space: nowrap;
+}
+
+.vdp-phone-btn {
+    width: 2.25rem;
+    height: 2.25rem;
+    background: white;
+    border: 2px solid var(--company-primary-base, #1d4ed8);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--company-primary-base, #1d4ed8);
+    font-size: 1rem;
+    text-decoration: none;
+    flex-shrink: 0;
+}
+
+/* ── Vehicle Highlights inside price panel ── */
+.vdp-vh-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem 0.5rem;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.vdp-vh-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    overflow: hidden;
+}
+
+.vdp-vh-item > div:not(.vdp-vh-icon) {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.vdp-vh-icon {
+    width: 1.75rem;
+    height: 1.75rem;
+    background: #f3f4f6;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 0.85rem;
+    color: #111827;
+}
+
+.vdp-vh-val {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #111827;
+    line-height: 1.2;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.vdp-vh-lbl {
+    font-size: 0.68rem;
+    color: #6b7280;
+    margin-top: 0.05rem;
+}
+
+.vdp-price-location .vdp-vh-val { color: #111827; }
+.vdp-price-location .vdp-vh-lbl { color: #6b7280; }
+
+/* ── show.blade.php: Vehicle Highlights ── */
+    .vdp-section { margin-bottom: 2rem; }
+    .vdp-section-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #000000;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    /* ── Vehicle Details card (full width) ── */
+    .vdp-hl-details-card {
+        border: 1px solid #e5e7eb;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        background: white;
+        margin-bottom: 2rem;
+    }
+
+    .vdp-details-panel { padding: 1.5rem; }
+
+    /* Details table */
+    .vdp-details-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 0 1.5rem;
+    }
+    .vdp-details-grid--2col { grid-template-columns: 1fr 1fr; }
+    .vdp-details-grid--1col { grid-template-columns: 1fr; }
+    @media (max-width: 767px) { .vdp-details-grid { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 639px) { .vdp-details-grid { grid-template-columns: 1fr; } }
+
+    .vdp-details-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.6rem 0;
+        border-bottom: 1px solid #f3f4f6;
+        font-size: 0.85rem;
+        gap: 0.5rem;
+    }
+    .vdp-details-row:last-child { border-bottom: none; }
+    .vdp-details-label { color: #000000; flex-shrink: 0; }
+    .vdp-details-val { color: #000000; font-weight: 700; text-align: right; }
+
+    .vdp-show-more-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--company-primary-base, #1d4ed8);
+        cursor: pointer;
+        margin-top: 1rem;
+        text-decoration: none;
+    }
+
+    /* ── Features & Equipment ── */
+    .vdp-features-section {
+        border: 1px solid #e5e7eb;
+        border-radius: 0.5rem;
+        background: white;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .vdp-features-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #000000;
+        margin-bottom: 1.25rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .vdp-features-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.6rem 1rem;
+    }
+    @media (max-width: 767px) { .vdp-features-grid { grid-template-columns: repeat(2, 1fr); } }
+
+    .vdp-feature-item {
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+        font-size: 0.825rem;
+        color: #000000;
+        padding: 0.2rem 0;
+    }
+
+    .vdp-feature-item .ion-icon {
+        color: var(--company-primary-base, #1d4ed8);
+        font-size: 1.05rem;
+        flex-shrink: 0;
+    }
+
+    /* Footer CTA */
+    .vdp-footer-cta {
+        background: color-mix(in srgb, var(--company-primary-base) 15%, #111827) !important;
+        border-color: color-mix(in srgb, var(--company-primary-base) 20%, #111827) !important;
+        color: white;
+        padding: 1.5rem;
+        border-radius: 0.5rem;
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+    }
+    @media (max-width: 639px) { .vdp-footer-cta { grid-template-columns: 1fr; } }
+
+    .vdp-cta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    .vdp-cta-icon {
+        width: 2.5rem; height: 2.5rem;
+        background: rgba(255,255,255,.1);
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+    .vdp-cta-text strong { display: block; font-size: 0.875rem; font-weight: 700; }
+    .vdp-cta-text small { font-size: 0.75rem; opacity: 0.7; }
+
+/* ── show.blade.php: About This Vehicle + Reviews ── */
+    .vdp-about-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+    @media (max-width: 767px) { .vdp-about-row { grid-template-columns: 1fr; } }
+
+    /* Vehicle badges */
+    .vdp-badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+    .vdp-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #000000;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.375rem;
+        padding: 0.35rem 0.65rem;
+        background: white;
+    }
+    .vdp-badge .ion-icon { font-size: 1rem; color: #000000; }
+
+    /* Reviews */
+    .vdp-reviews-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.75rem;
+    }
+    @media (max-width: 640px) {
+        .vdp-reviews-header { flex-direction: column; align-items: flex-start; gap: 0.25rem; }
+    }
+    .vdp-reviews-link {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--company-primary-base, #1d4ed8);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.2rem;
+        white-space: nowrap;
+    }
+    .vdp-rating-row {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.75rem;
+    }
+    .vdp-rating-num {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #000000;
+        line-height: 1;
+    }
+    .vdp-stars { display: flex; gap: 2px; color: #f59e0b; font-size: 1.1rem; }
+    .vdp-rating-count { font-size: 0.8rem; color: #000000; }
+
+    .vdp-reviews-list {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.75rem;
+    }
+    @media (max-width: 1199px) { .vdp-reviews-list { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 639px)  { .vdp-reviews-list { grid-template-columns: 1fr; } }
+
+    .vdp-review-card {
+        border: 1px solid #e5e7eb;
+        border-radius: 0.5rem;
+        padding: 0.85rem;
+        background: white;
+    }
+    .vdp-review-top { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.3rem; }
+    .vdp-review-avatar {
+        width: 2rem; height: 2rem;
+        border-radius: 50%;
+        background: #e5e7eb;
+        display: flex; align-items: center; justify-content: center;
+        color: #000000;
+        font-size: 0.8rem;
+        font-weight: 700;
+        flex-shrink: 0;
+        overflow: hidden;
+    }
+    .vdp-review-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .vdp-review-name { font-size: 0.82rem; font-weight: 700; color: #000000; }
+    .vdp-review-verified { font-size: 0.68rem; color: #000000; }
+    .vdp-review-meta { display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.35rem; }
+    .vdp-review-stars { display: flex; gap: 1px; color: #f59e0b; font-size: 0.78rem; }
+    .vdp-review-time { font-size: 0.68rem; color: #9ca3af; }
+    .vdp-review-text { font-size: 0.78rem; color: #000000; line-height: 1.55; }
+
+    /* ── About + Reviews unified card ── */
+    .vdp-about-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        background: white;
+        margin-bottom: 2rem;
+    }
+    @media (max-width: 767px) { .vdp-about-row { grid-template-columns: 1fr; } }
+
+    .vdp-about-panel {
+        padding: 1.5rem;
+        border-right: 1px solid #e5e7eb;
+    }
+    @media (max-width: 767px) { .vdp-about-panel { border-right: none; border-bottom: 1px solid #e5e7eb; } }
+
+    .vdp-reviews-panel { padding: 1.5rem; }
+
+    /* When reviews panel is hidden, about panel takes full width */
+    .vdp-about-row:has(.vdp-reviews-panel.hidden) {
+        grid-template-columns: 1fr;
+    }
+    .vdp-about-row:has(.vdp-reviews-panel.hidden) .vdp-about-panel {
+        border-right: none;
+    }
+
+    /* ── Similar Vehicles ── */
+    .vdp-similar-section { margin-bottom: 2rem; }
+
+    .vdp-similar-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.25rem;
+    }
+    @media (max-width: 640px) {
+        .vdp-similar-header { flex-direction: column; align-items: flex-start; gap: 0.25rem; }
+    }
+
+    .vdp-similar-title {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #000000;
+    }
+    @media (max-width: 640px) {
+        .vdp-similar-title { font-size: 0.95rem; white-space: nowrap; }
+    }
+
+    .vdp-similar-link {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--company-primary-base, #1d4ed8);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.2rem;
+        white-space: nowrap;
+    }
+
+    .vdp-similar-grid {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 0.75rem;
+    }
+    @media (max-width: 1199px) { .vdp-similar-grid { grid-template-columns: repeat(4, 1fr); } }
+    @media (max-width: 767px)  { .vdp-similar-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 640px)  { .vdp-similar-grid { grid-template-columns: 1fr; } }
+
+    .vdp-sim-card {
+        border: 1px solid #e5e7eb;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        background: white;
+        transition: box-shadow 0.2s, transform 0.2s;
+        text-decoration: none;
+        display: block;
+    }
+    .vdp-sim-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.1); transform: translateY(-2px); }
+
+    .vdp-sim-img-wrap { position: relative; background: #f3f4f6; }
+    .vdp-sim-img { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; }
+
+    .vdp-sim-heart {
+        position: absolute;
+        top: 0.4rem; right: 0.4rem;
+        width: 1.6rem; height: 1.6rem;
+        background: white;
+        border: none;
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 1px 4px rgba(0,0,0,.15);
+        color: #9ca3af;
+        font-size: 0.9rem;
+        z-index: 2;
+    }
+    .vdp-sim-heart:hover { color: #ef4444; }
+
+    .vdp-sim-body { padding: 0.6rem 0.65rem 0.75rem; }
+
+    .vdp-sim-title {
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: #000000;
+        margin: 0 0 0.1rem;
+        line-height: 1.25;
+    }
+
+    .vdp-sim-sub {
+        font-size: 0.72rem;
+        color: #000000;
+        margin-bottom: 0.3rem;
+    }
+
+    .vdp-sim-mi {
+        font-size: 0.72rem;
+        color: #000000;
+        margin-bottom: 0.35rem;
+    }
+
+    .vdp-sim-price-row {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 0.25rem;
+    }
+
+    .vdp-sim-price { font-size: 0.95rem; font-weight: 700; color: #000000; }
+    .vdp-sim-monthly { font-size: 0.78rem; font-weight: 700; color: var(--company-primary-base, #1d4ed8); }
+
+/* ── show.blade.php: legacy block ── */
+@scope (.show-vehicle) {
+  .to-vehicle-full-screen .image-container-for-zoom img {
+      width: auto;
+      height: 100%;
+  }
+
+  .fa.font-icon {
+      font-size: 20px;
+  }
+
+  .min-width-button {
+      min-width: 300px;
+      border-radius: 5px;
+  }
+
+  .capital-one-prequalification-button {
+      height: 50px;
+  }
+
+  .shadow {
+      box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15) !important;
+  }
+
+  #next {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: 15%;
+      font-size: 20px;
+      color: #fff;
+      text-align: center;
+      text-shadow: 0 1px 2px rgb(0 0 0 / 60%);
+      background-color: rgba(0, 0, 0, 0);
+      filter: alpha(opacity=50);
+      opacity: 1;
+      right: 0;
+      left: auto;
+  }
+
+  #prev {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: 15%;
+      font-size: 20px;
+      color: #fff;
+      text-align: center;
+      text-shadow: 0 1px 2px rgb(0 0 0 / 60%);
+      background-color: rgba(0, 0, 0, 0);
+      filter: alpha(opacity=50);
+      opacity: 1;
+      right: auto;
+      left: 0;
+  }
+
+  #next:hover {
+      background-color: rgba(0, 0, 0, 0);
+      background-image: -webkit-linear-gradient(right, rgba(0, 0, 0, .0001) 0, rgba(0, 0, 0, .5) 100%);
+      background-image: -o-linear-gradient(right, rgba(0, 0, 0, .0001) 0, rgba(0, 0, 0, .5) 100%);
+      background-image: -webkit-gradient(linear, right top, left top, from(rgba(0, 0, 0, .0001)), to(rgba(0, 0, 0, .5)));
+      background-image: linear-gradient(to left, rgba(0, 0, 0, .0001) 0, rgba(0, 0, 0, .5) 100%);
+      filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00000000', endColorstr='#80000000', GradientType=1);
+      background-repeat: repeat-x;
+  }
+
+  #prev:hover {
+      background-color: rgba(0, 0, 0, 0);
+      background-image: -webkit-linear-gradient(left, rgba(0, 0, 0, .0001) 0, rgba(0, 0, 0, .5) 100%);
+      background-image: -o-linear-gradient(left, rgba(0, 0, 0, .0001) 0, rgba(0, 0, 0, .5) 100%);
+      background-image: -webkit-gradient(linear, left top, right top, from(rgba(0, 0, 0, .0001)), to(rgba(0, 0, 0, .5)));
+      background-image: linear-gradient(to right, rgba(0, 0, 0, .0001) 0, rgba(0, 0, 0, .5) 100%);
+      filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00000000', endColorstr='#80000000', GradientType=1);
+      background-repeat: repeat-x;
+  }
+
+  .pswp img {
+      max-width: none;
+      object-fit: contain;
+  }
+
+  .my-gallery::-webkit-scrollbar {
+      width: 1em;
+  }
+
+  .my-gallery::-webkit-scrollbar-track {
+      box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  }
+
+  .my-gallery::-webkit-scrollbar-thumb {
+      background-color: darkgrey;
+      outline: 1px solid slategrey;
+  }
+
+  .table-striped>tbody>tr:nth-of-type(odd)>* {
+      --bs-table-accent-bg: var(--bs-table-striped-bg);
+      color: var(--bs-table-striped-color);
+  }
+
+  .table>:not(caption)>*>* {
+      padding: 0.5rem 0.5rem;
+      background-color: var(--bs-table-bg);
+      border-bottom-width: 1px;
+      box-shadow: inset 0 0 0 9999px var(--bs-table-accent-bg);
+  }
+
+  tbody,
+  td,
+  tfoot,
+  th,
+  thead,
+  tr {
+      border-color: inherit;
+      border-style: solid;
+      border-width: 0;
+  }
+
+
+  table {
+      caption-side: bottom;
+  }
+
+  /* width */
+  .red-scroll::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+  }
+
+  /* Track */
+  .red-scroll::-webkit-scrollbar-track {
+      box-shadow: inset 0 0 5px grey;
+      border-radius: 10px;
+  }
+
+  /* Handle */
+  .red-scroll::-webkit-scrollbar-thumb {
+      background: red;
+      border-radius: 10px;
+  }
+
+  /* Handle on hover */
+  .red-scroll::-webkit-scrollbar-thumb:hover {
+      background: #b30000;
+  }
+
+  .car_title {
+      /* font-family: Open Sans; */
+      font-style: normal;
+      font-weight: 700;
+      font-size: 26px;
+      line-height: 33px;
+      /* identical to box height */
+
+      display: flex;
+      align-items: center;
+
+      /* color: #E51436; */
+  }
+
+  .top-part {
+      width: 100%;
+      position: relative;
+      /* border: 1px solid rgba(0, 0, 0, 0.25);
+  box-sizing: border-box;
+  --tw-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25); */
+      /* padding: 0.5rem; */
+      /* border-left-width: 8px; */
+      /* border-left-color: var(--company-primary-base); */
+      /* border-radius: 0.375rem; */
+      background-color: white;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.5rem;
+  }
+
+  .top-part span,
+  .top-part label {
+      font-weight: 600;
+  }
+
+  .top-part .pagination ul {
+      display: flex;
+
+  }
+
+  .top-part .pagination ul li a {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      padding: 0.25rem 0.5rem;
+      border-width: 1px;
+      font-weight: 600;
+      font-size: 0.875rem;
+      line-height: 1.25rem;
+      cursor: pointer;
+  }
+
+  .top-part .pagination ul li .active {
+      background-color: var(--company-primary-base);
+      color: rgb(255, 255, 255);
+  }
+
+  .top-part .pagination ul li a:hover {
+      background-color: var(--company-primary-base);
+      color: rgb(255, 255, 255);
+  }
+
+  .top-part .vehicle-selection {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: center;
+  }
+
+  .top-part .vehicle-selection select {
+      border: 1px solid rgba(0, 0, 0, 0.25);
+      border-radius: 0.25rem;
+      line-height: 1;
+  }
+
+  .top-part .position-selection {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .25rem;
+      align-items: center;
+  }
+
+  .top-part .position-selection .button {
+      padding: .45rem;
+      border: 1px solid rgba(0, 0, 0, 0.25);
+      border-radius: 0.25rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      text-align: center;
+      cursor: pointer;
+  }
+
+  .top-part .position-selection :hover.button {
+      background-color: var(--company-primary-base);
+      color: white;
+  }
+
+  .top-part .position-selection .active {
+      background-color: var(--company-primary-base);
+      color: white;
+  }
+
+
+  /* for slick */
+  #other_info,
+  #testimonial-slider .owl-pagination .owl-page.active,
+  .add_compare .checkbox,
+  .back-top a,
+  .btn,
+  .btn.outline:focus,
+  .btn.outline:hover,
+  .featured-icon,
+  .fun-facts-m,
+  .label-icon,
+  .label_icon,
+  .main_bg,
+  .nav-tabs>li a.active:focus,
+  .nav-tabs>li a.active:hover,
+  .nav-tabs>li>a.active,
+  .nav-tabs>li>a.active:focus,
+  .nav-tabs>li>a.active:hover,
+  .navbar-expand-lg .navbar-toggle .icon-bar,
+  .navbar-expand-lg .navbar-toggle:focus,
+  .navbar-expand-lg .navbar-toggle:hover,
+  .navbar-nav>li>.dropdown-menu,
+  .owl-pagination .owl-page.active,
+  .pagination ul li.current,
+  .pagination ul li:hover,
+  .recent-tab .nav.nav-tabs li a.active,
+  .search_other,
+  .search_other_inventory,
+  .share_article ul li:hover,
+  .slider .slider-handle,
+  .slider .slider-selection,
+  .social-follow.footer-social a:hover,
+  .tag_list ul li a:hover,
+  .td_divider,
+  .team_more_info ul li a:hover,
+  .vs {
+      background: #fa2837 none repeat scroll 0 0;
+      fill: #fa2837
+  }
+
+
+
+
+  form .slider.slider-horizontal {
+      width: 100%
+  }
+}
+
+/* ── The page container's sides, as on the Laravel page: its `lg:px-0` beats frontend-tw's .container padding there
+   (main.css keeps .container's padding unlayered, so it would win here), and below 992px custom-design.css's
+   `.container.px-4` sets 0.5rem. ── */
+.container.show-vehicle {
+    padding-inline: 0;
+}
+@media (max-width: 991px) {
+    .container.show-vehicle {
+        padding-inline: 0.5rem;
+    }
+}

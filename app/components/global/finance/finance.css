@@ -1,0 +1,700 @@
+/*
+ * The credit application's styles (/finance): the Laravel page's inline <style> (global/finance/new_form.blade.php,
+ * its "fin-theme" block) and the frontend-tw.css input classes the form uses (.input, .validation-text, .group-input),
+ * unchanged apart from these:
+ *  - every rule is kept to the page (.fin-page / #creditapp-form): this file stays loaded after leaving /finance;
+ *  - `body:has(> .fin-page)` (the Laravel body holds the nav, the page and the footer) is the layout's wrapper here,
+ *    `[data-template]:has(> .fin-page)`;
+ *  - the "hide the page until the step script has run" block (ADR-0173) is gone: the steps render with the page here;
+ *  - the unused .step-section / .group-steps / .step / .bg-step-primary classes are left out.
+ * Unlayered on purpose: on :8002 both sheets come after the compiled Tailwind and beat its utilities.
+ */
+
+/* ── frontend-tw.css: the inputs (Tailwind 3 @apply, written out) ── */
+.fin-page .input {
+  appearance: none;
+  border-width: 1px;
+  border-color: #6b7280;
+  border-radius: 0.25rem;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  color: #374151;
+  line-height: 1.25;
+  font-size: 16px !important;
+}
+
+.fin-page .input:focus {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+.fin-page .input.input-error {
+  border-color: #ef4444;
+}
+
+.fin-page .input:disabled {
+  background-color: #d1d5db;
+  cursor: not-allowed !important;
+}
+
+.fin-page .validation-text {
+  color: #ef4444;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+
+.fin-page .group-input {
+  position: relative;
+}
+
+.fin-page .group-input .icon {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  padding-left: 0.75rem;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+}
+
+.fin-page .group-input .icon span {
+  color: #6b7280;
+}
+
+@media (min-width: 576px) {
+  .fin-page .group-input .icon span {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+}
+
+.fin-page .group-input .input {
+  border-radius: 0.25rem;
+  border-width: 1px;
+  border-color: #6b7280;
+  padding: 0.5rem 0.75rem 0.5rem 1.5rem;
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 500ms;
+  width: 100%;
+  height: 44px;
+}
+
+.fin-page .group-input .input.input-error {
+  border-color: #ef4444;
+}
+
+/* ── new_form.blade.php ── */
+.fin-page .bg-red-600 {
+  background-color: var(--company-primary-base);
+}
+
+.fin-page .text-red-600 {
+  color: var(--company-primary-base);
+}
+
+.fin-page .group-input .input {
+  height: 38px !important;
+}
+
+/* ══ fin-theme (the credit application mock-up; layout only) ══════════════════════════════════════════════
+   Badges and the title above one white card; the step header (#step-N spans, the current one
+   .company-primary-base-background) gets its icons, labels and checks here; the bar's width and the percentage follow
+   which span is current and how many there are (5 Individual, 8 Joint). Every colour derives from
+   --company-primary-base. */
+body:has(.fin-page) {
+  background: color-mix(in srgb, var(--company-primary-base, #6d28d9) 3%, #f6f6f8) !important;
+}
+
+/* Short page on a tall window (as the sell page): the page fills the window, the spare space goes under the content,
+   and the footer sits at the window's bottom. */
+[data-template]:has(> .fin-page) {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+[data-template]:has(> .fin-page) > .fin-page {
+  width: 100%; /* auto side margins would shrink it in the flex column */
+  margin-bottom: auto;
+}
+
+[data-template]:has(> .fin-page) > footer {
+  flex-shrink: 0;
+}
+
+.fin-page {
+  --fin-p: var(--company-primary-base, #6d28d9);
+  --fin-ink: #16131f;
+  --fin-muted: #6b6880;
+  --fin-line: #e7e7ec;
+  --fin-dark: #141226;
+  --fin-ok: #16a34a;
+  max-width: none;
+  margin: 0 auto;
+  /* 40px over and 72px under, the content on the header's and footer's 1280px column, 16px each side on a phone. */
+  padding: 40px max(16px, calc((100% - 1280px) / 2)) 72px;
+  font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  color: var(--fin-ink);
+}
+
+.fin-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.fin-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.9rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: color-mix(in srgb, var(--fin-p) 80%, #000000);
+  background: color-mix(in srgb, var(--fin-p) 9%, #ffffff);
+  border: 1px solid color-mix(in srgb, var(--fin-p) 18%, #ffffff);
+}
+
+.fin-page .fin-title {
+  margin: 0.75rem 0 1rem;
+  font-family: 'Outfit', 'Inter', sans-serif;
+  font-size: 3rem;
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--fin-ink);
+}
+
+.fin-page .fin-card {
+  padding: 1.75rem 2rem;
+  border-radius: 1.25rem;
+  background: #fff;
+  border: 1px solid var(--fin-line);
+  box-shadow: 0 18px 40px -28px rgba(16, 12, 40, 0.35), 0 1px 2px rgba(16, 12, 40, 0.04);
+}
+
+/* ── The step header ── */
+/* Each #step-N span (its text is the step's number): the circle, its icon and the line to the next step are
+   background layers; ::before adds "STEP " before the number (the first line), ::after the label (the second). */
+#creditapp-form .fin-steps {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+#button_step > span {
+  --fin-ic: var(--fin-ig);
+  --fin-cf: #ffffff;
+  --fin-cb: #e2e1e8;
+  --fin-cl: #ececf1;
+  --fin-lw: calc(100% - 12rem);
+  position: relative;
+  display: block;
+  flex: 1 1 0;
+  min-width: 0;
+  width: auto;
+  height: auto;
+  min-height: 2.75rem;
+  padding: 0.35rem 0 0 3.5rem;
+  border-radius: 0;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  line-height: 1.25;
+  white-space: nowrap;
+  color: var(--fin-muted) !important;
+  background:
+    var(--fin-ic) no-repeat 0.8rem center / 1.15rem,
+    radial-gradient(circle at 1.375rem 50%, var(--fin-cf) 1.27rem, var(--fin-cb) 1.3rem 1.375rem, transparent 1.4rem) no-repeat 0 0 / 2.8rem 100%,
+    linear-gradient(var(--fin-cl), var(--fin-cl)) no-repeat right 0.5rem center / var(--fin-lw) 3px !important;
+  cursor: default;
+}
+
+#button_step > span:last-child {
+  --fin-cl: transparent;
+  flex: none;
+}
+
+#button_step > span::before {
+  content: 'STEP ';
+}
+
+#button_step > span::after {
+  white-space: pre;
+  font-size: 1rem;
+  letter-spacing: 0;
+  color: #a3a1b0;
+}
+
+#button_step > #step-1 { --fin-ig: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239a98a8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='8' r='4'/%3E%3Cpath d='M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6'/%3E%3C/svg%3E"); --fin-iw: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='8' r='4'/%3E%3Cpath d='M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6'/%3E%3C/svg%3E"); }
+#button_step > #step-1::after { content: "\A Applicant"; }
+#button_step > #step-2 { --fin-ig: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239a98a8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z'/%3E%3C/svg%3E"); --fin-iw: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z'/%3E%3C/svg%3E"); }
+#button_step > #step-2::after { content: "\A Residence"; }
+#button_step > #step-3 { --fin-ig: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239a98a8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='7' width='18' height='13' rx='2'/%3E%3Cpath d='M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 13h18'/%3E%3C/svg%3E"); --fin-iw: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='7' width='18' height='13' rx='2'/%3E%3Cpath d='M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 13h18'/%3E%3C/svg%3E"); }
+#button_step > #step-3::after { content: "\A Employment"; }
+#button_step > #step-4 { --fin-ig: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239a98a8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='8' r='4'/%3E%3Cpath d='M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6'/%3E%3C/svg%3E"); --fin-iw: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='8' r='4'/%3E%3Cpath d='M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6'/%3E%3C/svg%3E"); }
+#button_step > #step-4::after { content: "\A Co-Applicant"; }
+#button_step > #step-5 { --fin-ig: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239a98a8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z'/%3E%3C/svg%3E"); --fin-iw: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z'/%3E%3C/svg%3E"); }
+#button_step > #step-5::after { content: "\A Co-Residence"; }
+#button_step > #step-6 { --fin-ig: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239a98a8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='7' width='18' height='13' rx='2'/%3E%3Cpath d='M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 13h18'/%3E%3C/svg%3E"); --fin-iw: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='7' width='18' height='13' rx='2'/%3E%3Cpath d='M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 13h18'/%3E%3C/svg%3E"); }
+#button_step > #step-6::after { content: "\A Co-Employment"; }
+#button_step > #step-7 { --fin-ig: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239a98a8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 15l1.6-4.6A2 2 0 0 1 8.5 9h7a2 2 0 0 1 1.9 1.4L19 15'/%3E%3Crect x='3' y='15' width='18' height='4' rx='1.5'/%3E%3Cpath d='M7 19v1.5M17 19v1.5'/%3E%3C/svg%3E"); --fin-iw: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 15l1.6-4.6A2 2 0 0 1 8.5 9h7a2 2 0 0 1 1.9 1.4L19 15'/%3E%3Crect x='3' y='15' width='18' height='4' rx='1.5'/%3E%3Cpath d='M7 19v1.5M17 19v1.5'/%3E%3C/svg%3E"); }
+#button_step > #step-7::after { content: "\A Trade-In"; }
+#button_step > #step-8 { --fin-ig: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239a98a8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3v18M16.5 7.5c-.7-1.4-2.4-2.2-4.5-2.2-2.5 0-4.5 1.2-4.5 3.2s2 2.7 4.5 3.2 4.5 1.3 4.5 3.3-2 3.2-4.5 3.2c-2.2 0-3.9-.8-4.6-2.3'/%3E%3C/svg%3E"); --fin-iw: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3v18M16.5 7.5c-.7-1.4-2.4-2.2-4.5-2.2-2.5 0-4.5 1.2-4.5 3.2s2 2.7 4.5 3.2 4.5 1.3 4.5 3.3-2 3.2-4.5 3.2c-2.2 0-3.9-.8-4.6-2.3'/%3E%3C/svg%3E"); }
+#button_step > #step-8::after { content: "\A Money Down"; }
+
+/* The current step: a dark circle, its icon white, its label in the primary. */
+#button_step > span.company-primary-base-background {
+  --fin-ic: var(--fin-iw);
+  --fin-cf: var(--fin-dark);
+  --fin-cb: var(--fin-dark);
+}
+
+#button_step > span.company-primary-base-background::after {
+  color: var(--fin-p);
+}
+
+/* Done (every step before the current one): a green check, the label dark, the line to the next green. */
+#button_step > span:has(~ span.company-primary-base-background) {
+  --fin-ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E");
+  --fin-cf: var(--fin-ok);
+  --fin-cb: var(--fin-ok);
+  --fin-cl: var(--fin-ok);
+}
+
+#button_step > span:has(~ span.company-primary-base-background)::after {
+  color: var(--fin-ink);
+}
+
+/* When the steps don't fit (a joint application's eight steps, and phones), each keeps the width and words it has in
+   the five-step header and the row scrolls sideways; the page scrolls it to the current step. */
+#button_step:has(> span:nth-child(8)) {
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+}
+
+/* The row still scrolls (swipe, trackpad, and to the current step), without a visible scrollbar (Product). */
+#creditapp-form .fin-steps::-webkit-scrollbar {
+  display: none;
+}
+
+#button_step:has(> span:nth-child(8)) > span {
+  flex: 0 0 13rem;
+}
+
+#button_step:has(> span:nth-child(8)) > span:last-child {
+  flex: 0 0 auto;
+  padding-right: 0.25rem;
+}
+
+@media (max-width: 767px) {
+  #creditapp-form .fin-steps {
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+  }
+
+  #button_step > span {
+    flex: 0 0 13rem;
+  }
+
+  #button_step > span:last-child {
+    flex: 0 0 auto;
+    padding-right: 0.25rem;
+  }
+}
+
+/* ── The progress bar under it ── */
+#creditapp-form .fin-progress {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+#creditapp-form .fin-progress-bar {
+  flex: 1;
+  height: 0.375rem;
+  border-radius: 9999px;
+  background: #ececf1;
+  overflow: hidden;
+}
+
+#creditapp-form .fin-progress-bar > span {
+  display: block;
+  width: calc(var(--fin-i, 1) / var(--fin-n, 5) * 100%);
+  height: 100%;
+  border-radius: inherit;
+  background: color-mix(in srgb, var(--fin-p) 75%, #ffffff);
+  transition: width 0.3s;
+}
+
+#creditapp-form .fin-progress-txt {
+  margin: 0;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  white-space: nowrap;
+  color: var(--fin-muted);
+}
+
+#creditapp-form .fin-pct {
+  font-weight: inherit;
+}
+
+#creditapp-form:has(#button_step > span:nth-child(1).company-primary-base-background) { --fin-i: 1; }
+#creditapp-form:has(#button_step > span:nth-child(2).company-primary-base-background) { --fin-i: 2; }
+#creditapp-form:has(#button_step > span:nth-child(3).company-primary-base-background) { --fin-i: 3; }
+#creditapp-form:has(#button_step > span:nth-child(4).company-primary-base-background) { --fin-i: 4; }
+#creditapp-form:has(#button_step > span:nth-child(5).company-primary-base-background) { --fin-i: 5; }
+#creditapp-form:has(#button_step > span:nth-child(6).company-primary-base-background) { --fin-i: 6; }
+#creditapp-form:has(#button_step > span:nth-child(7).company-primary-base-background) { --fin-i: 7; }
+#creditapp-form:has(#button_step > span:nth-child(8).company-primary-base-background) { --fin-i: 8; }
+#creditapp-form:has(#button_step > span:nth-child(5):last-child) { --fin-n: 5; }
+#creditapp-form:has(#button_step > span:nth-child(8):last-child) { --fin-n: 8; }
+#creditapp-form:has(#button_step > span:nth-child(5):last-child):has(#button_step > span:nth-child(1).company-primary-base-background) .fin-pct::before { content: " · 20%"; }
+#creditapp-form:has(#button_step > span:nth-child(5):last-child):has(#button_step > span:nth-child(2).company-primary-base-background) .fin-pct::before { content: " · 40%"; }
+#creditapp-form:has(#button_step > span:nth-child(5):last-child):has(#button_step > span:nth-child(3).company-primary-base-background) .fin-pct::before { content: " · 60%"; }
+#creditapp-form:has(#button_step > span:nth-child(5):last-child):has(#button_step > span:nth-child(4).company-primary-base-background) .fin-pct::before { content: " · 80%"; }
+#creditapp-form:has(#button_step > span:nth-child(5):last-child):has(#button_step > span:nth-child(5).company-primary-base-background) .fin-pct::before { content: " · 100%"; }
+#creditapp-form:has(#button_step > span:nth-child(8):last-child):has(#button_step > span:nth-child(1).company-primary-base-background) .fin-pct::before { content: " · 13%"; }
+#creditapp-form:has(#button_step > span:nth-child(8):last-child):has(#button_step > span:nth-child(2).company-primary-base-background) .fin-pct::before { content: " · 25%"; }
+#creditapp-form:has(#button_step > span:nth-child(8):last-child):has(#button_step > span:nth-child(3).company-primary-base-background) .fin-pct::before { content: " · 38%"; }
+#creditapp-form:has(#button_step > span:nth-child(8):last-child):has(#button_step > span:nth-child(4).company-primary-base-background) .fin-pct::before { content: " · 50%"; }
+#creditapp-form:has(#button_step > span:nth-child(8):last-child):has(#button_step > span:nth-child(5).company-primary-base-background) .fin-pct::before { content: " · 63%"; }
+#creditapp-form:has(#button_step > span:nth-child(8):last-child):has(#button_step > span:nth-child(6).company-primary-base-background) .fin-pct::before { content: " · 75%"; }
+#creditapp-form:has(#button_step > span:nth-child(8):last-child):has(#button_step > span:nth-child(7).company-primary-base-background) .fin-pct::before { content: " · 88%"; }
+#creditapp-form:has(#button_step > span:nth-child(8):last-child):has(#button_step > span:nth-child(8).company-primary-base-background) .fin-pct::before { content: " · 100%"; }
+
+/* ── The questions as option cards (Application type, trade-in, cash down) ── */
+#creditapp-form .fin-choice {
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+  justify-content: flex-start;
+}
+
+/* The labels carry text-sm, whose line height was a fixed 1.25rem in the Laravel build (a ratio in Tailwind 4). */
+#creditapp-form .fin-choice > label {
+  margin-right: 0.5rem;
+  font-size: 1.0625rem;
+  line-height: 1.25rem;
+  font-weight: 600;
+  color: var(--fin-ink);
+}
+
+#creditapp-form .fin-choice > div:has(> input[type="radio"]) {
+  position: relative;
+  gap: 0.75rem;
+  padding: 0.7rem 1.25rem 0.7rem 1rem;
+  border-radius: 0.875rem;
+  background: #fff;
+  border: 1.5px solid var(--fin-line);
+  transition: background 0.15s, border-color 0.15s;
+}
+
+#creditapp-form .fin-choice > div:has(> input[type="radio"]:checked) {
+  background: color-mix(in srgb, var(--fin-p) 8%, #ffffff);
+  border-color: color-mix(in srgb, var(--fin-p) 70%, #ffffff);
+  box-shadow: 0 10px 22px -18px color-mix(in srgb, var(--fin-p) 80%, transparent);
+}
+
+#creditapp-form .fin-choice > div > span {
+  font-size: 1.0625rem;
+  line-height: 1.25rem;
+  font-weight: 600;
+  color: var(--fin-ink);
+}
+
+/* Phones: the question on its own line, then its two options side by side at equal width, so they fit and line up
+   (Application type, trade-in, cash down). */
+@media (max-width: 640px) {
+  #creditapp-form .fin-choice {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  #creditapp-form .fin-choice > label {
+    grid-column: 1 / -1;
+    margin-right: 0;
+  }
+
+  #creditapp-form .fin-choice > div:has(> input[type="radio"]) {
+    min-width: 0;
+    padding: 0.7rem 0.9rem;
+  }
+}
+
+#creditapp-form .fin-choice input[type="radio"] {
+  appearance: none;
+  flex-shrink: 0;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin: 0;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid color-mix(in srgb, var(--fin-p) 35%, #ffffff);
+  box-shadow: none;
+  cursor: pointer;
+}
+
+#creditapp-form .fin-choice input[type="radio"]:checked {
+  border-color: var(--fin-p);
+  background: radial-gradient(circle, var(--fin-p) 0 40%, #fff 45%);
+}
+
+/* The step-7 / step-8 title rows (Trade-In / Money Down information) repeat the question: hidden. */
+#creditapp-form section.step-7 > .grid:first-child,
+#creditapp-form section.step-8 > .grid:first-child {
+  display: none;
+}
+
+/* ── Each group of fields: a titled card ── */
+#creditapp-form section > .grid.grid-cols-12,
+#creditapp-form section.step-4,
+#creditapp-form #hasTradeIn:not(.hidden),
+#creditapp-form #hasDownPaymentDiv:not(.hidden) {
+  padding: 1.25rem 1.5rem 1.5rem;
+  border-radius: 1rem;
+  background: #fff;
+  border: 1px solid var(--fin-line);
+  row-gap: 1rem;
+}
+
+#creditapp-form section.step-4.hidden {
+  display: none;
+}
+
+/* The title row: the "Applicant" / "Co-Applicant" label and the group's name read as one title. */
+#creditapp-form section .col-span-full.flex.flex-col.gap-2:has(> h1, > h2) {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.4rem;
+}
+
+#creditapp-form section .col-span-full.flex.flex-col.gap-2:has(> h1, > h2) > :not(h1):not(h2) {
+  order: 3;
+  flex-basis: 100%;
+}
+
+#creditapp-form section .col-span-full.flex.flex-col.gap-2:has(> h1, > h2) > h2 {
+  order: 2;
+}
+
+#creditapp-form section h1,
+#creditapp-form section h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0;
+  font-family: 'Outfit', 'Inter', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.3;
+  text-align: left;
+  text-transform: none;
+  color: var(--fin-ink) !important;
+}
+
+#creditapp-form section h1 + h2 {
+  gap: 0;
+}
+
+#creditapp-form section h1 + h2::before {
+  content: '— ';
+  white-space: pre;
+}
+
+/* Phones: no dash in the card titles ("Applicant" over "Contact Information"; "Trade-In Vehicle Information"). */
+@media (max-width: 640px) {
+  #creditapp-form section h1 + h2::before {
+    content: none;
+  }
+
+  #creditapp-form .fin-dash {
+    display: none;
+  }
+}
+
+/* The icon tile before a title. */
+#creditapp-form section h1.text-gray-500::before,
+#creditapp-form section :is(h1, h2):has(> .fin-note)::before,
+#creditapp-form section .fin-h::before {
+  content: '';
+  flex-shrink: 0;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.75rem;
+  background: var(--fin-tile) center / 1.15rem no-repeat, #f6f6f8;
+  border: 1px solid var(--fin-line);
+}
+
+#creditapp-form section.step-1,
+#creditapp-form section.step-4 { --fin-tile: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2316131f' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='8' r='4'/%3E%3Cpath d='M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6'/%3E%3C/svg%3E"); }
+#creditapp-form section.step-2,
+#creditapp-form section.step-5 { --fin-tile: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2316131f' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z'/%3E%3C/svg%3E"); }
+#creditapp-form section.step-3,
+#creditapp-form section.step-6 { --fin-tile: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2316131f' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='7' width='18' height='13' rx='2'/%3E%3Cpath d='M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 13h18'/%3E%3C/svg%3E"); }
+#creditapp-form #hasTradeIn { --fin-tile: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2316131f' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 15l1.6-4.6A2 2 0 0 1 8.5 9h7a2 2 0 0 1 1.9 1.4L19 15'/%3E%3Crect x='3' y='15' width='18' height='4' rx='1.5'/%3E%3Cpath d='M7 19v1.5M17 19v1.5'/%3E%3C/svg%3E"); }
+#creditapp-form #hasDownPaymentDiv { --fin-tile: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2316131f' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3v18M16.5 7.5c-.7-1.4-2.4-2.2-4.5-2.2-2.5 0-4.5 1.2-4.5 3.2s2 2.7 4.5 3.2 4.5 1.3 4.5 3.3-2 3.2-4.5 3.2c-2.2 0-3.9-.8-4.6-2.3'/%3E%3C/svg%3E"); }
+
+#creditapp-form section :is(h1, h2):has(> .fin-note) {
+  flex-wrap: wrap;
+  --fin-tile: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2316131f' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 12a9 9 0 1 0 2.6-6.4L3 8'/%3E%3Cpath d='M3 3v5h5M12 7v5l3 2'/%3E%3C/svg%3E");
+}
+
+#creditapp-form section :is(h1, h2):has(> .fin-note)::before {
+  background-color: color-mix(in srgb, var(--fin-p) 9%, #ffffff);
+}
+
+#creditapp-form .fin-note {
+  padding: 0.2rem 0.6rem;
+  border-radius: 9999px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: color-mix(in srgb, var(--fin-p) 80%, #000000);
+  background: color-mix(in srgb, var(--fin-p) 9%, #ffffff);
+}
+
+/* Tailwind 3's text-sm line height was a fixed 1.25rem, which children (the "Same As Primary" <small>) inherit as
+   20px; Tailwind 4's is a ratio, inherited as 16px at the <small>'s size. */
+#creditapp-form .text-sm {
+  line-height: 1.25rem;
+}
+
+/* ── The fields ── */
+#creditapp-form .form-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--fin-ink);
+}
+
+#creditapp-form .required-indicator {
+  color: #dc2626;
+}
+
+#creditapp-form .input {
+  height: 3rem !important;
+  padding: 0 1rem;
+  border-radius: 0.625rem;
+  font-size: 0.9375rem;
+  color: var(--fin-ink);
+  background-color: #fff;
+  border: 1.5px solid #d9d8e0;
+}
+
+#creditapp-form textarea.input {
+  height: auto !important;
+  padding: 0.75rem 1rem;
+}
+
+#creditapp-form .input:focus {
+  outline: none;
+  border-color: var(--fin-p);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--fin-p) 18%, transparent);
+}
+
+#creditapp-form .input:disabled {
+  color: #9a98a8;
+  background-color: #f6f6f8;
+  border-color: var(--fin-line);
+}
+
+#creditapp-form .input.input-error {
+  border-color: #dc2626;
+}
+
+#creditapp-form .group-input {
+  position: relative;
+}
+
+#creditapp-form .group-input .icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  z-index: 1;
+  color: var(--fin-muted);
+  transform: translateY(-50%);
+  background: none;
+  border: 0;
+  padding: 0;
+}
+
+#creditapp-form .group-input .input {
+  width: 100%;
+  padding-left: 2rem;
+}
+
+/* The checkboxes (SMS consent, Same As Primary), ticked: the forms plugin fills them with blue-600, #2563eb in the
+   Laravel build (an oklch blue in Tailwind 4). */
+#creditapp-form input[type='checkbox'] {
+  color: #2563eb;
+}
+
+#creditapp-form input[type='checkbox']:focus {
+  --tw-ring-color: #2563eb;
+}
+
+/* ── The buttons: Back outlined, Next / Submit Application in the primary ── */
+#creditapp-form #back-button,
+#creditapp-form #next-button,
+#creditapp-form #submit-button {
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.85rem 1.6rem;
+  border-radius: 0.875rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff;
+  background: color-mix(in srgb, var(--fin-p) 75%, #ffffff);
+  border: 1.5px solid transparent;
+  box-shadow: 0 12px 24px -14px color-mix(in srgb, var(--fin-p) 80%, transparent);
+}
+
+#creditapp-form #back-button {
+  color: color-mix(in srgb, var(--fin-p) 80%, #000000);
+  background: #fff;
+  border-color: color-mix(in srgb, var(--fin-p) 70%, #ffffff);
+  box-shadow: none;
+}
+
+#creditapp-form #back-button::before {
+  content: '\2190';
+}
+
+#creditapp-form #next-button::after,
+#creditapp-form #submit-button::after {
+  content: '\2192';
+}
+
+#creditapp-form #submit-button:disabled {
+  opacity: 0.55;
+}
+
+#creditapp-form #next-button:hover,
+#creditapp-form #submit-button:not(:disabled):hover {
+  filter: brightness(1.08);
+}
+
+@media (max-width: 640px) {
+  .fin-page .fin-title {
+    font-size: 2.25rem;
+  }
+
+  .fin-page .fin-card {
+    padding: 1.25rem 1rem;
+  }
+
+  #creditapp-form section > .grid.grid-cols-12,
+  #creditapp-form section.step-4 {
+    padding: 1rem;
+  }
+}
