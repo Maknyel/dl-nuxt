@@ -20,6 +20,7 @@ import VehicleInformation from '~/components/global/vehicle/Information.vue'
 import VehiclePayment from '~/components/global/vehicle/Payment.vue'
 import VehicleDetails from '~/components/global/vehicle/Details.vue'
 import InquiryForm from '~/components/global/vehicle/InquiryForm.vue'
+import SalesInquiryForm from '~/components/global/vehicle/SalesInquiryForm.vue'
 import VehicleNotFound from '~/components/global/vehicle/NotFound.vue'
 
 // The layout is chosen below: the vehicle in the site's frame, Vehicle Not Found on its own.
@@ -32,6 +33,9 @@ const { data } = await useFetch(() => `/api/site/vehicle/${encodeURIComponent(id
   key: `vehicle-${id.value}`,
 })
 const vehicle = computed<Record<string, any> | null>(() => (data.value?.vehicle as Record<string, any> | null) ?? null)
+/** The sales site: its inquiry forms have Dealer Info instead of the trade-in (SalesInquiryForm). */
+const { isSales } = useSite()
+const isDemo = computed(() => Boolean((data.value as { isDemo?: boolean } | null)?.isDemo))
 
 if (!vehicle.value && import.meta.server) {
   const event = useRequestEvent()
@@ -107,7 +111,7 @@ onBeforeUnmount(() => {
   <NuxtLayout v-if="vehicle" name="default">
     <div class="container m-auto lg:px-0 px-4 show-vehicle">
       <VehicleHeader :vehicle="vehicle" @interested="interestedOpen = true" />
-      <VehicleInformation :vehicle="vehicle" />
+      <VehicleInformation :vehicle="vehicle" :is-demo="isDemo" />
       <VehiclePayment :vehicle="vehicle" />
       <VehicleDetails :vehicle="vehicle" @interested="interestedOpen = true" />
     </div>
@@ -121,7 +125,14 @@ onBeforeUnmount(() => {
       class="fixed top-0 left-0 flex items-center justify-center w-full h-full z-50 padding-for-modal-interested"
       style="background-color: rgba(0, 0, 0, 0.5)"
     >
-      <InquiryForm :vehicle="vehicle" variant="modal" @close="interestedOpen = false" />
+      <SalesInquiryForm
+        v-if="isSales"
+        :vehicle="vehicle"
+        variant="modal"
+        :is-demo="isDemo"
+        @close="interestedOpen = false"
+      />
+      <InquiryForm v-else :vehicle="vehicle" variant="modal" @close="interestedOpen = false" />
     </div>
   </NuxtLayout>
   <VehicleNotFound v-else />

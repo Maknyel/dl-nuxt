@@ -14,13 +14,13 @@ import Review from './Review.vue'
 
 defineProps<{ home: any }>()
 
-const { templateNav, isMulti } = useSite()
+const { templateNav, isMulti, isSales } = useSite()
 const on = (flag: string) => String(templateNav.value?.[flag] ?? '') === '1'
 </script>
 
 <template>
   <div>
-    <MultiHero v-if="isMulti" :home="home" />
+    <MultiHero v-if="isMulti && !isSales" :home="home" />
     <Hero v-else />
     <Inventory v-if="on('show_view_inventory')" :vehicles="home?.vehicles ?? []" />
     <Sell v-if="on('show_sell')" />

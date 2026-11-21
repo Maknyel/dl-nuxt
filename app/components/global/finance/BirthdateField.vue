@@ -21,8 +21,10 @@ const HIDDEN = `${p}birthdate`
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 
 const today = new Date()
+const { isSales } = useSite()
 const cutoff = new Date(today.getTime())
-cutoff.setFullYear(cutoff.getFullYear() - 18)
+// The sales site's lists have no 18+ rule: they only stop at today (CUR_Y / CUR_M / CUR_D in its Blade).
+if (!isSales.value) cutoff.setFullYear(cutoff.getFullYear() - 18)
 const MAX_Y = cutoff.getFullYear()
 const MAX_M = cutoff.getMonth() + 1
 const MAX_D = cutoff.getDate()
@@ -41,7 +43,8 @@ const maxDayFor = (yr: number | null, mon: number | null) =>
 const yr = computed(() => Number(form[Y]) || null)
 const mon = computed(() => Number(form[M]) || null)
 const maxMonth = computed(() => maxMonthForYear(yr.value))
-const dayCount = computed(() => daysInMonth(yr.value, mon.value))
+// The client site lists the month's days and disables the underage ones; the sales site lists only the allowed days.
+const dayCount = computed(() => (isSales.value ? maxDayFor(yr.value, mon.value) : daysInMonth(yr.value, mon.value)))
 const maxDay = computed(() => maxDayFor(yr.value, mon.value))
 
 /** writeHiddenIso() */

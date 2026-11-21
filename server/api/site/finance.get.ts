@@ -22,7 +22,8 @@ export default defineEventHandler(async (event) => {
   }
 
   let vehicleLocationId: number | null = null
-  if (vehicleId) {
+  // The sales site's controller has no vehicleLocationId (its finance page never pre-selects the store).
+  if (vehicleId && siteType() !== 'sales') {
     try {
       const company = (await getCompanyData())?.company
       if (company && company.account_type === 'Multi') {

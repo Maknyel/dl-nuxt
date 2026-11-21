@@ -60,7 +60,10 @@ const props = defineProps<{
 }>()
 
 const route = useRoute()
-const { company, isMulti, mediaUrl } = useSite()
+const { company, isMulti, mediaUrl, isSales } = useSite()
+/** The sales site (:8003): validations() always passes, and Submit Application (with the SMS consent) opens the
+ *  "Demo Only" notice instead of the confirm and the request. */
+const demoNotice = ref(false)
 
 /* ── State ── */
 const FIELDS = [
@@ -371,6 +374,7 @@ function step8(): number {
 const VALIDATORS = [step1, step2, step3, step4, step5, step6, step7, step8]
 /** validations(step): true when the step passes. */
 function validate(step: number): boolean {
+  if (isSales.value) return true
   const fn = VALIDATORS[step - 1]
   return fn ? fn() === 0 : true
 }
@@ -424,6 +428,11 @@ function buildPayload(): Record<string, unknown> {
 function submitDataBefore() {
   if (!smsConsent.value) return
   if (!validate(8)) return
+  if (isSales.value) {
+    // The sales site's submitData(): nothing is sent.
+    demoNotice.value = true
+    return
+  }
   const payload = buildPayload()
   // TODO(forms): POST /credit_app/post-data → website/forms/credit-app (see data-map.md "Form endpoints"), after the
   // Blade's "Form Submission" confirm; on success hide the form, show #finish and the Thank You modal (showThanks).
@@ -627,5 +636,6 @@ const logoPath = computed(() => (company.value.logo ? mediaUrl(company.value.log
       :logo-path="logoPath"
       bottom-description="A representative from the dealership will contact you shortly"
     />
+    <UiDemoNoticeModal v-if="isSales" v-model="demoNotice" />
   </div>
 </template>

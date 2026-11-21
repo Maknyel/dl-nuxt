@@ -6,11 +6,32 @@
 import type { NavLocation } from '~/types/site'
 
 const route = useRoute()
-const { company, menus, locations, logoUrl } = useSite()
+const { company, mainCompany, menus, locations, logoUrl, isSales } = useSite()
 
 const isDemo = computed(() => isDemoHost(useRequestURL().host))
 
-const navLocations = computed<NavLocation[]>(() => locations.value)
+/**
+ * The sales site (dealerlion_sales_template) lists the group's locations only for a Multi account, and links a
+ * location's address to its own website; otherwise just the company, with a Google Maps link.
+ */
+const salesLocations = computed<NavLocation[]>(() => {
+  if (company.value.account_type === 'Multi' && mainCompany.value.length) {
+    return locations.value.map((loc) => ({ ...loc, mapUrl: loc.website }))
+  }
+  const address = formatAddress(company.value)
+  return [{
+    name: company.value.name ?? '',
+    phone: company.value.phone_number ?? '',
+    email: company.value.email ?? '',
+    address,
+    mapUrl: `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(address)}`,
+    website: company.value.dl_website ?? '',
+    accountType: company.value.account_type ?? '',
+    raw: company.value,
+  }]
+})
+
+const navLocations = computed<NavLocation[]>(() => (isSales.value ? salesLocations.value : locations.value))
 const hasNavPhone = computed(() => navLocations.value.some((l) => l.phone !== ''))
 const hasNavAddress = computed(() => navLocations.value.some((l) => l.address !== ''))
 const showLocationName = computed(() => navLocations.value.length > 1)
@@ -116,7 +137,7 @@ const isActive = (to: string) => route.path === to
           </NuxtLink>
 
           <!-- More than one location (Multi account, or a single-location site grouped with siblings) -->
-          <div v-if="navLocations.length > 1" class="relative">
+          <div v-if="!isSales && navLocations.length > 1" class="relative">
             <button
               ref="storeBtn"
               type="button"
@@ -163,7 +184,78 @@ const isActive = (to: string) => route.path === to
 
         <!-- Phone & address (desktop) -->
         <div class="hidden lg:flex justify-end items-center gap-2 shrink-0">
-          <template v-if="hasNavPhone">
+          <!-- Sales site: one location's phone is a call link with a hover tooltip, its address a map link; several
+               locations open a list. -->
+          <template v-if="isSales">
+            <template v-if="hasNavPhone">
+              <div v-if="navLocations.length === 1 && singleLoc" class="relative group">
+                <a :href="`tel:${singleLoc.phone}`" class="nav-icon-btn nav-phone">
+                  <Icon name="ion:call-outline" aria-hidden="true" style="width:1.05rem;height:1.05rem;display:block;" />
+                </a>
+                <!-- pt-1 bridges the gap so hover isn't lost when moving to the tooltip -->
+                <div class="absolute right-0 top-full pt-1 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto z-50 transition-opacity duration-150">
+                  <div class="bg-white border border-gray-300 rounded-lg shadow-lg px-4 py-2 whitespace-nowrap">
+                    <span class="text-sm font-semibold text-gray-800">{{ formatPhone(singleLoc.phone) }}</span>
+                  </div>
+                </div>
+              </div>
+              <div v-else-if="navLocations.length !== 1" class="relative">
+                <button ref="phoneBtn" type="button" class="nav-icon-btn nav-phone" @click="phoneOpen = !phoneOpen">
+                  <Icon name="ion:call-outline" aria-hidden="true" style="width:1.05rem;height:1.05rem;display:block;" />
+                </button>
+                <Transition
+                  enter-active-class="transition ease-[cubic-bezier(0.4,0,0.2,1)] duration-150"
+                  enter-from-class="opacity-0 scale-95"
+                  leave-active-class="transition ease-[cubic-bezier(0.4,0,0.2,1)] duration-150"
+                  leave-to-class="opacity-0 scale-95"
+                >
+                  <div
+                    v-show="phoneOpen"
+                    class="absolute right-0 top-full mt-3 bg-white border border-gray-300 rounded-lg shadow-lg px-4 py-3 whitespace-nowrap z-50 flex flex-col gap-2"
+                  >
+                    <template v-for="(loc, i) in navLocations" :key="i">
+                      <div v-if="loc.phone !== ''" class="flex items-center justify-between gap-4">
+                        <span v-if="showLocationName && loc.name !== ''" class="text-sm font-semibold text-gray-900">{{ loc.name }}</span>
+                        <a :href="`tel:${loc.phone}`" class="text-sm font-semibold text-gray-800 hover:underline">{{ formatPhone(loc.phone) }}</a>
+                      </div>
+                    </template>
+                  </div>
+                </Transition>
+              </div>
+            </template>
+            <template v-if="hasNavAddress">
+              <template v-if="navLocations.length === 1">
+                <a v-if="singleAddr" :href="singleAddr.mapUrl" target="_blank" class="nav-icon-btn nav-phone">
+                  <Icon name="ion:location-outline" aria-hidden="true" style="width:1.05rem;height:1.05rem;display:block;" />
+                </a>
+              </template>
+              <div v-else class="relative">
+                <button ref="addrBtn" type="button" class="nav-icon-btn nav-phone" @click="addrOpen = !addrOpen">
+                  <Icon name="ion:location-outline" aria-hidden="true" style="width:1.05rem;height:1.05rem;display:block;" />
+                </button>
+                <Transition
+                  enter-active-class="transition ease-[cubic-bezier(0.4,0,0.2,1)] duration-150"
+                  enter-from-class="opacity-0 scale-95"
+                  leave-active-class="transition ease-[cubic-bezier(0.4,0,0.2,1)] duration-150"
+                  leave-to-class="opacity-0 scale-95"
+                >
+                  <div
+                    v-show="addrOpen"
+                    class="absolute right-0 top-full mt-3 bg-white border border-gray-300 rounded-lg shadow-lg px-4 py-3 whitespace-nowrap z-50 flex flex-col gap-2"
+                  >
+                    <template v-for="(loc, i) in navLocations" :key="i">
+                      <div v-if="loc.address !== ''" class="flex items-center justify-between gap-4">
+                        <span v-if="showLocationName && loc.name !== ''" class="text-sm font-semibold text-gray-900">{{ loc.name }}</span>
+                        <a :href="loc.mapUrl" target="_blank" class="text-sm text-gray-800 hover:underline">{{ loc.address }}</a>
+                      </div>
+                    </template>
+                  </div>
+                </Transition>
+              </div>
+            </template>
+          </template>
+
+          <template v-if="!isSales && hasNavPhone">
             <template v-if="navLocations.length === 1">
               <div v-if="singleLoc" class="relative">
                 <button ref="phoneBtn" type="button" class="nav-icon-btn nav-phone" @click="phoneOpen = !phoneOpen">
@@ -228,7 +320,7 @@ const isActive = (to: string) => route.path === to
 
           <!-- Standalone address icon: only for a true single, ungrouped location (grouped ones show their
                addresses in the phone dropdown above). -->
-          <div v-if="hasNavAddress && navLocations.length <= 1 && singleAddr" class="relative">
+          <div v-if="!isSales && hasNavAddress && navLocations.length <= 1 && singleAddr" class="relative">
             <button ref="addrBtn" type="button" class="nav-icon-btn nav-phone" @click="addrOpen = !addrOpen">
               <Icon name="ion:location-outline" aria-hidden="true" style="width:1.05rem;height:1.05rem;display:block;" />
             </button>
@@ -278,7 +370,7 @@ const isActive = (to: string) => route.path === to
             <Icon name="ion:call" aria-hidden="true" style="width:1.5rem;height:1.5rem;display:block;" />
           </button>
           <button
-            v-if="hasNavAddress && navLocations.length <= 1"
+            v-if="hasNavAddress && (isSales || navLocations.length <= 1)"
             type="button"
             class="p-2 rounded-sm nav-phone"
             :aria-expanded="mobilePanel === 'address' ? 'true' : 'false'"
@@ -319,7 +411,7 @@ const isActive = (to: string) => route.path === to
         </NuxtLink>
 
         <!-- Store locations (Multi account, or a single-location site grouped with siblings) -->
-        <div v-if="navLocations.length > 1" class="border-b nav-mobile-border last:border-0">
+        <div v-if="!isSales && navLocations.length > 1" class="border-b nav-mobile-border last:border-0">
           <button
             type="button"
             class="w-full flex items-center justify-between py-3 text-sm font-medium nav-link"
@@ -364,7 +456,20 @@ const isActive = (to: string) => route.path === to
         class="lg:hidden nav-mobile-bg absolute top-full left-0 w-full px-6 shadow-lg z-[200] border-t nav-header-border"
         :class="mobilePanel === 'phone' ? '' : 'hidden'"
       >
-        <template v-for="(loc, i) in navLocations" :key="i">
+        <!-- Sales site: each phone is one call link (the location's name above it when there are several). -->
+        <template v-if="isSales">
+          <template v-for="(loc, i) in navLocations" :key="i">
+            <a
+              v-if="loc.phone !== ''"
+              :href="`tel:${loc.phone}`"
+              class="flex flex-col items-center gap-2 py-3 text-sm nav-phone font-semibold border-b nav-mobile-border last:border-0"
+            >
+              <span v-if="showLocationName && loc.name !== ''" class="text-gray-900">{{ loc.name }}</span>
+              {{ formatPhone(loc.phone) }}
+            </a>
+          </template>
+        </template>
+        <template v-for="(loc, i) in (isSales ? [] : navLocations)" :key="i">
           <div
             v-if="loc.phone !== ''"
             class="flex flex-col items-center gap-1 py-3 text-sm nav-phone font-semibold border-b nav-mobile-border last:border-0"
@@ -383,7 +488,7 @@ const isActive = (to: string) => route.path === to
 
       <!-- Mobile address dropdown (true single, ungrouped location only) -->
       <div
-        v-if="hasNavAddress && navLocations.length <= 1"
+        v-if="hasNavAddress && (isSales || navLocations.length <= 1)"
         class="lg:hidden nav-mobile-bg absolute top-full left-0 w-full px-6 shadow-lg z-[200] border-t nav-header-border"
         :class="mobilePanel === 'address' ? '' : 'hidden'"
       >

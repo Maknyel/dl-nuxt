@@ -8,7 +8,7 @@ import NavLogo from '../template-2/nav/Logo.vue'
 import NavSearchBar from '../template-2/nav/SearchBar.vue'
 import NavMobile from '../template-2/nav/MobileNav.vue'
 
-const { company, menus } = useSite()
+const { company, menus, isSales } = useSite()
 const demo = isDemoHost(useRequestURL().hostname)
 
 const state = computed(() => capsOnly(company.value.state))
@@ -27,7 +27,9 @@ const mapUrl = computed(
       <div class="container">
         <div class="right-info">
           <ul class="flex justify-end items-center text-slate-400">
-            <li>
+            <!-- Sales site: "Call us:" and the number. -->
+            <li v-if="isSales">Call us: <a :href="`tel:${company.phone_number ?? ''}`">{{ formatPhone(company.phone_number) }}</a></li>
+            <li v-else>
               <a :href="`tel:${company.phone_number ?? ''}`" class="flex items-center gap-1">
                 <Icon name="ion:call" /> {{ formatPhone(company.phone_number) }}
               </a>

@@ -5,7 +5,7 @@
  */
 import T1Icon from './Icon.vue'
 
-const { company, site } = useSite()
+const { company, site, isSales } = useSite()
 
 const financePoints = ['No impact to your credit score.', 'Personalized rates.', 'Instant decisions.']
 const sellPoints = ['Get an instant cash offer online in under 2 minutes.', 'Free appraisal.', 'We buy all makes & models.']
@@ -19,9 +19,12 @@ const stats = [
 const FINANCE_FALLBACK = '/media/images/company/finance.webp'
 const SELL_FALLBACK = '/media/images/company/sell_2.png'
 const financeSrc = ref('/media/images/company/finance-couple.jpg')
+// The sales site always shows its own sell photo (no dealer image).
 const sellSrc = ref(
-  String(site.value?.mediaBase ?? '') +
-    (company.value.pre_define?.home?.sell_your_vehicle_image ?? 'global_images/home_new/sell.webp'),
+  isSales.value
+    ? SELL_FALLBACK
+    : String(site.value?.mediaBase ?? '') +
+        (company.value.pre_define?.home?.sell_your_vehicle_image ?? 'global_images/home_new/sell.webp'),
 )
 
 // The Blade's onerror fallbacks. An image can fail before the page hydrates, so check once on mount too.

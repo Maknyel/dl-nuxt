@@ -12,7 +12,7 @@ const props = withDefaults(defineProps<{ co?: boolean }>(), { co: false })
 
 const ctx = inject<FinCtx>('finCtx')!
 const { form, bad, msg, ind, vehicleLocationId } = ctx
-const { mainCompany, isMulti } = useSite()
+const { mainCompany, isMulti, isSales } = useSite()
 
 const p = props.co ? 'co_' : ''
 const STATE = `${p}state`
@@ -20,6 +20,8 @@ const DL_IND = `${p}app_dl_state`
 
 /** The location's line in the Store Location select: "Name - street, city STATE zip". */
 function locationLabel(loc: Record<string, any>) {
+  // The sales site lists the names only.
+  if (isSales.value) return String(loc.name ?? '')
   const address = `${loc.street_address ?? ''}, ${loc.city ?? ''} ${String(loc.state ?? '').toUpperCase()} ${loc.zip_code ?? ''}`.trim()
   return `${loc.name ?? ''}${address !== '' ? ` - ${address}` : ''}`
 }

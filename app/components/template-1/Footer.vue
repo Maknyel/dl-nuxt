@@ -8,7 +8,7 @@
  */
 import type { Company } from '~/types/site'
 
-const { company, mainCompany } = useSite()
+const { company, mainCompany, isSales } = useSite()
 
 // Multi accounts list every location's contact info; otherwise just the company.
 const footerLocations = computed<Company[]>(() =>
@@ -57,6 +57,8 @@ onMounted(() => {
             <li><NuxtLink to="/sell" class="footer4-link text-sm">Sell Us You Car</NuxtLink></li>
             <li><NuxtLink to="/finance" class="footer4-link text-sm">Credit App</NuxtLink></li>
             <li><NuxtLink to="/services" class="footer4-link text-sm">Book Service</NuxtLink></li>
+            <!-- Sales site only: the live-demo booking calendar. -->
+            <li v-if="isSales"><a href="https://hqcalendars.dealerlion.com/booklivedemo" target="_blank" class="footer4-link text-sm">Calendar</a></li>
             <!-- The Blade's "About Us" / "Contact" items check routes (frontend.about, frontend.contact) the Laravel
                  site doesn't have, so they never show. -->
           </ul>
@@ -71,7 +73,32 @@ onMounted(() => {
           </ul>
         </div>
 
-        <div class="flex flex-col gap-4">
+        <!-- Sales site: the company's own contact info only, as a list (no locations). -->
+        <div v-if="isSales" class="flex flex-col gap-4">
+          <h4 class="footer4-heading text-xs font-bold tracking-widest uppercase">Get in Touch</h4>
+          <ul class="flex flex-col gap-4">
+            <li v-if="company.phone_number">
+              <a :href="`tel:${company.phone_number}`" class="footer4-link flex items-center gap-3 text-sm">
+                <span class="footer4-contact-icon"><Icon name="ion:call-outline" style="font-size: 1rem;" aria-hidden="true" /></span>
+                <span>{{ formatPhone(company.phone_number) }}</span>
+              </a>
+            </li>
+            <li v-if="company.email">
+              <a :href="`mailto:${company.email}`" class="footer4-link flex items-center gap-3 text-sm">
+                <span class="footer4-contact-icon"><Icon name="ion:mail-outline" style="font-size: 1rem;" aria-hidden="true" /></span>
+                <span>{{ company.email }}</span>
+              </a>
+            </li>
+            <li v-if="company.street_address">
+              <a :href="mapUrl(company)" target="_blank" class="footer4-link flex items-center gap-3 text-sm">
+                <span class="footer4-contact-icon"><Icon name="ion:location-outline" style="font-size: 1rem;" aria-hidden="true" /></span>
+                <span>{{ company.street_address }},<br>{{ company.city }}, {{ capsOnly(company.state) }} {{ company.zip_code }}</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <div v-else class="flex flex-col gap-4">
           <h4 class="footer4-heading text-xs font-bold tracking-widest uppercase text-left">Get in Touch</h4>
           <div :class="footerMulti ? 'grid lg:grid-cols-2 grid-cols-1 gap-x-8 gap-y-3' : 'flex flex-col gap-4'">
             <template v-for="(loc, i) in footerLocations" :key="loc.id ?? i">

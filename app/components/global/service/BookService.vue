@@ -32,8 +32,11 @@ const props = withDefaults(defineProps<{ services?: Option[]; makes?: Option[] }
   makes: () => [],
 })
 
-const { company, mainCompany, logoUrl } = useSite()
+const { company, mainCompany, logoUrl, isSales } = useSite()
 const demo = isDemoHost(useRequestURL().hostname)
+/** The sales site (:8003): the store select comes after the service (names only), and Request Appointment opens the
+ *  "Demo Only" notice instead of sending. */
+const demoNotice = ref(false)
 
 const accountType = computed(() => String(company.value.account_type ?? ''))
 const isMulti = computed(() => accountType.value === 'Multi')
@@ -450,7 +453,7 @@ function submit() {
               <span class="svc-ico"><Icon name="ion:construct-outline" aria-hidden="true" /></span>Service
             </h2>
             <div class="grid grid-cols-12 gap-3">
-              <div v-if="isMulti" class="col-span-12 md:col-span-12 lg:col-span-12">
+              <div v-if="isMulti && !isSales" class="col-span-12 md:col-span-12 lg:col-span-12">
                 <label class="form-label text-sm font-bold my-2.5">Store Location: <span class="required-indicator">*</span></label>
                 <select
                   id="store_location"
@@ -494,6 +497,23 @@ function submit() {
                   />
                   <div v-show="error.others" class="text-xs text-red-500">{{ error.others }}</div>
                 </div>
+              </div>
+
+              <div v-if="isMulti && isSales" class="col-span-12 md:col-span-12 lg:col-span-12">
+                <label class="form-label text-sm font-bold my-2.5">Store Location: <span class="required-indicator">*</span></label>
+                <select
+                  id="store_location"
+                  v-model="form.store_location"
+                  :class="{ 'input-error': error.store_location }"
+                  required
+                  name="store_location"
+                  class="mt-2.5 input"
+                  @change="onchangeFunction(true)"
+                >
+                  <option value="" disabled selected>Select Store Location</option>
+                  <option v-for="loc in mainCompany" :key="loc.id" :value="String(loc.id)">{{ loc.name }}</option>
+                </select>
+                <div v-show="error.store_location" class="text-xs text-red-500">{{ error.store_location }}</div>
               </div>
             </div>
           </section>
@@ -840,7 +860,15 @@ function submit() {
 
             <div class="mt-3 flex items-center justify-end">
               <button
-                v-if="!buttonDisabled"
+                v-if="isSales"
+                class="flex-1 lg:flex-none flex justify-center px-5 py-3 company-primary-base-background rounded-sm text-white focus:outline-hidden focus:ring-2 focus:ring-pink-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                :disabled="!smsConsent"
+                @click.prevent="smsConsent && (demoNotice = true)"
+              >
+                <Icon name="ion:calendar-outline" aria-hidden="true" /> Request Appointment
+              </button>
+              <button
+                v-else-if="!buttonDisabled"
                 class="flex-1 lg:flex-none flex justify-center px-5 py-3 company-primary-base-background rounded-sm text-white focus:outline-hidden focus:ring-2 focus:ring-pink-300 disabled:opacity-50 disabled:cursor-not-allowed"
                 :disabled="demo || !smsConsent"
                 @click.prevent="smsConsent && !demo && submit()"
@@ -868,6 +896,7 @@ function submit() {
       bottom-description="A representative from the dealership will contact you shortly"
     />
     <UiSwal v-model="swal" />
+    <UiDemoNoticeModal v-if="isSales" v-model="demoNotice" />
   </div>
 </template>
 

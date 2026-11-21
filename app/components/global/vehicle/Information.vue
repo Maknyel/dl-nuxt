@@ -10,9 +10,10 @@
  */
 import CopyButton from './CopyButton.vue'
 import InquiryForm from './InquiryForm.vue'
+import SalesInquiryForm from './SalesInquiryForm.vue'
 
-const props = defineProps<{ vehicle: Record<string, any> }>()
-const { company, site, templateNav } = useSite()
+const props = withDefaults(defineProps<{ vehicle: Record<string, any>; isDemo?: boolean }>(), { isDemo: false })
+const { company, site, templateNav, isSales } = useSite()
 
 const FALLBACK_IMG = '/media/images/company/exv3.jpg'
 const v = computed(() => props.vehicle)
@@ -331,7 +332,9 @@ onBeforeUnmount(() => {
           </div>
         </div>
 
-        <InquiryForm :vehicle="vehicle" variant="panel" />
+        <!-- The sales site's form has Dealer Info instead of the trade-in. -->
+        <SalesInquiryForm v-if="isSales" :vehicle="vehicle" variant="panel" :is-demo="isDemo" />
+        <InquiryForm v-else :vehicle="vehicle" variant="panel" />
       </div>
     </div>
   </div>

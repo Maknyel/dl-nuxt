@@ -54,5 +54,9 @@ export default defineEventHandler(async (event) => {
 
   const hours = body.companyhoursDataUpdated ?? body.companyhours_data_company_id_only_updated ?? []
 
-  return { vehicle, hours: Array.isArray(hours) ? hours : [] }
+  // The sales site's AppConfig.isDemo (its forms open the "Demo Only" notice): COMPANY_INFO === 'Sales Template Live
+  // Demo' exactly. Locally the sales dealer is 'Sales Template Live Demo1', so its forms check the fields as usual.
+  const isDemo = siteType() === 'sales' && companyName() === 'Sales Template Live Demo'
+
+  return { vehicle, hours: Array.isArray(hours) ? hours : [], isDemo }
 })

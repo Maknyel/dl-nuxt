@@ -2,6 +2,7 @@
 // The global footer's "Write a Review" modal (global/footer/index.blade.php, Alpine `add_review`). Shown while
 // v-model is true; its × closes it. The form is rendered but doesn't send yet.
 const open = defineModel<boolean>({ default: false })
+const { isSales } = useSite()
 
 const firstname = ref('')
 const lastname = ref('')
@@ -31,7 +32,7 @@ function submit() {
         <div class="flex flex-wrap justify-between items-center gap-4 p-4 px-6 border-b border-gray-200">
           <h3 class="text-lg font-medium leading-6 text-gray-900">Write a Review</h3>
 
-          <button class="btn-icon-circle on-light" @click.prevent="open = false">x</button>
+          <button :class="isSales ? 'text-black text-xl cursor-pointer' : 'btn-icon-circle on-light'" @click.prevent="open = false">x</button>
         </div>
 
         <div class="py-2 px-4 flex flex-1 flex-col overflow-auto">
@@ -118,7 +119,12 @@ function submit() {
             </div>
             <div class="card-footer w-full mt-5">
               <div class="text-center">
-                <button class="btn-pill btn-pill-light uppercase focus:outline-hidden" @click.prevent="submit">
+                <button
+                  :class="isSales
+                    ? 'uppercase company-primary-base-background font-bold py-2 px-4 rounded-sm focus:outline-hidden text-white'
+                    : 'btn-pill btn-pill-light uppercase focus:outline-hidden'"
+                  @click.prevent="submit"
+                >
                   SUBMIT
                 </button>
               </div>

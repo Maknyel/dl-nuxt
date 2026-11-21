@@ -8,7 +8,7 @@ import NavLogo from './nav/Logo.vue'
 import NavSearchBar from './nav/SearchBar.vue'
 import NavMobile from './nav/MobileNav.vue'
 
-const { company, menus } = useSite()
+const { company, menus, isSales } = useSite()
 const demo = isDemoHost(useRequestURL().hostname)
 
 const state = computed(() => capsOnly(company.value.state))
@@ -28,7 +28,11 @@ const mapUrl = computed(
       <div class="container">
         <div class="right-info">
           <ul class="flex justify-start gap-4 items-center p-2">
-            <li class="flex items-center gap-1">
+            <!-- Sales site: the icon beside the link, not in it. -->
+            <li v-if="isSales" class="flex items-center gap-1">
+              <Icon name="ion:call-outline" /> <a :href="`tel:${company.phone_number ?? ''}`">{{ formatPhone(company.phone_number) }}</a>
+            </li>
+            <li v-else class="flex items-center gap-1">
               <a :href="`tel:${company.phone_number ?? ''}`" class="flex items-center gap-1">
                 <Icon name="ion:call-outline" /> {{ formatPhone(company.phone_number) }}
               </a>

@@ -19,7 +19,7 @@ import Reviews from './Reviews.vue'
 
 const props = defineProps<{ home: T1Home | null | undefined }>()
 
-const { isMulti, templateNav } = useSite()
+const { isMulti, isSales, templateNav } = useSite()
 const on = (flag: string) => String(templateNav.value?.[flag] ?? '') === '1'
 
 const data = computed(() => props.home?.data ?? {})
@@ -30,7 +30,7 @@ useHead({ bodyAttrs: { class: 't1-home' } })
 </script>
 
 <template>
-  <MultiHero v-if="isMulti" :home="home" />
+  <MultiHero v-if="isMulti && !isSales" :home="home" />
   <Hero v-else :reviews="reviews" />
   <Search :data="data" />
   <TrustBar />

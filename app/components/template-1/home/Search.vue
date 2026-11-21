@@ -13,6 +13,7 @@ import PriceRange from './PriceRange.vue'
 
 const props = defineProps<{ data: T1HomeData }>()
 const route = useRoute()
+const { isSales } = useSite()
 
 const FALLBACK_BODIES = ['Compact Car', 'Convertible', 'Crossover SUV', 'Hatchback', 'Minivan', 'SUV', 'Sedan', 'Truck']
 
@@ -479,7 +480,7 @@ const tabSelectClass =
             <option value="">Any Body Style</option>
             <option v-for="(bt, i) in bodyOptions" :key="i" :value="bt">{{ bt }}</option>
           </select>
-          <button type="submit" class="lf4-submit-btn flex items-center gap-2 px-5 py-2 rounded-full text-white text-sm font-semibold">
+          <button type="submit" class="lf4-submit-btn flex items-center gap-2 px-5 py-2 text-white text-sm font-semibold" :class="isSales ? 'rounded-sm' : 'rounded-full'">
             Search
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M12 5l7 7-7 7" />
@@ -495,7 +496,7 @@ const tabSelectClass =
             <option value="">Any Make</option>
             <option v-for="m in makeTabOptions" :key="m" :value="m">{{ m }}</option>
           </select>
-          <button type="submit" class="lf4-submit-btn flex items-center gap-2 px-5 py-2 rounded-full text-white text-sm font-semibold">
+          <button type="submit" class="lf4-submit-btn flex items-center gap-2 px-5 py-2 text-white text-sm font-semibold" :class="isSales ? 'rounded-sm' : 'rounded-full'">
             Search
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M12 5l7 7-7 7" />
@@ -515,7 +516,7 @@ const tabSelectClass =
             ismoneyvalue="yes"
           />
           <div class="flex justify-end mt-2 px-4">
-            <button type="submit" class="lf4-submit-btn flex items-center gap-2 px-5 py-2 rounded-full text-white text-sm font-semibold">
+            <button type="submit" class="lf4-submit-btn flex items-center gap-2 px-5 py-2 text-white text-sm font-semibold" :class="isSales ? 'rounded-sm' : 'rounded-full'">
               Search
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M12 5l7 7-7 7" />

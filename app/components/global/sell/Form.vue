@@ -25,8 +25,15 @@ interface Opt {
   makeid?: number | string
 }
 
-const { company, mainCompany, mediaUrl } = useSite()
+const { company, mainCompany, mediaUrl, isSales } = useSite()
 const isMulti = computed(() => company.value.account_type === 'Multi')
+/**
+ * The sales site (:8003) is a demo: its Next goes to step 2 without checking anything, its VIN Next opens the
+ * "Demo Only" notice and goes to step 2 without decoding, and Submit (still only with the SMS consent) opens the notice.
+ * Its store select sits under the vehicle fields, names only, hidden until a VIN answer is picked.
+ */
+const demoNotice = ref(false)
+const storeShown = ref(false)
 
 const locationLabel = (loc: Record<string, any>) => {
   const address = `${loc.street_address ?? ''}, ${loc.city ?? ''} ${String(loc.state ?? '').toUpperCase()} ${loc.zip_code ?? ''}`.trim()
@@ -174,6 +181,7 @@ function resetValidation(id: Field) {
 function onchangeHasVin(value: 0 | 1) {
   resetAllValidations()
   hasVin.value = value
+  storeShown.value = true
   if (value === 1) {
     decodeShown.value = true
     stepsShown.value = false
@@ -409,7 +417,21 @@ function nextStep() {
   formValidation()
 }
 
+/** The sales site's formValidation(): step 1 always moves on; step 2 (with the SMS consent) "submits". */
+function salesFormValidation() {
+  let s = step.value
+  if (s === 1) {
+    s++
+    scrollTop()
+  } else if (s === 2) {
+    if (!smsConsent.value) return
+    salesFormSubmit()
+  }
+  currentStepChecker(s)
+}
+
 function formValidation() {
+  if (isSales.value) return salesFormValidation()
   let counter = 0
   let s = step.value
   if (s === 2 && !smsConsent.value) return
@@ -498,6 +520,13 @@ function formValidation() {
 
 /* ── VIN decode (the Blade's decodeVin) ── */
 async function decodeVin() {
+  if (isSales.value) {
+    // The sales site's decodeVin(): no decode, the demo notice, then step 2.
+    demoNotice.value = true
+    scrollTop()
+    currentStepChecker(step.value + 1)
+    return
+  }
   decoding.value = true
   if (hasVin.value !== 1) return
   let counter = 0
@@ -548,6 +577,13 @@ function onDecodeConfirmed() {
 
 /* ── Image upload (the hidden #upload_sellcar_image form) ── */
 function onUploadChange(e: Event) {
+  if (isSales.value) {
+    // The sales site uploads nothing: a sample photo and the demo notice.
+    carFeaturesImage.value = 'demo'
+    imagePreview.value = '/media/images/company/exv3.jpg'
+    demoNotice.value = true
+    return
+  }
   const file = (e.target as HTMLInputElement).files?.[0]
   if (!file) return
   if (imagePreview.value) URL.revokeObjectURL(imagePreview.value)
@@ -601,6 +637,17 @@ function formSubmit() {
   void data
 }
 
+/** Previous / Next: the client site's classes, and the sales site's (the page's CSS restyles both alike). */
+const CLIENT_STEP_BTN =
+  'flex-1 lg:flex-none flex justify-center px-5 py-3 company-primary-base-background rounded-sm text-white focus:outline-hidden focus:ring-2 focus:ring-pink-300 disabled:opacity-50 disabled:cursor-not-allowed'
+const SALES_STEP_BTN =
+  'flex-1 lg:flex-none disabled:opacity-50 disabled:cursor-not-allowed md:flex-none flex justify-center company-primary-base-background text-white font-bold py-2 px-4 rounded-sm focus:outline-hidden'
+
+/** The sales site's formSubmit(): nothing is sent (its Blade has no request at all), the demo notice opens. */
+function salesFormSubmit() {
+  demoNotice.value = true
+}
+
 const alertVehicle = { image: '', title: '', vin: '', mileage: '', year: '', make: '', model: '', trim: '' }
 </script>
 
@@ -625,7 +672,7 @@ const alertVehicle = { image: '', title: '', vin: '', mileage: '', year: '', mak
 
       <!-- Step 1: Your Vehicle -->
       <div class="taboption" :class="{ 'is-shown': step === 1 }">
-        <div v-if="isMulti" id="store_location_div" class="input-container mt-2.5">
+        <div v-if="isMulti && !isSales" id="store_location_div" class="input-container mt-2.5">
           <label class="form-label text-sm font-bold">Store Location <span class="required-indicator">*</span></label>
           <select
             id="store_location"
@@ -812,6 +859,26 @@ const alertVehicle = { image: '', title: '', vin: '', mileage: '', year: '', mak
             <span id="condition_validation_text" class="validation-text">{{ err.condition }}</span>
           </div>
         </div>
+        <div
+          v-if="isMulti && isSales"
+          id="store_location_div"
+          class="input-container mt-2.5"
+          :class="{ nodisplay: !storeShown }"
+        >
+          <label class="form-label text-sm font-bold">Store Location <span class="required-indicator">*</span></label>
+          <select
+            id="store_location"
+            v-model="f.store_location"
+            name="store_location"
+            class="mt-2.5 input"
+            :class="{ 'input-error': err.store_location }"
+            @change="resetValidation('store_location')"
+          >
+            <option value="" disabled>Select Store Location</option>
+            <option v-for="loc in mainCompany" :key="String(loc.id)" :value="String(loc.id)">{{ loc.name }}</option>
+          </select>
+          <span id="store_location_validation_text" class="validation-text">{{ err.store_location }}</span>
+        </div>
       </div>
 
       <!-- Step 2: Your Contact Info -->
@@ -922,7 +989,7 @@ const alertVehicle = { image: '', title: '', vin: '', mileage: '', year: '', mak
           <div class="w-full flex gap-2 justify-between">
             <button
               id="prevBtn"
-              class="flex-1 lg:flex-none flex justify-center px-5 py-3 company-primary-base-background rounded-sm text-white focus:outline-hidden focus:ring-2 focus:ring-pink-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              :class="isSales ? SALES_STEP_BTN : CLIENT_STEP_BTN"
               type="button"
               :style="{ display: step === 1 ? 'none' : 'inline' }"
               @click="previousStep"
@@ -931,7 +998,8 @@ const alertVehicle = { image: '', title: '', vin: '', mileage: '', year: '', mak
             </button>
             <button
               id="nextBtn"
-              class="flex-1 lg:flex-none flex justify-center px-5 py-3 company-primary-base-background rounded-sm text-white focus:outline-hidden focus:ring-2 focus:ring-pink-300 disabled:opacity-50 disabled:cursor-not-allowed ml-auto"
+              :class="isSales ? SALES_STEP_BTN : CLIENT_STEP_BTN"
+              class="ml-auto"
               type="button"
               :disabled="step === 2 && !smsConsent"
               @click="nextStep"
@@ -971,5 +1039,6 @@ const alertVehicle = { image: '', title: '', vin: '', mileage: '', year: '', mak
     </form>
 
     <UiSwal v-model="swal" @confirm="onDecodeConfirmed" />
+    <UiDemoNoticeModal v-if="isSales" v-model="demoNotice" />
   </div>
 </template>
