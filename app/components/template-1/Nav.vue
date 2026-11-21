@@ -24,7 +24,8 @@ const salesLocations = computed<NavLocation[]>(() => {
     phone: company.value.phone_number ?? '',
     email: company.value.email ?? '',
     address,
-    mapUrl: `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(address)}`,
+    // PHP's urlencode(): spaces as '+'.
+    mapUrl: `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(address).replace(/%20/g, '+')}`,
     website: company.value.dl_website ?? '',
     accountType: company.value.account_type ?? '',
     raw: company.value,
