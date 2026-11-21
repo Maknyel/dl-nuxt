@@ -424,6 +424,10 @@ function submit() {
   }
   // TODO(forms): POST website/forms/interested (see data-map.md "Form endpoints") with `payload` + source; on success
   // clear the fields, resetTrade(), untick the consent and show the Thank You alert (alert-component).
+  // On the sales site (where this form is only the inventory list's pop-up, vehicle-lists.blade.php) it posts to the
+  // site's own /frontend/interested instead (FormSubmissionService::submitInterested → API
+  // websitetemplate/sales-interested-api, answer has is_sales), and after a success re-runs syncInquirySmsConsent()
+  // so the submit button is disabled again with the consent cleared.
   void payload
 }
 

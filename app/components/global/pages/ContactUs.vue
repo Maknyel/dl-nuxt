@@ -73,6 +73,9 @@ function submit() {
   if (onchangeFunction(false) !== 0) return
   // TODO(forms): POST /frontend/contact_us → website/forms/contact-us (see data-map.md "Form endpoints"), with
   // location_id = store_location for a Multi dealer; on success set showAlert, else show the API's message.
+  // (The sales site never gets here: its Send Message opens the Demo Only notice. Its controller would post through
+  // FormSubmissionService::submitContactUs → API websitetemplate/contact-us, adding company_info, dealership_name and
+  // job_title.)
 }
 </script>
 

@@ -5,7 +5,7 @@
  * × or Close shuts it.
  *
  * `bodyFont`: where the Blade puts the notice outside the page's own block (Sell Us Your Car), it has the Laravel
- * <body>'s font (frontend-tw's Poppins stack); the Nuxt <body> has Inter.
+ * <body>'s font (frontend-tw's Poppins stack) and black text; the Nuxt <body> has Inter.
  */
 withDefaults(defineProps<{ title?: string; message?: string; bodyFont?: boolean }>(), {
   title: 'Demo Only',
@@ -63,6 +63,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 .demo-notice--body-font {
   font-family: Poppins, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
     'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  color: #000;
 }
 
 .fade-in {
