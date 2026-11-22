@@ -61,6 +61,7 @@ declare module 'vue' {
     GlobalVehiclePayment: typeof import('./app/components/global/vehicle/Payment.vue')['default']
     GlobalVehicleSalesInquiryForm: typeof import('./app/components/global/vehicle/SalesInquiryForm.vue')['default']
     Icon: typeof import('./app/components/Icon.vue')['default']
+    PageSkeleton: typeof import('./app/components/PageSkeleton.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SiteFooter: typeof import('./app/components/site/Footer.vue')['default']

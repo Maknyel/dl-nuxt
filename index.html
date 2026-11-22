@@ -12,15 +12,43 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=block"
     />
     <style>
-      /* Shown until the dealer's data is in and the page mounts (replaced by the app). */
-      #boot { position: fixed; inset: 0; display: grid; place-items: center; background: #fafafc; }
-      #boot span { width: 40px; height: 40px; border: 3px solid #e6e4ef; border-top-color: #6b7280; border-radius: 50%;
-        animation: boot-spin .8s linear infinite; }
-      @keyframes boot-spin { to { transform: rotate(360deg); } }
+      /* Shown until the dealer's data is in and the app mounts (replaced by the app): a skeleton of the nav and the
+         page, the same shapes as the page skeleton (app/components/PageSkeleton.vue). */
+      #boot { min-height: 100vh; background: #fff; }
+      #boot .b { border-radius: 1rem; background: linear-gradient(90deg, #ececf1 0%, #f6f6f9 40%, #ececf1 80%);
+        background-size: 200% 100%; animation: boot-shimmer 1.3s ease-in-out infinite; }
+      #boot .b-nav { height: 58px; border-bottom: 1px solid #eeeef2; }
+      #boot .b-nav-in { max-width: 1280px; height: 100%; margin: 0 auto; padding: 0 1rem; display: flex;
+        align-items: center; justify-content: space-between; gap: 1rem; }
+      #boot .b-logo { width: 150px; height: 36px; border-radius: 0.5rem; }
+      #boot .b-links { flex: 1; max-width: 640px; height: 36px; border-radius: 999px; }
+      #boot .b-cta { width: 150px; height: 38px; border-radius: 0.6rem; }
+      #boot .b-wrap { max-width: 1280px; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
+      #boot .b-hero { height: clamp(260px, 45vw, 460px); }
+      #boot .b-title { width: min(320px, 60%); height: 1.75rem; margin: 2.5rem auto 1.5rem; border-radius: 0.5rem; }
+      #boot .b-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem; }
+      #boot .b-card { height: 200px; }
+      @media (max-width: 767px) {
+        #boot .b-links { display: none; }
+        #boot .b-cta { width: 90px; }
+        #boot .b-grid { grid-template-columns: minmax(0, 1fr); }
+        #boot .b-card:nth-child(n + 2) { display: none; }
+      }
+      @keyframes boot-shimmer { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+      @media (prefers-reduced-motion: reduce) { #boot .b { animation: none; } }
     </style>
   </head>
   <body>
-    <div id="app"><div id="boot" aria-hidden="true"><span></span></div></div>
+    <div id="app">
+      <div id="boot" role="status" aria-label="Loading">
+        <div class="b-nav"><div class="b-nav-in"><div class="b b-logo"></div><div class="b b-links"></div><div class="b b-cta"></div></div></div>
+        <div class="b-wrap">
+          <div class="b b-hero"></div>
+          <div class="b b-title"></div>
+          <div class="b-grid"><div class="b b-card"></div><div class="b b-card"></div><div class="b b-card"></div></div>
+        </div>
+      </div>
+    </div>
     <script type="module" src="/app/main.ts"></script>
   </body>
 </html>
