@@ -38,6 +38,8 @@ const todayHours = computed(() => {
 
     <div class="lp-map-info">
       <div class="lp-map-addr">
+        <!-- Shown only when the address is one line (Contact Us, stacked); hidden otherwise. -->
+        <Icon class="lp-map-addr-ico" name="ion:location-outline" aria-hidden="true" />
         <strong>{{ v.street_address }}</strong>
         <strong>{{ v.city }}, {{ state }} {{ v.zip_code }}</strong>
         <span>USA</span>

@@ -8,15 +8,19 @@
  *    price and miles, the fields, the trade-in, the SMS consent and the submit button. The parent supplies the dimmed
  *    full-screen backdrop around it. Errors show after the first Submit and update as the fields are typed in.
  *
- * Both: Submit stays disabled until the SMS consent is ticked; the phone formats as (xxx) xxx-xxxx; the trade-in's
+ *  - variant 'vim': the vehicle page's I'm Interested pop-up as rebuilt in ADR-0180 (global/show/form.blade.php):
+ *    two columns, a trade-in second step, its own backdrop (`open`). The inventory list's pop-up keeps 'modal'.
+ *
+ * All: Submit stays disabled until the SMS consent is ticked; the phone formats as (xxx) xxx-xxxx; the trade-in's
  * makes come from the API (/api/site/trade/makes), its models / trims / VIN decode from JD Power
  * (/api/site/trade/*); miles format with thousands separators.
  *
  * Not sent yet (docs/PORTING.md "Forms are not ported yet"): Submit validates, then stops at the TODO(forms) below.
  */
-const props = withDefaults(defineProps<{ vehicle: Record<string, any>; variant?: 'modal' | 'panel' }>(), {
-  variant: 'modal',
-})
+const props = withDefaults(
+  defineProps<{ vehicle: Record<string, any>; variant?: 'modal' | 'panel' | 'vim'; open?: boolean }>(),
+  { variant: 'modal', open: false },
+)
 const emit = defineEmits<{ close: [] }>()
 
 const { company, site } = useSite()
@@ -305,13 +309,19 @@ function onTradeTrimChange() {
   }
 }
 
+/** DECODE's errors: the 'vim' pop-up shows them as the required check's (a red border, cleared by typing; ADR-0180). */
+function setVinError(message: string) {
+  if (props.variant === 'vim') tradeErrors.tradeVin = message
+  else tradeVinError.value = message
+}
+
 async function decodeTradeVin() {
   const vin = tradeVin.value.trim()
   if (!vin || vin.length !== 17) {
-    tradeVinError.value = 'VIN must be exactly 17 characters'
+    setVinError('VIN must be exactly 17 characters')
     return
   }
-  tradeVinError.value = ''
+  setVinError('')
   tradeVinDecoded.value = false
   tradeVinDecoding.value = true
   try {
@@ -324,11 +334,11 @@ async function decodeTradeVin() {
       tradeVinDrivetrain.value = d.data.drivetype || ''
       tradeVinDecoded.value = true
     } else {
-      tradeVinError.value = 'Invalid VIN. Please try again.'
+      setVinError('Invalid VIN. Please try again.')
     }
   } catch {
     // An unknown VIN answers 404 (as the Laravel endpoint does): the failed-call message, as there.
-    tradeVinError.value = 'Failed to decode VIN. Please try again.'
+    setVinError('Failed to decode VIN. Please try again.')
   } finally {
     tradeVinDecoding.value = false
   }
@@ -449,6 +459,92 @@ const modalMakePh = computed(() =>
 const MODEL_PH = { initial: 'Select your Vehicle Model', reset: 'Select Model', loading: 'Loading...', ok: 'Select Model', error: 'Failed to load models' }
 const TRIM_PH = { initial: 'Select your Vehicle Trim', reset: 'Select Trim', loading: 'Loading...', ok: 'Select Trim', error: 'Failed to load trims' }
 const DT_PH = { initial: 'Select your Vehicle Drivetrain', reset: 'Select Drivetrain', none: 'No drivetrain data', ok: 'Select Drivetrain' }
+
+/* ── variant 'vim': the vehicle page's I'm Interested pop-up (ADR-0180, global/show/form.blade.php) ──
+ * Two columns: the vehicle on a grey panel, the form beside it. Step 1 is the contact fields; "I have a trade-in" makes
+ * the trade its step 2. Only the fields scroll (.vim-scroll). The component draws its own backdrop (`open`); Esc and a
+ * click on the backdrop close it. Styles: vim-popup.css. */
+const VIM_CONDITIONS = ['Excellent', 'Good', 'Fair', 'Poor']
+const step = ref<1 | 2>(1)
+const vimBody = ref<HTMLElement | null>(null)
+const vimScroll = ref<HTMLElement | null>(null)
+const vimFirst = ref<HTMLInputElement | null>(null)
+const vimPrice = computed(() => (priceNum.value > 0 ? `$${fmt(priceNum.value)}` : 'CALL FOR PRICE'))
+const vimMiles = computed(() =>
+  v.value.mileage && isNum(v.value.mileage) ? `Miles: ${fmt(Math.round(Number(v.value.mileage)))}` : 'CALL FOR MILEAGE',
+)
+/** Condition takes the full row when a Drivetrain field sits beside Miles. */
+const vimConditionFull = computed(() => tradeOption.value === 'manual' || tradeVinDecoded.value)
+const vimMakePh = computed(() => (makeState.value === 'error' ? 'Failed to load makes' : 'Select Make'))
+const VIM_MODEL_PH = { initial: 'Select Model', reset: 'Select Model', loading: 'Loading...', ok: 'Select Model', error: 'Failed to load models' }
+const VIM_TRIM_PH = { initial: 'Select Trim', reset: 'Select Trim', loading: 'Loading...', ok: 'Select Trim', error: 'Failed to load trims' }
+
+if (props.variant === 'vim') {
+  useHead({
+    link: [{ rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap' }],
+  })
+}
+
+/** Moves between step 1 (contact) and step 2 (trade-in) and brings the new step's top into view. */
+function vimGoTo(n: 1 | 2) {
+  step.value = n
+  nextTick(() => {
+    if (vimBody.value) vimBody.value.scrollTop = 0
+    if (vimScroll.value) vimScroll.value.scrollTop = 0
+  })
+}
+/** "Next: Trade-in details": the contact fields have to be valid first. */
+function vimNext() {
+  alreadySubmit.value = true
+  if (validateContact()) vimGoTo(2)
+}
+function vimToggleTrade() {
+  if (!hasTrade.value) clearTradeErrors()
+  else if (tradeOption.value === 'manual') loadTradeMakes()
+}
+function vimSubmit() {
+  if (!smsConsent.value) return
+  alreadySubmit.value = true
+  if (!validateContact()) {
+    // A contact field went bad after step 1 (e.g. edited back): show it.
+    if (step.value !== 1) vimGoTo(1)
+    return
+  }
+  if (!validateTrade()) return
+  const payload: Record<string, unknown> = {
+    company_id: String(company.value.id),
+    vehicle_id: String(v.value.id ?? ''),
+    ...(company.value.account_type === 'Multi' ? { location_id: String(v.value.company_id ?? '') } : {}),
+    firstname: firstname.value,
+    lastname: lastname.value,
+    phone: phone.value,
+    email: email.value,
+    message: '',
+    sms_consent: smsConsent.value ? 1 : 0,
+    ...tradeData(),
+  }
+  // TODO(forms): POST website/forms/interested (see data-map.md "Form endpoints") with `payload` + source; on success
+  // close, clear the fields, resetTrade(), step 1, untick the consent and show the Thank You alert.
+  void payload
+}
+function vimClose() {
+  step.value = 1
+  closeModal()
+}
+function vimOnKey(e: KeyboardEvent) {
+  if (e.key === 'Escape' && props.open) vimClose()
+}
+if (props.variant === 'vim') {
+  watch(
+    () => props.open,
+    (open) => {
+      // Focus the first name on open (not on phones, where the keyboard would cover the card).
+      if (open && window.matchMedia('(min-width: 768px)').matches) setTimeout(() => vimFirst.value?.focus(), 60)
+    },
+  )
+  onMounted(() => window.addEventListener('keydown', vimOnKey))
+  onBeforeUnmount(() => window.removeEventListener('keydown', vimOnKey))
+}
 </script>
 
 <template>
@@ -755,7 +851,387 @@ const DT_PH = { initial: 'Select your Vehicle Drivetrain', reset: 'Select Drivet
     </div>
   </div>
 
-  <!-- ══ Modal: the I'm Interested pop-up's card ══ -->
+  <!-- ══ variant 'vim': the vehicle page's I'm Interested pop-up (ADR-0180) ══ -->
+  <Transition v-else-if="variant === 'vim'" name="vim-fade">
+    <div v-show="open" class="vim-overlay" @click.self="vimClose">
+      <div
+        id="vimPanel"
+        class="vim-dialog"
+        :class="{ 'is-step-2': step === 2 }"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="vimHead"
+      >
+        <button type="button" class="vim-close" aria-label="Close" @click="vimClose">
+          <Icon name="ion:close-outline" />
+        </button>
+
+        <!-- Desktop: the two columns. Phones: the card's scroll area (the footer is pinned inside it). -->
+        <div ref="vimBody" class="vim-body">
+          <!-- Vehicle -->
+          <aside class="vim-aside">
+            <div class="vim-aside-main">
+              <div class="vim-photo">
+                <img
+                  id="vehicle_image_logo"
+                  :src="modalImage"
+                  :alt="modalImage === FALLBACK_IMG ? '' : `${vehicle.year} ${vehicle.make} ${vehicle.model}`"
+                  @error="onImgError"
+                />
+              </div>
+
+              <div class="vim-car-text">
+                <h3 class="vim-car-title">{{ modalTitle }}</h3>
+
+                <div class="vim-car-meta">
+                  <span class="vim-price">{{ vimPrice }}</span>
+                  <span>{{ vimMiles }}</span>
+                </div>
+
+                <div v-if="otherLocation" class="vim-location">
+                  <Icon name="ion:location" />
+                  {{ otherLocation }}
+                </div>
+              </div>
+            </div>
+
+            <p class="vim-reply">
+              <Icon name="ion:time-outline" />
+              A specialist typically replies within 15 minutes.
+            </p>
+          </aside>
+
+          <!-- Form -->
+          <section class="vim-main">
+            <div class="vim-form">
+              <!-- Pinned to the top while the fields scroll under it. -->
+              <div class="vim-top">
+                <div id="vimHead">
+                  <h2 v-show="step === 1" class="vim-title vim-head-1">I'm interested in this vehicle</h2>
+                  <h2 v-show="step === 2" class="vim-title">Trade-in details</h2>
+                  <p v-show="step === 1" class="vim-sub vim-head-1">
+                    Confirm availability, schedule a test drive, or get your best price. No obligation.
+                  </p>
+                  <p v-show="step === 2" class="vim-sub">Tell us about the vehicle you're trading in.</p>
+                </div>
+
+                <div class="vim-progress">
+                  <span class="vim-progress-label">Step {{ step }} of {{ hasTrade ? 2 : 1 }}</span>
+                  <span class="vim-progress-bar" :class="{ 'is-single': !hasTrade }" aria-hidden="true">
+                    <span class="vim-progress-seg is-filled" />
+                    <span class="vim-progress-seg" :class="{ 'is-filled': step === 2 }" />
+                  </span>
+                </div>
+              </div>
+
+              <!-- The fields: the only part that scrolls on desktop. -->
+              <div ref="vimScroll" class="vim-scroll">
+                <!-- Step 1: contact -->
+                <div v-show="step === 1" id="show-inquiry-step-contact" class="vim-step">
+                  <div class="vim-grid">
+                    <div>
+                      <label class="vim-label" for="show_firstname">First name <span class="vim-req">*</span></label>
+                      <input
+                        id="show_firstname"
+                        ref="vimFirst"
+                        v-model="firstname"
+                        :class="{ 'input-error': error.firstName }"
+                        class="vim-input"
+                        required
+                        name="firstname"
+                        placeholder="Jane"
+                        autocomplete="given-name"
+                        type="text"
+                        @keyup="onModalKeyup"
+                      />
+                      <div v-show="error.firstName" class="vim-error">{{ error.firstName }}</div>
+                    </div>
+                    <div>
+                      <label class="vim-label" for="show_lastname">Last name <span class="vim-req">*</span></label>
+                      <input
+                        id="show_lastname"
+                        v-model="lastname"
+                        type="text"
+                        :class="{ 'input-error': error.lastName }"
+                        class="vim-input"
+                        required
+                        name="lastname"
+                        placeholder="Doe"
+                        autocomplete="family-name"
+                        @keyup="onModalKeyup"
+                      />
+                      <div v-show="error.lastName" class="vim-error">{{ error.lastName }}</div>
+                    </div>
+                    <div class="vim-span-2-sm">
+                      <label class="vim-label" for="phone_interested">Mobile phone <span class="vim-req">*</span></label>
+                      <input
+                        id="phone_interested"
+                        v-model="phone"
+                        type="tel"
+                        placeholder="(555) 123-4567"
+                        name="phone"
+                        autocomplete="tel-national"
+                        :class="{ 'input-error': error.phoneNumber }"
+                        class="vim-input"
+                        required
+                        @input="formatPhoneInput"
+                        @keyup="onModalKeyup"
+                      />
+                      <div v-show="error.phoneNumber" class="vim-error">{{ error.phoneNumber }}</div>
+                    </div>
+                    <div class="vim-span-2-sm">
+                      <label class="vim-label" for="show_email">Email <span class="vim-req">*</span></label>
+                      <input
+                        id="show_email"
+                        v-model="email"
+                        type="email"
+                        :class="{ 'input-error': error.email }"
+                        class="vim-input"
+                        required
+                        name="email"
+                        placeholder="jane@email.com"
+                        autocomplete="email"
+                        @keyup="onModalKeyup"
+                      />
+                      <div v-show="error.email" class="vim-error">{{ error.email }}</div>
+                    </div>
+                  </div>
+
+                  <label class="vim-check vim-trade-check" for="showHasTradeCheckbox">
+                    <input id="showHasTradeCheckbox" v-model="hasTrade" type="checkbox" @change="vimToggleTrade" />
+                    <span>I have a trade-in</span>
+                  </label>
+                </div>
+
+                <!-- Step 2: trade-in -->
+                <div v-show="step === 2" id="show-inquiry-step-trade" class="vim-step">
+                  <div class="vim-grid">
+                    <!-- Options -->
+                    <div class="vim-span-2">
+                      <label class="vim-label" for="trade_option">Options</label>
+                      <select id="trade_option" v-model="tradeOption" class="vim-input" @change="changeTradeOption">
+                        <option value="vin">Add Using VIN</option>
+                        <option value="manual">Add Manually</option>
+                      </select>
+                    </div>
+
+                    <!-- VIN Section -->
+                    <div v-show="tradeOption === 'vin'" id="trade-vin-section" class="vim-span-2">
+                      <label class="vim-label" for="trade_vin">VIN Number <span class="vim-req">*</span></label>
+                      <div class="vim-vin">
+                        <input
+                          id="trade_vin"
+                          v-model="tradeVin"
+                          type="text"
+                          placeholder="Enter your 17-character VIN"
+                          maxlength="17"
+                          :class="{ 'input-error': tradeErrors.tradeVin }"
+                          class="vim-input"
+                          @input="tradeErrors.tradeVin = ''"
+                          @keydown.enter.prevent="decodeTradeVin"
+                        />
+                        <button id="trade-decode-btn" type="button" class="vim-decode" @click="decodeTradeVin">
+                          {{ tradeVinDecoding ? 'DECODING...' : 'DECODE' }}
+                        </button>
+                      </div>
+                      <div v-show="tradeErrors.tradeVin" class="vim-error">{{ tradeErrors.tradeVin }}</div>
+
+                      <div v-show="tradeVinDecoded" id="trade-vin-decoded" class="vim-grid" style="margin-top: 16px">
+                        <div>
+                          <label class="vim-label" for="trade_vin_year">Year</label>
+                          <input id="trade_vin_year" v-model="tradeVinYear" type="text" class="vim-input" disabled />
+                        </div>
+                        <div>
+                          <label class="vim-label" for="trade_vin_make">Make</label>
+                          <input id="trade_vin_make" v-model="tradeVinMake" type="text" class="vim-input" disabled />
+                        </div>
+                        <div>
+                          <label class="vim-label" for="trade_vin_model">Model</label>
+                          <input id="trade_vin_model" v-model="tradeVinModel" type="text" class="vim-input" disabled />
+                        </div>
+                        <div>
+                          <label class="vim-label" for="trade_vin_trim">Trim</label>
+                          <input id="trade_vin_trim" v-model="tradeVinTrim" type="text" class="vim-input" disabled />
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Manual Section -->
+                    <div v-show="tradeOption === 'manual'" id="trade-manual-section" class="vim-span-2">
+                      <div class="vim-grid">
+                        <div>
+                          <label class="vim-label" for="trade_year">Year <span class="vim-req">*</span></label>
+                          <select
+                            id="trade_year"
+                            v-model="tradeYear"
+                            :class="{ 'input-error': tradeErrors.tradeYear }"
+                            class="vim-input"
+                            @change="onTradeYearChange"
+                          >
+                            <option value="" disabled>Select Year</option>
+                            <option v-for="ty in YEARS" :key="ty" :value="String(ty)">{{ ty }}</option>
+                          </select>
+                          <div v-show="tradeErrors.tradeYear" class="vim-error">{{ tradeErrors.tradeYear }}</div>
+                        </div>
+                        <div>
+                          <label class="vim-label" for="trade_make">Make <span class="vim-req">*</span></label>
+                          <select
+                            id="trade_make"
+                            v-model="tradeMake"
+                            :disabled="makeState === 'idle'"
+                            :class="{ 'input-error': tradeErrors.tradeMake }"
+                            class="vim-input"
+                            @change="onTradeMakeChange"
+                          >
+                            <option value="" disabled>{{ vimMakePh }}</option>
+                            <option v-for="m in tradeMakes" :key="m.id" :value="m.title">{{ m.title }}</option>
+                          </select>
+                          <div v-show="tradeErrors.tradeMake" class="vim-error">{{ tradeErrors.tradeMake }}</div>
+                        </div>
+                        <div>
+                          <label class="vim-label" for="trade_model">Model <span class="vim-req">*</span></label>
+                          <select
+                            id="trade_model"
+                            v-model="tradeModel"
+                            :disabled="modelState !== 'ok' && modelState !== 'error'"
+                            :class="{ 'input-error': tradeErrors.tradeModel }"
+                            class="vim-input"
+                            @change="onTradeModelChange"
+                          >
+                            <option value="" disabled>{{ VIM_MODEL_PH[modelState] }}</option>
+                            <option v-for="m in tradeModels" :key="m.model" :value="m.model">{{ m.model }}</option>
+                          </select>
+                          <div v-show="tradeErrors.tradeModel" class="vim-error">{{ tradeErrors.tradeModel }}</div>
+                        </div>
+                        <div>
+                          <label class="vim-label" for="trade_trim">Trim <span class="vim-req">*</span></label>
+                          <select
+                            id="trade_trim"
+                            v-model="tradeTrim"
+                            :disabled="trimState !== 'ok' && trimState !== 'error'"
+                            :class="{ 'input-error': tradeErrors.tradeTrim }"
+                            class="vim-input"
+                            @change="onTradeTrimChange"
+                          >
+                            <option value="" disabled>{{ VIM_TRIM_PH[trimState] }}</option>
+                            <option v-for="t in uniqueTradeTrims" :key="trimLabel(t)" :value="trimLabel(t)">{{ trimLabel(t) }}</option>
+                          </select>
+                          <div v-show="tradeErrors.tradeTrim" class="vim-error">{{ tradeErrors.tradeTrim }}</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Drivetrain (VIN option: decoded, beside Miles) -->
+                    <div v-show="tradeOption === 'vin' && tradeVinDecoded" id="trade-vin-drivetrain-wrap">
+                      <label class="vim-label" for="trade_vin_drivetrain">Drivetrain</label>
+                      <select id="trade_vin_drivetrain" v-model="tradeVinDrivetrain" class="vim-input">
+                        <option value="" disabled>Select Drivetrain</option>
+                        <option>AWD</option>
+                        <option>4WD</option>
+                        <option>FWD</option>
+                        <option>RWD</option>
+                      </select>
+                    </div>
+
+                    <!-- Drivetrain (Manual option: beside Miles) -->
+                    <div v-show="tradeOption === 'manual'" id="trade-manual-drivetrain-wrap">
+                      <label class="vim-label" for="trade_drivetrain">Drivetrain <span class="vim-req">*</span></label>
+                      <select
+                        id="trade_drivetrain"
+                        v-model="tradeDrivetrain"
+                        :disabled="dtState !== 'ok'"
+                        :class="{ 'input-error': tradeErrors.tradeDrivetrain }"
+                        class="vim-input"
+                        @change="tradeErrors.tradeDrivetrain = ''"
+                      >
+                        <option value="" disabled>{{ dtState === 'none' ? 'No drivetrain data' : 'Select Drivetrain' }}</option>
+                        <option v-if="tradeDrivetrain" :value="tradeDrivetrain">{{ tradeDrivetrain }}</option>
+                      </select>
+                      <div v-show="tradeErrors.tradeDrivetrain" class="vim-error">{{ tradeErrors.tradeDrivetrain }}</div>
+                    </div>
+
+                    <!-- Miles -->
+                    <div>
+                      <label class="vim-label" for="trade_miles">Miles <span class="vim-req">*</span></label>
+                      <input
+                        id="trade_miles"
+                        :value="tradeMiles"
+                        type="text"
+                        placeholder="e.g. 45,000"
+                        inputmode="numeric"
+                        :class="{ 'input-error': tradeErrors.tradeMiles }"
+                        class="vim-input"
+                        @input="formatTradeMiles"
+                      />
+                      <div v-show="tradeErrors.tradeMiles" class="vim-error">{{ tradeErrors.tradeMiles }}</div>
+                    </div>
+
+                    <!-- Condition (full width when Drivetrain takes the spot beside Miles) -->
+                    <div id="trade-condition-wrap" :class="{ 'vim-span-2': vimConditionFull }">
+                      <label class="vim-label" for="trade_condition">Condition <span class="vim-req">*</span></label>
+                      <select
+                        id="trade_condition"
+                        v-model="tradeCondition"
+                        :class="{ 'input-error': tradeErrors.tradeCondition }"
+                        class="vim-input"
+                        @change="tradeErrors.tradeCondition = ''"
+                      >
+                        <option value="" disabled>Select Condition</option>
+                        <option v-for="c in VIM_CONDITIONS" :key="c">{{ c }}</option>
+                      </select>
+                      <div v-show="tradeErrors.tradeCondition" class="vim-error">{{ tradeErrors.tradeCondition }}</div>
+                    </div>
+
+                    <!-- Notes -->
+                    <div class="vim-span-2 vim-notes">
+                      <label class="vim-label" for="trade_notes">Notes</label>
+                      <textarea
+                        id="trade_notes"
+                        v-model="tradeNotes"
+                        rows="3"
+                        placeholder="Please describe your trade or any details we should know."
+                        class="vim-input"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Footer: the consent shows on both steps (one checkbox, so ticking it on step 1 carries to step 2's send). -->
+            <div id="show-contact-step-footer" class="vim-footer">
+              <div class="vim-consent">
+                <UiSmsConsent id="show_sms_consent" v-model="smsConsent" size="12.5px" />
+              </div>
+
+              <div class="vim-actions">
+                <button v-show="step === 2" type="button" class="vim-btn vim-btn-ghost" @click="vimGoTo(1)">
+                  <Icon name="ion:arrow-back" /> Back
+                </button>
+
+                <button v-show="hasTrade && step === 1" type="button" class="vim-btn vim-btn-primary" @click="vimNext">
+                  Next: Trade-in details <Icon name="ion:arrow-forward" />
+                </button>
+
+                <button
+                  v-show="!hasTrade || step === 2"
+                  id="showSubmitBtn"
+                  type="button"
+                  class="vim-btn vim-btn-primary submit-button"
+                  :disabled="demo || !smsConsent"
+                  @click="vimSubmit"
+                >
+                  Send my inquiry <Icon name="ion:arrow-forward" />
+                </button>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </Transition>
+
+  <!-- ══ Modal: the inventory list's I'm Interested pop-up card ══ -->
   <div
     v-else
     class="w-[90%] h-auto max-h-[95dvh] mx-auto rounded-xl md:w-auto md:max-w-xl lg:max-w-2xl xl:max-w-2xl md:h-auto md:mx-2 text-left bg-white shadow-xl md:max-h-[120vh] flex flex-1 flex-col overflow-hidden iminterested-popup md:[transform:scale(0.8)]"
@@ -1100,7 +1576,18 @@ const DT_PH = { initial: 'Select your Vehicle Drivetrain', reset: 'Select Drivet
   </div>
 </template>
 
+<style src="./vim-popup.css"></style>
+
 <style>
+.vim-fade-enter-active,
+.vim-fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+.vim-fade-enter-from,
+.vim-fade-leave-to {
+  opacity: 0;
+}
+
 /* The Laravel vdp-contact-form.blade.php block (global there too; every class is vdp-*). */
 .vdp-contact-form {
   border-bottom: 1px solid #e5e7eb;

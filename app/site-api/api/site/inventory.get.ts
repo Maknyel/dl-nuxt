@@ -62,8 +62,14 @@ function slimVehicle(row: Record<string, any>): Record<string, any> {
 
 const list = (v: unknown): any[] => (Array.isArray(v) ? v : [])
 
+/** The inventory page's page size when the visitor hasn't picked one (ADR-0187, HomeController::INVENTORY_PER_PAGE). */
+const INVENTORY_PER_PAGE = 100
+
 export default defineEventHandler(async (event) => {
   const get = laravelQuery(getQuery(event) as Record<string, unknown>)
+  // No page size picked: the inventory's default (INVENTORY_PER_PAGE, ADR-0187), sent to the API (whose own default
+  // stays 12 for its other callers), as HomeController::searchLive does.
+  if (get.per_page === undefined || get.per_page === null || String(get.per_page) === '') get.per_page = INVENTORY_PER_PAGE
   const page = get.page ?? ''
 
   const body = await getCompanyData().catch(() => null)
@@ -91,7 +97,7 @@ export default defineEventHandler(async (event) => {
     paging: {
       current_page: Number(inv.current_page ?? get.page ?? 1) || 1,
       last_page: Number(inv.last_page ?? 1) || 1,
-      per_page: Number(inv.per_page ?? 12) || 12,
+      per_page: Number(inv.per_page ?? INVENTORY_PER_PAGE) || INVENTORY_PER_PAGE,
       total: Number(inv.total ?? 0) || 0,
     },
     inventory_data_count: Number(search?.inventory_data_count ?? 0) || 0,

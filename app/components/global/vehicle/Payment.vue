@@ -1,7 +1,8 @@
 <script setup lang="ts">
 /**
  * The row under the gallery (Laravel global/cars/vdp-payment.blade.php):
- *  - "Financing Made Simple": the financing card, Get Pre-Approved opens the credit application with the vehicle;
+ *  - "Financing Made Simple": the shared financing card (UiFinancingCard, the same as the home page's), Get
+ *    Pre-Approved opens the credit application with the vehicle;
  *  - "Estimate My Monthly Payment" (the Alpine `vdpPayment`): credit range, term and down payment (its slider), with
  *    the payment and its breakdown. A standard amortised loan on the advertised price; the APRs are example rates.
  *    Shown only with a price and when the dealer shows prices; otherwise only the financing card.
@@ -45,34 +46,12 @@ const financeUrl = computed(() => `/finance?vehicle_id=${encodeURIComponent(prop
 function onDown(e: Event) {
   down.value = Number((e.target as HTMLInputElement).value)
 }
-function onImgError(e: Event) {
-  const img = e.target as HTMLImageElement
-  if (!img.src.endsWith('/media/images/company/finance.webp')) img.src = '/media/images/company/finance.webp'
-}
 </script>
 
 <template>
   <div class="vdp-money-row" :class="{ 'vdp-money-row--solo': !on }">
-    <section class="vdp-promo">
-      <img
-        class="vdp-promo-img"
-        src="/media/images/company/finance-couple.jpg"
-        alt=""
-        loading="lazy"
-        decoding="async"
-        @error="onImgError"
-      />
-      <div class="vdp-promo-body">
-        <span class="vdp-promo-badge"><Icon name="ion:checkmark-circle-outline" aria-hidden="true" /> GET PRE-APPROVED IN MINUTES</span>
-        <h2 class="vdp-promo-title">Financing<br />Made Simple</h2>
-        <ul class="vdp-promo-list">
-          <li><Icon name="ion:checkmark-outline" aria-hidden="true" /> No impact to your credit score.</li>
-          <li><Icon name="ion:checkmark-outline" aria-hidden="true" /> Personalized rates.</li>
-          <li><Icon name="ion:checkmark-outline" aria-hidden="true" /> Instant decisions.</li>
-        </ul>
-        <NuxtLink :to="financeUrl" class="vdp-promo-btn">Get Pre-Approved <Icon name="ion:arrow-forward-outline" aria-hidden="true" /></NuxtLink>
-      </div>
-    </section>
+    <!-- Financing Made Simple: the shared component, the same card as the home page's (its link carries the vehicle). -->
+    <UiFinancingCard :href="financeUrl" />
 
     <section v-if="on" class="vdp-pay">
       <div class="vdp-pay-hd">

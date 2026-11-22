@@ -1,0 +1,869 @@
+/*
+ * The I'm Interested pop-up (ADR-0180): the Laravel global/show/form.blade.php <style> block, unchanged but for
+ * <ion-icon> → .ion-icon (the <Icon> component) and the SMS consent rules raised over UiSmsConsent's own. Every class
+ * is .vim-*, so it is global (InquiryForm, variant 'vim').
+ */
+
+.vim-overlay {
+    --vim-primary: var(--company-primary-base, #4A1FB8);
+    --vim-ink: #14121F;
+    --vim-muted: #5B5870;
+    --vim-line: #DCD8E6;
+    --vim-field: #FBFAFE;
+    --vim-req: #C2261C;
+    --vim-disabled: #6E6690;
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: rgba(20, 18, 31, 0.55);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+}
+
+.vim-dialog {
+    position: relative;
+    /* Flex, not grid: a stretched flex item is held to the popup's max-height, so the form column scrolls
+       instead of being clipped. */
+    display: flex;
+    width: 100%;
+    max-width: 960px;
+    /* Step 1 is ~548px. Holding that as a minimum keeps the centred popup from jumping as steps change. */
+    min-height: min(548px, calc(100dvh - 48px));
+    max-height: calc(100dvh - 48px);
+    overflow: hidden;
+    border-radius: 24px;
+    background: #ffffff;
+    box-shadow: 0 32px 80px -24px rgba(20, 18, 31, 0.5), 0 2px 8px rgba(20, 18, 31, 0.08);
+    color: var(--vim-ink);
+    font-family: 'Plus Jakarta Sans', 'Inter', ui-sans-serif, system-ui, sans-serif;
+    text-align: left;
+}
+
+/* The jQuery flows hide parts with Tailwind's .hidden; it must beat .vim-grid's display. */
+.vim-dialog .hidden,
+.vim-dialog [hidden] {
+    display: none !important;
+}
+
+/* The two columns on desktop; the card's scroll area on phones. */
+.vim-body {
+    flex: 1;
+    display: flex;
+    min-width: 0;
+    min-height: 0;
+}
+
+.vim-dialog button,
+.vim-dialog input,
+.vim-dialog select,
+.vim-dialog textarea {
+    font-family: inherit;
+}
+
+/* ---- Close ---- */
+.vim-dialog .vim-close {
+    position: absolute;
+    top: 34px; /* centred on the 32px heading line, which starts 40px down */
+    right: 18px;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 1px solid var(--vim-line);
+    border-radius: 9999px;
+    background: #ffffff;
+    color: var(--vim-ink);
+    font-size: 22px;
+    cursor: pointer;
+    transition: background-color .15s ease, border-color .15s ease;
+}
+
+.vim-dialog .vim-close:hover {
+    background: #F6F4FB;
+    border-color: #C9C3D8;
+}
+
+.vim-dialog .vim-close:focus-visible {
+    outline: 2px solid var(--vim-primary);
+    outline-offset: 2px;
+}
+
+/* ---- Vehicle panel (left) ---- */
+.vim-aside {
+    flex: 0 0 41.6667%; /* 400px of 960px */
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    padding: 40px 32px 28px;
+    background: #F3F3F6; /* neutral grey, not a tint of the dealer colour */
+}
+
+.vim-aside-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* The photo fills its rounded frame (cover), cropping its edges rather than leaving white margins. */
+.vim-photo {
+    position: relative;
+    overflow: hidden;
+    border-radius: 18px;
+    background: #ffffff;
+    box-shadow: 0 1px 2px rgba(20, 18, 31, 0.04), 0 12px 28px -20px rgba(20, 18, 31, 0.35);
+}
+
+.vim-photo img {
+    display: block;
+    width: 100%;
+    height: 190px;
+    object-fit: cover;
+}
+
+.vim-dialog .vim-car-title {
+    margin: 22px 0 0;
+    color: var(--vim-ink);
+    font-size: 21px;
+    font-weight: 800;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+    text-align: center;
+}
+
+.vim-car-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 6px 20px; /* no line between price and miles, so a wider gap */
+    margin-top: 10px;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.vim-price {
+    color: var(--vim-primary);
+}
+
+.vim-location {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    margin-top: 8px;
+    color: var(--vim-muted);
+    font-size: 13px;
+}
+
+.vim-location .ion-icon {
+    color: var(--vim-primary);
+}
+
+.vim-reply {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin: 24px 0 0;
+    color: var(--vim-muted);
+    font-size: 13px;
+    line-height: 1.4;
+    text-align: center;
+}
+
+.vim-reply .ion-icon {
+    flex-shrink: 0;
+    color: var(--vim-primary);
+    font-size: 16px;
+}
+
+/* ---- Form (right) ---- */
+/* A column whose footer (consent + buttons) sits at the bottom: with a trade-in ticked, the consent is hidden
+   and "Next: Trade-in details" lines up where "Send my inquiry" is, not under the checkbox. */
+.vim-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    padding: 0 40px; /* top and bottom are on .vim-top and .vim-footer */
+}
+
+.vim-form {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+/* Heading (and step row) at the top, consent and buttons at the bottom; only the fields between scroll, so the
+   scrollbar doesn't run past them. */
+.vim-top {
+    flex: none;
+    padding: 40px 0 0;
+    background: #ffffff;
+}
+
+/* The fields' scroll area. Its top and bottom 14px are padding that fades out, so a field (its label or a
+   focused input's ring) scrolled past either edge fades away instead of showing cut off. The 6px sides
+   (taken back by the margin) keep the inputs' 4px focus ring from being clipped. */
+.vim-scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    margin: 0 -6px;
+    padding: 14px 6px;
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 14px, #000 calc(100% - 14px), transparent 100%);
+    mask-image: linear-gradient(to bottom, transparent 0, #000 14px, #000 calc(100% - 14px), transparent 100%);
+}
+
+.vim-scroll .vim-step > .vim-grid:first-child {
+    margin-top: 0;
+}
+
+.vim-footer {
+    flex: none;
+    margin-top: auto;
+    padding: 16px 0 32px;
+    background: #ffffff;
+}
+
+.vim-footer .vim-consent {
+    margin-top: 0;
+}
+
+.vim-dialog .vim-title {
+    margin: 0;
+    padding-right: 56px; /* clear of the close button */
+    color: var(--vim-ink);
+    font-size: 24px;
+    font-weight: 800;
+    line-height: 32px;
+    letter-spacing: -0.015em;
+}
+
+.vim-dialog .vim-sub {
+    margin: 6px 0 0;
+    color: var(--vim-muted);
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* Always shown: "Step 1 of 1" with one full bar without a trade-in; "Step N of 2" with two parts with one. */
+.vim-progress {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: 20px;
+    margin-top: 14px;
+}
+
+.vim-progress-label {
+    flex-shrink: 0;
+    color: var(--vim-muted);
+    font-size: 12.5px;
+    font-weight: 700;
+}
+
+.vim-progress-bar {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+}
+
+.vim-progress-bar.is-single {
+    grid-template-columns: 1fr;
+}
+
+.vim-progress-bar.is-single .vim-progress-seg + .vim-progress-seg {
+    display: none;
+}
+
+.vim-progress-seg {
+    height: 6px;
+    border-radius: 9999px;
+    background: #ECE9F3;
+    transition: background-color .25s ease;
+}
+
+.vim-progress-seg.is-filled {
+    background: var(--vim-primary);
+}
+
+.vim-step {
+    animation: vimFadeIn .22s ease;
+}
+
+@keyframes vimFadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: none; }
+}
+
+.vim-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    margin-top: 18px;
+}
+
+.vim-grid .vim-grid {
+    margin-top: 0;
+}
+
+.vim-span-2 {
+    grid-column: 1 / -1;
+}
+
+.vim-dialog .vim-label {
+    display: block;
+    margin: 0 0 6px;
+    color: var(--vim-ink);
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.vim-req {
+    color: var(--vim-req);
+}
+
+.vim-dialog .vim-input {
+    display: block;
+    width: 100%;
+    height: 48px;
+    margin: 0;
+    padding: 0 14px;
+    border: 1px solid var(--vim-line);
+    border-radius: 12px;
+    background-color: var(--vim-field);
+    box-shadow: none;
+    color: var(--vim-ink);
+    font-size: 14px;
+    line-height: 1.4;
+    outline: none;
+    transition: border-color .15s ease, box-shadow .15s ease, background-color .15s ease;
+}
+
+.vim-dialog .vim-input::placeholder {
+    color: #9A97AB;
+    opacity: 1;
+}
+
+.vim-dialog .vim-input:focus {
+    border-color: var(--vim-primary);
+    background-color: #ffffff;
+    box-shadow: 0 0 0 4px rgba(74, 31, 184, 0.14);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--vim-primary) 16%, transparent);
+}
+
+.vim-dialog .vim-input:disabled {
+    background-color: #F3F1F8;
+    color: var(--vim-muted);
+    cursor: not-allowed;
+}
+
+.vim-dialog .vim-input.input-error {
+    border-color: var(--vim-req);
+}
+
+.vim-dialog .vim-input.input-error:focus {
+    box-shadow: 0 0 0 4px rgba(194, 38, 28, 0.12);
+}
+
+.vim-dialog select.vim-input {
+    -webkit-appearance: none;
+    appearance: none;
+    padding-right: 40px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%235B5870' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 7.5l5 5 5-5'/%3E%3C/svg%3E");
+    background-position: right 14px center;
+    background-repeat: no-repeat;
+    background-size: 16px 16px;
+    cursor: pointer;
+}
+
+.vim-dialog textarea.vim-input {
+    height: auto;
+    min-height: 96px;
+    padding: 12px 14px;
+    resize: vertical;
+}
+
+.vim-error {
+    margin-top: 5px;
+    color: var(--vim-req);
+    font-size: 12px;
+    line-height: 1.35;
+}
+
+/* VIN: DECODE sits inside the field, on the right. */
+.vim-vin {
+    position: relative;
+}
+
+.vim-dialog .vim-vin .vim-input {
+    padding-right: 104px;
+    text-transform: uppercase;
+}
+
+.vim-dialog .vim-vin .vim-input::placeholder {
+    text-transform: none;
+}
+
+.vim-dialog .vim-decode {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    bottom: 6px;
+    display: flex;
+    align-items: center;
+    padding: 0 14px;
+    border: 0;
+    border-radius: 9px;
+    background: var(--vim-primary);
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color .15s ease;
+}
+
+.vim-dialog .vim-decode:hover {
+    background: color-mix(in srgb, var(--vim-primary) 86%, #000000);
+}
+
+/* Checkboxes: "I have a trade-in" and the SMS consent (x-sms-consent). */
+.vim-dialog .vim-check,
+.vim-overlay .vim-dialog .sms-consent {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    color: var(--vim-ink);
+    font-size: 12.5px;
+    line-height: 1.5 !important;
+    cursor: pointer;
+}
+
+.vim-dialog .vim-check input[type="checkbox"],
+.vim-overlay .vim-dialog .sms-consent input[type="checkbox"] {
+    flex-shrink: 0;
+    width: 18px !important;
+    height: 18px !important;
+    min-width: 18px;
+    margin: 0;
+    padding: 0 !important;
+    border: 1.5px solid #BDB7CC;
+    border-radius: 5px;
+    background-color: #ffffff;
+    color: var(--vim-primary);
+    cursor: pointer;
+}
+
+.vim-dialog .vim-check input[type="checkbox"]:checked,
+.vim-overlay .vim-dialog .sms-consent input[type="checkbox"]:checked {
+    border-color: var(--vim-primary);
+    background-color: var(--vim-primary);
+}
+
+.vim-dialog .vim-check input[type="checkbox"]:focus,
+.vim-overlay .vim-dialog .sms-consent input[type="checkbox"]:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.vim-dialog .vim-check input[type="checkbox"]:focus-visible,
+.vim-overlay .vim-dialog .sms-consent input[type="checkbox"]:focus-visible {
+    outline: 2px solid var(--vim-primary);
+    outline-offset: 2px;
+}
+
+.vim-dialog .vim-check span {
+    padding-top: 0;
+    font-weight: 600;
+}
+
+.vim-dialog .vim-trade-check {
+    align-items: center;
+    margin-top: 18px;
+}
+
+.vim-overlay .vim-dialog .sms-consent a {
+    color: var(--vim-primary);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.vim-overlay .vim-dialog .sms-consent a:hover {
+    text-decoration: underline;
+}
+
+.vim-consent {
+    margin-top: 16px;
+}
+
+/* ---- Buttons ---- */
+.vim-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.vim-dialog .vim-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 54px;
+    margin: 0;
+    padding: 0 22px;
+    border-radius: 14px;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color .15s ease, border-color .15s ease, box-shadow .15s ease;
+}
+
+.vim-dialog .vim-btn .ion-icon {
+    font-size: 18px;
+}
+
+.vim-dialog .vim-btn-primary {
+    flex: 1;
+    border: 0;
+    background: var(--vim-primary);
+    box-shadow: 0 12px 24px -14px var(--vim-primary);
+    color: #ffffff;
+}
+
+.vim-dialog .vim-btn-primary:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--vim-primary) 88%, #000000);
+}
+
+.vim-dialog .vim-btn-primary:disabled {
+    background: var(--vim-disabled);
+    box-shadow: none;
+    cursor: not-allowed;
+}
+
+.vim-dialog .vim-btn-ghost {
+    flex: 0 0 140px;
+    border: 1px solid var(--vim-line);
+    background: #ffffff;
+    color: var(--vim-ink);
+}
+
+.vim-dialog .vim-btn-ghost:hover {
+    border-color: #C9C3D8;
+    background: #F6F4FB;
+}
+
+.vim-dialog .vim-btn:focus-visible {
+    outline: 2px solid var(--vim-primary);
+    outline-offset: 2px;
+}
+
+/* ---- Tablet ---- */
+@media (max-width: 1023px) {
+    .vim-aside {
+        padding: 36px 24px 24px;
+    }
+
+    .vim-main {
+        padding: 0 28px;
+    }
+
+    .vim-footer {
+        padding-bottom: 28px;
+    }
+
+    .vim-dialog .vim-close {
+        right: 14px;
+    }
+}
+
+/* ---- Phone: a fixed card (the mobile spec: 366×733). As on desktop, only the fields scroll: the vehicle (step 1)
+   or heading (step 2) and the step row stay at the top, the consent and buttons at the bottom. ---- */
+@media (max-width: 767px) {
+    /* The page stays readable behind the card, under a lighter (3px) blur. */
+    .vim-overlay {
+        padding: 12px;
+        -webkit-backdrop-filter: blur(3px);
+        backdrop-filter: blur(3px);
+    }
+
+    .vim-dialog {
+        display: block;
+        width: min(366px, 100%);
+        height: min(733px, calc(100dvh - 24px));
+        min-height: 0;
+        max-height: none;
+        border-radius: 24px;
+    }
+
+    .vim-body {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        overflow: hidden;
+    }
+
+    /* Close: a 30px circle in a 44px tap area, 25px from the card's top and 16px from its right edge. */
+    .vim-dialog .vim-close {
+        top: 18px;
+        right: 9px;
+        width: 44px;
+        height: 44px;
+        border: 0;
+        background: transparent;
+        font-size: 17px;
+    }
+
+    .vim-dialog .vim-close::before {
+        content: '';
+        position: absolute;
+        inset: 7px;
+        border: 1px solid var(--vim-line);
+        border-radius: 9999px;
+        background: #ffffff;
+        transition: background-color .15s ease;
+    }
+
+    .vim-dialog .vim-close .ion-icon {
+        position: relative;
+    }
+
+    .vim-dialog .vim-close:hover {
+        background: transparent;
+    }
+
+    .vim-dialog .vim-close:hover::before {
+        background: #F6F4FB;
+    }
+
+    /* Step 1 leads with the vehicle: the photo across the card on white, then the title and price.
+       Step 2 drops it and starts with its heading. */
+    .vim-aside {
+        flex: none;
+        padding: 18px 18px 0;
+        background: #ffffff;
+    }
+
+    .vim-dialog.is-step-2 .vim-aside {
+        display: none;
+    }
+
+    .vim-photo {
+        border-radius: 14px;
+        box-shadow: none;
+    }
+
+    .vim-photo img {
+        height: 170px;
+    }
+
+    .vim-reply {
+        display: none;
+    }
+
+    .vim-dialog .vim-car-title {
+        margin-top: 10px;
+        font-size: 17px;
+    }
+
+    .vim-car-meta {
+        gap: 4px 16px;
+        margin-top: 4px;
+        font-size: 18px;
+    }
+
+    .vim-location {
+        margin-top: 4px;
+        font-size: 12px;
+    }
+
+    /* The form fills the card under the vehicle, so the footer sits at the bottom. */
+    .vim-main {
+        flex: 1 1 auto;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+        overflow: hidden;
+        padding: 0 18px;
+    }
+
+    .vim-top {
+        padding: 0;
+    }
+
+    /* The fields scroll, with the scrollbar hidden (no fade: the card is sized to fit them). */
+    .vim-scroll {
+        flex: 1 1 auto;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+        overflow-y: auto;
+        margin: 0;
+        padding: 0;
+        scrollbar-width: none;
+        -webkit-mask-image: none;
+        mask-image: none;
+    }
+
+    .vim-scroll::-webkit-scrollbar {
+        display: none;
+    }
+
+    .vim-scroll .vim-step > .vim-grid:first-child {
+        margin-top: 14px;
+    }
+
+    .vim-dialog.is-step-2 .vim-top {
+        padding-top: 27px; /* the heading's line centres on the close button */
+        padding-bottom: 8px;
+    }
+
+    .vim-form {
+        flex: 1 1 auto;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+    }
+
+    .vim-head-1 {
+        display: none !important;
+    }
+
+    .vim-dialog .vim-title {
+        padding-right: 44px;
+        font-size: 18px;
+        line-height: 26px;
+    }
+
+    .vim-dialog .vim-sub {
+        margin-top: 2px;
+        font-size: 13px;
+    }
+
+    .vim-progress {
+        flex-direction: column;
+        justify-content: center;
+        gap: 6px;
+        height: auto;
+        margin-top: 14px;
+    }
+
+    .vim-progress-label {
+        color: var(--vim-primary);
+        font-size: 12px;
+    }
+
+    .vim-progress-bar {
+        flex: none;
+        width: 100%;
+    }
+
+    .vim-grid {
+        gap: 12px;
+        margin-top: 14px;
+    }
+
+    .vim-span-2-sm {
+        grid-column: 1 / -1;
+    }
+
+    .vim-dialog .vim-label {
+        margin-bottom: 5px;
+    }
+
+    .vim-dialog .vim-input {
+        height: 42px;
+        font-size: 15px;
+    }
+
+    .vim-dialog .vim-vin .vim-input {
+        padding-right: 92px;
+    }
+
+    .vim-dialog .vim-decode {
+        top: 5px;
+        right: 5px;
+        bottom: 5px;
+        padding: 0 11px;
+        font-size: 11px;
+    }
+
+    .vim-dialog .vim-trade-check {
+        margin-top: 14px;
+    }
+
+    /* Step 2: one column; Notes takes the space that's left (at least ~4 lines). */
+    #show-inquiry-step-trade {
+        flex: 1 0 auto;
+        display: flex;
+        flex-direction: column;
+    }
+
+    #show-inquiry-step-trade > .vim-grid {
+        flex: 1 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 10px; /* a little tighter than step 1, so the step fits the card with Notes at 4 lines */
+        margin-top: 6px; /* + the pinned header's 8px */
+    }
+
+    .vim-dialog.is-step-2 .vim-progress {
+        margin-top: 10px;
+    }
+
+    .vim-notes {
+        flex: 1 0 auto;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .vim-dialog .vim-notes textarea.vim-input {
+        flex: 1 0 auto;
+        min-height: 108px;
+        resize: none;
+    }
+
+    /* Footer: at the card's bottom, under the fields' scroll area. */
+    .vim-footer {
+        flex: none;
+        margin-top: auto;
+        padding: 12px 0 18px;
+        background: #ffffff;
+    }
+
+    .vim-consent {
+        margin-top: 0;
+    }
+
+    .vim-actions {
+        margin-top: 14px;
+    }
+
+    .vim-dialog .vim-btn {
+        padding: 0 16px;
+    }
+
+    .vim-dialog .vim-btn-ghost {
+        flex-basis: 96px;
+    }
+}

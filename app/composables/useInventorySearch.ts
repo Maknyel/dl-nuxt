@@ -99,6 +99,9 @@ export function histogram(choices: FacetRow[], key: string, lo: number, hi: numb
 
 const DESKTOP = 992
 
+/** The inventory page's page size when the visitor hasn't picked one (ADR-0187, HomeController::INVENTORY_PER_PAGE). */
+export const INVENTORY_PER_PAGE = 100
+
 export function createInventorySearch(data: Ref<InventoryResponse | null | undefined>, refresh: () => Promise<void>) {
   const route = useRoute()
   const router = useRouter()
@@ -405,6 +408,29 @@ export function createInventorySearch(data: Ref<InventoryResponse | null | undef
     }, 400)
   }
 
+  // ── The desktop Filters & Sort dropdown (ADR-0183 / ADR-0187: index-live's srpFilters* script) ──────
+  // Open / closed and its place live here, not on the sidebar, which is re-rendered after every search.
+  const filtersOpen = ref(false)
+  const filtersStyle = reactive<{ top?: string; right?: string; maxHeight?: string }>({})
+
+  /** Just under the Browse card, at its right edge, fixed to the window (so it stays under the card once the card is
+   *  pinned); never past the window's bottom (34rem at most). */
+  function placeFilters() {
+    if (typeof window === 'undefined' || window.innerWidth < DESKTOP) return
+    const card = document.querySelector('.srp-head-card')
+    if (!card) return
+    const r = card.getBoundingClientRect()
+    const top = Math.max(r.bottom + 6, 8)
+    const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16
+    filtersStyle.top = `${top}px`
+    filtersStyle.right = `${Math.max(window.innerWidth - r.right, 8)}px`
+    filtersStyle.maxHeight = `${Math.max(Math.min(34 * rem, window.innerHeight - top - rem), 12 * rem)}px`
+  }
+  function setFiltersOpen(open: boolean) {
+    filtersOpen.value = open
+    if (open) placeFilters()
+  }
+
   // ── The phone's off-canvas filters, the Active Filters modal, the inquiry modal ─────────────────────
   const mobileOpen = ref(false)
   const filterModalOpen = ref(false)
@@ -438,6 +464,10 @@ export function createInventorySearch(data: Ref<InventoryResponse | null | undef
     submitRange,
     mobileOpen,
     setMobileOpen,
+    filtersOpen,
+    filtersStyle,
+    placeFilters,
+    setFiltersOpen,
     filterModalOpen,
     inquiryVehicle,
   }

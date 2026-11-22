@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * Template-1's nav: the port of template-1/nav/layout-4.blade.php (sticky header, logo, the menu as joined tabs, the
- * store / phone / address dropdowns, Get Pre-Approved, and the mobile menu with its phone and address panels).
+ * store / phone / address dropdowns, and the mobile menu with its phone and address panels).
  */
 import type { NavLocation } from '~/types/site'
 
@@ -38,7 +38,6 @@ const hasNavAddress = computed(() => navLocations.value.some((l) => l.address !=
 const showLocationName = computed(() => navLocations.value.length > 1)
 const singleLoc = computed(() => navLocations.value.find((l) => l.phone !== ''))
 const singleAddr = computed(() => navLocations.value.find((l) => l.address !== ''))
-const hasFinance = computed(() => menus.value.some((m) => m.to === '/finance'))
 
 /** "Rochester - Headquarters" for the group's main (Multi) site. */
 const locName = (loc: NavLocation) => loc.name + (loc.accountType === 'Multi' ? ' - Headquarters' : '')
@@ -340,22 +339,7 @@ const isActive = (to: string) => route.path === to
             </Transition>
           </div>
 
-          <!-- Get Pre-Approved: the credit app, when the dealer shows it. -->
-          <NuxtLink v-if="hasFinance" to="/finance" class="nav-cta ml-2">
-            Get Pre-Approved
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2.25"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              aria-hidden="true"
-              style="width:0.9rem;height:0.9rem;"
-            >
-              <path d="M5 12h14" /><path d="m12 5 7 7-7 7" />
-            </svg>
-          </NuxtLink>
+          <!-- No Get Pre-Approved button (ADR-0180, QA): the Credit App is reached from its own nav tab. -->
         </div>
 
         <!-- Mobile actions: phone, address, hamburger -->

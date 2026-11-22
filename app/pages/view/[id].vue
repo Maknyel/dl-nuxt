@@ -120,19 +120,15 @@ onBeforeUnmount(() => {
     <div class="h-4" />
 
     <div
+      v-if="isSales"
       v-show="interestedOpen"
       class="fixed top-0 left-0 flex items-center justify-center w-full h-full z-50 padding-for-modal-interested"
       style="background-color: rgba(0, 0, 0, 0.5)"
     >
-      <SalesInquiryForm
-        v-if="isSales"
-        :vehicle="vehicle"
-        variant="modal"
-        :is-demo="isDemo"
-        @close="interestedOpen = false"
-      />
-      <InquiryForm v-else :vehicle="vehicle" variant="modal" @close="interestedOpen = false" />
+      <SalesInquiryForm :vehicle="vehicle" variant="modal" :is-demo="isDemo" @close="interestedOpen = false" />
     </div>
+    <!-- The I'm Interested pop-up (ADR-0180): two columns and a trade-in step; it draws its own backdrop. -->
+    <InquiryForm v-else :vehicle="vehicle" variant="vim" :open="interestedOpen" @close="interestedOpen = false" />
   </NuxtLayout>
   <VehicleNotFound v-else />
 </template>

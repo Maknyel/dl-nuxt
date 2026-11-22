@@ -542,8 +542,8 @@ const logoPath = computed(() => (company.value.logo ? mediaUrl(company.value.log
 <template>
   <div class="fin-page">
     <div class="fin-badges">
-      <span class="fin-badge"><Icon name="ion:checkmark-circle-outline" aria-hidden="true" /> GET PRE-APPROVED IN MINUTES</span>
-      <span class="fin-badge"><Icon name="ion:shield-checkmark-outline" aria-hidden="true" /> NO IMPACT TO YOUR CREDIT SCORE</span>
+      <UiPagePill icon="checkmark-circle-outline">GET PRE-APPROVED IN MINUTES</UiPagePill>
+      <UiPagePill icon="shield-checkmark-outline">NO IMPACT TO YOUR CREDIT SCORE</UiPagePill>
     </div>
     <h1 class="fin-title">Get Approved Now</h1>
 

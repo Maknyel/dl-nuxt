@@ -125,7 +125,7 @@ function scrollByCard(dir: number) {
             </div>
           </div>
 
-          <NuxtLink to="/reviews" class="t1-btn t1-btn--white review-leave w-fit mt-2">
+          <NuxtLink to="/reviews" class="t1-btn w-fit mt-2">
             Leave a Review
             <T1Icon name="arrow-right" class="t1-ico-sm" :stroke="2.5" />
           </NuxtLink>
@@ -228,10 +228,6 @@ function scrollByCard(dir: number) {
   box-shadow: 0 0 0 3px #fff;
 }
 
-.review-leave {
-  border: 1px solid var(--t1-line, #e9e8ee);
-  box-shadow: 0 6px 16px -10px rgba(22, 19, 31, 0.35);
-}
 
 .review-cards-track {
   scrollbar-width: thin;

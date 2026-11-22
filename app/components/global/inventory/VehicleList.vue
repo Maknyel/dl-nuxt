@@ -225,6 +225,21 @@ onBeforeUnmount(() => {
 
     <div v-else id="car-grid" ref="grid" class="tile-view">
       <div v-for="c in cards" :key="c.v.id" class="car-card" :data-id="c.v.id">
+        <!-- The title first, above the photo (ADR-0182, QA: "so the user can see that title immediately"): the year,
+             make and model, then the trim, body and drive, on one line (the whole name as its tooltip). -->
+        <NuxtLink
+          :to="c.url"
+          class="car-card-title"
+          :title="`${c.v.year} ${c.v.make} ${c.v.model} ${c.sub}`.trim()"
+        >
+          <!-- The space between the two (Vue drops the whitespace-only line break the Blade keeps). -->
+          <span class="car-card-title-main">{{ c.v.year }} {{ c.v.make }} {{ c.v.model }}</span>{{ ' ' }}<span
+            v-if="c.sub !== ''"
+            class="car-card-title-sub"
+            >{{ c.sub }}</span
+          >
+        </NuxtLink>
+
         <div class="car-card-img-wrap">
           <span v-if="c.badge" class="car-badge" :style="{ background: c.badgeColor! }">{{ String(c.badge).toUpperCase() }}</span>
           <span v-if="c.v.vehicle_status == 2" class="car-badge" style="background: #dc2626">SALE PENDING</span>
@@ -256,10 +271,7 @@ onBeforeUnmount(() => {
             </div>
           </div>
 
-          <NuxtLink :to="c.url" class="car-card-title">
-            {{ c.v.year }} {{ c.v.make }} {{ c.v.model }}
-            <span v-if="c.sub !== ''" class="car-card-title-sub">{{ c.sub }}</span>
-          </NuxtLink>
+          <!-- The title is at the card's top, above the photo (ADR-0182). -->
 
           <div v-if="c.specs.length" class="car-card-specs">
             <div class="car-card-price-lbl">Trim details</div>

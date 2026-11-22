@@ -213,23 +213,7 @@ body:has(.sell-page) {
 }
 
 /* ── The intro card ── */
-.sell-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    padding: 0.35rem 0.85rem;
-    border-radius: 9999px;
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    color: var(--sell-primary);
-    background: #fff;
-    border: 1px solid var(--sell-line);
-}
-
-.sell-pill .ion-icon {
-    color: #f59e0b;
-}
+/* The pill itself is the page-pill component (UiPagePill): one class and look on every page. */
 
 .sell-page .sell-title {
     margin: 1.1rem 0 0;
@@ -280,9 +264,10 @@ body:has(.sell-page) {
     height: 2.75rem;
     border-radius: 0.75rem;
     font-size: 1.25rem;
-    color: var(--sell-ink);
-    background: #fff;
-    border: 1px solid var(--sell-line);
+    /* The dealer's primary, as the other pages' icon tiles (.lp-ico, .svc-ico): the icon in it, on a pale tint. */
+    color: var(--sell-primary);
+    background: color-mix(in srgb, var(--sell-primary) 8%, #ffffff);
+    border: 1px solid color-mix(in srgb, var(--sell-primary) 16%, #ffffff);
 }
 
 .sell-perk strong {

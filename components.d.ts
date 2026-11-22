@@ -91,7 +91,9 @@ declare module 'vue' {
     UiCompanyMap: typeof import('./app/components/ui/CompanyMap.vue')['default']
     UiDemoNoticeModal: typeof import('./app/components/ui/DemoNoticeModal.vue')['default']
     UiFaSocialIcon: typeof import('./app/components/ui/FaSocialIcon.vue')['default']
+    UiFinancingCard: typeof import('./app/components/ui/FinancingCard.vue')['default']
     UiHoursOfOperation: typeof import('./app/components/ui/HoursOfOperation.vue')['default']
+    UiPagePill: typeof import('./app/components/ui/PagePill.vue')['default']
     UiSmsConsent: typeof import('./app/components/ui/SmsConsent.vue')['default']
     UiSwal: typeof import('./app/components/ui/Swal.vue')['default']
   }

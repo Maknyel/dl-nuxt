@@ -441,8 +441,8 @@ function submit() {
 <template>
   <div class="svc-page">
     <div class="svc-badges">
-      <span class="svc-badge"><Icon name="ion:checkmark-circle-outline" aria-hidden="true" /> BOOK SERVICE</span>
-      <span class="svc-badge"><Icon name="ion:shield-checkmark-outline" aria-hidden="true" /> SCHEDULE NOW</span>
+      <UiPagePill icon="checkmark-circle-outline">BOOK SERVICE</UiPagePill>
+      <UiPagePill icon="shield-checkmark-outline">SCHEDULE NOW</UiPagePill>
     </div>
     <h1 class="svc-title">Request a Service Appointment</h1>
     <div>
@@ -1020,19 +1020,7 @@ body:has(.svc-page) {
   gap: 0.6rem;
 }
 
-.svc-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.4rem 0.9rem;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  color: color-mix(in srgb, var(--svc-p) 80%, #000000);
-  background: color-mix(in srgb, var(--svc-p) 9%, #ffffff);
-  border: 1px solid color-mix(in srgb, var(--svc-p) 18%, #ffffff);
-}
+/* The pill itself is the page-pill component (UiPagePill): one class and look on every page. */
 
 .svc-page .svc-title {
   margin: 0.75rem 0 1rem;
@@ -1082,8 +1070,10 @@ body:has(.svc-page) {
   height: 2.5rem;
   border-radius: 0.75rem;
   font-size: 1.1rem;
-  background: #f6f6f8;
-  border: 1px solid var(--svc-line);
+  /* The dealer's primary, as the Contact Us / About Us icon tiles (.lp-ico): the icon in it, on a pale tint. */
+  color: var(--svc-p);
+  background: color-mix(in srgb, var(--svc-p) 8%, #ffffff);
+  border: 1px solid color-mix(in srgb, var(--svc-p) 16%, #ffffff);
 }
 
 .svc-page .form-label {

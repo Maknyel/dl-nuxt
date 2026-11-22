@@ -15,7 +15,6 @@ import InventoryHead from './Head.vue'
 import InventorySidebar from './Sidebar.vue'
 import InventoryTopMenu from './TopMenu.vue'
 import InventoryVehicleList from './VehicleList.vue'
-import InventoryPagination from './Pagination.vue'
 
 const props = defineProps<{
   data: InventoryResponse | null
@@ -63,7 +62,12 @@ onMounted(() => {
   }
   const update = () => {
     queued = false
-    root.value?.style.setProperty('--srp-pin-top', `${pinnedBottom() + 8}px`)
+    const bottom = pinnedBottom()
+    root.value?.style.setProperty('--srp-pin-top', `${bottom + 8}px`)
+    // The nav's own bottom (ADR-0187): where the pinned Browse card sits.
+    root.value?.style.setProperty('--srp-nav-bottom', `${bottom}px`)
+    // The open Filters dropdown stays just under the Browse card.
+    if (search.filtersOpen.value) search.placeFilters()
   }
   const queue = () => {
     if (queued) return
@@ -97,14 +101,14 @@ onBeforeUnmount(() => cleanup())
 
 <template>
   <div id="car-search-page" ref="root">
-    <InventoryHead v-if="head" :data="head" />
+    <InventoryHead v-if="head" :data="head" :current="shown" />
 
     <div class="view-vehicles-page pb-2">
       <div class="container">
         <div class="vehicles-layout">
           <InventorySidebar v-if="shown" :key="search.version.value" :data="shown" />
 
-          <!-- Vehicle list + bottom pagination. -->
+          <!-- Vehicle list (the pagination is in the Browse card, ADR-0186). -->
           <div class="vehicles-main">
             <div id="top-menu-wrapper" class="upper-menu srp-results-head">
               <InventoryTopMenu v-if="shown" :data="shown" />
@@ -135,10 +139,7 @@ onBeforeUnmount(() => cleanup())
             >
               <InventoryVehicleList :data="shown" />
             </div>
-
-            <div id="pagination-wrapper" class="vehicles-bottom-pagination">
-              <InventoryPagination v-if="shown" :data="shown" />
-            </div>
+            <!-- No pagination card under the cards (ADR-0186, QA): the pagination is in the Browse card. -->
           </div>
         </div>
       </div>

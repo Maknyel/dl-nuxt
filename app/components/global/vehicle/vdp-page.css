@@ -2221,119 +2221,6 @@ body:has(.show-vehicle) {
     display: none;
 }
 
-.show-vehicle .vdp-promo {
-    position: relative;
-    display: flex;
-    min-height: 20rem;
-    overflow: hidden;
-    border-radius: 1rem;
-    background: color-mix(in srgb, var(--vdp-primary) 24%, #0e0a1f);
-    box-shadow: 0 18px 40px -20px rgba(14, 10, 31, 0.7);
-}
-
-.show-vehicle .vdp-promo-img {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 75%;
-    height: 100%;
-    object-fit: cover;
-    object-position: 40% center;
-}
-
-/* The photo fades into the dark card from the left. */
-.show-vehicle .vdp-promo::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    background: linear-gradient(90deg,
-        color-mix(in srgb, var(--vdp-primary) 24%, #0e0a1f) 30%,
-        color-mix(in srgb, color-mix(in srgb, var(--vdp-primary) 24%, #0e0a1f) 55%, transparent) 65%,
-        transparent 100%);
-}
-
-.show-vehicle .vdp-promo-body {
-    position: relative;
-    z-index: 2;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 1rem;
-    padding: 2rem;
-    max-width: 22rem;
-    color: #fff;
-}
-
-.show-vehicle .vdp-promo-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    width: fit-content;
-    padding: 0.35rem 0.8rem;
-    border-radius: 9999px;
-    font-size: 0.6875rem;
-    font-weight: 700;
-    letter-spacing: 0.05em;
-    background: rgba(255, 255, 255, 0.12);
-    border: 1px solid rgba(255, 255, 255, 0.25);
-}
-
-.show-vehicle .vdp-promo-title {
-    margin: 0;
-    font-family: 'Outfit', 'Inter', sans-serif;
-    font-size: 2rem;
-    font-weight: 800;
-    line-height: 1.1;
-    color: #fff;
-}
-
-.show-vehicle .vdp-promo-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.45rem;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    font-size: 0.9375rem;
-}
-
-.show-vehicle .vdp-promo-list li {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.show-vehicle .vdp-promo-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    width: fit-content;
-    margin-top: 0.5rem;
-    padding: 0.75rem 1.4rem;
-    border-radius: 0.625rem;
-    font-weight: 700;
-    color: color-mix(in srgb, var(--vdp-primary) 85%, #000000);
-    background: #fff;
-    box-shadow: 0 10px 24px -10px rgba(0, 0, 0, 0.45), 0 0 0 3px rgba(255, 255, 255, 0.14);
-    transition: filter 0.15s;
-}
-
-.show-vehicle .vdp-promo-btn:hover {
-    color: color-mix(in srgb, var(--vdp-primary) 85%, #000000);
-    filter: brightness(0.96);
-}
-
-@media (max-width: 640px) {
-    .show-vehicle .vdp-promo-img {
-        width: 100%;
-        opacity: 0.45;
-    }
-
-    .show-vehicle .vdp-promo-body {
-        padding: 1.5rem;
-    }
-}
 /* ══ The VDP mock-up (QA, the latest pass) ══════════════════════════════════════════════════════════════════════
    1. The top is one white card: the gallery, its thumbnails and the price panel inside it, instead of three cards. */
 .show-vehicle .vdp-main-grid {
@@ -2423,18 +2310,6 @@ body:has(.show-vehicle) {
 .show-vehicle .vdp-thumbs-card .vdp-thumbs.is-dragging {
     cursor: grabbing;
     user-select: none;
-}
-
-/* Financing Made Simple (QA, as the home card): the couple photo across the whole card, the couple kept in view
-   at the right, under a dark purple tint — strong at the left behind the text, nearly clear at the right. */
-.show-vehicle .vdp-promo-img {
-    width: 100%;
-    opacity: 1;
-    object-position: 70% center;
-}
-
-.show-vehicle .vdp-promo::before {
-    background: linear-gradient(90deg, rgba(30, 18, 64, 0.94) 0%, rgba(38, 22, 80, 0.82) 38%, rgba(46, 26, 96, 0.38) 68%, rgba(46, 26, 96, 0.12) 100%);
 }
 
 /* About This Vehicle (QA's design): the heading and its line across the whole card, over Ready to drive it?; the
@@ -4339,5 +4214,460 @@ body:has(.show-vehicle) {
 @media (max-width: 991px) {
     .container.show-vehicle {
         padding-inline: 0.5rem;
+    }
+}
+
+/* ══ The vehicle page, QA pass (ADR-0180): no Inspected tag or miles pill, a smaller price, arrows on the photo;
+   phones: no thumbnails, Back | title | Call at the top, the price and I'm Interested in a second row of the band.
+   Last in the file, so these win. ═════════════════════════════════════════════════════════════════════════════ */
+
+/* A smaller price (QA: "price is too big"). */
+.show-vehicle .vdp-price-hero .vdp-price-main {
+    font-size: 1.75rem;
+    line-height: 1.1;
+}
+
+/* Share in the price card: centred vertically at every width (QA). Phones had it 1.5rem from the top, which sat
+   low once the price got smaller. */
+.show-vehicle .vdp-price-hero .vdp-share-btn.vdp-share-btn--icon {
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* Previous / next on the photo: white chevrons on a dark round background, readable on any photo. */
+.show-vehicle .vdp-main-img-wrap {
+    position: relative;
+}
+
+.show-vehicle .vdp-main-nav {
+    position: absolute;
+    top: 50%;
+    z-index: 4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    padding: 0;
+    border: 0;
+    border-radius: 9999px;
+    color: #fff;
+    font-size: 1.35rem;
+    background: rgba(17, 17, 24, 0.35);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    transform: translateY(-50%);
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.show-vehicle .vdp-main-nav:hover,
+.show-vehicle .vdp-main-nav:focus-visible {
+    background: rgba(17, 17, 24, 0.55);
+}
+
+.show-vehicle .vdp-main-nav--prev {
+    left: 0.75rem;
+}
+
+.show-vehicle .vdp-main-nav--next {
+    right: 0.75rem;
+}
+
+/* The phone bar: hidden on wider screens. */
+.show-vehicle .vdp-mobile-bar {
+    display: none;
+}
+
+@media (max-width: 1023px) {
+    /* No thumbnail strip: the arrows on the photo step through the photos. */
+    .show-vehicle .vdp-thumbs-card {
+        display: none;
+    }
+
+    /* The top row: Back on the left, the title centred on one line (ellipsis when long), Call on the right.
+       I'm Interested moves to the band's second row (.vdp-mobile-bar). */
+    .show-vehicle .vdp-band {
+        padding: 0.6rem 0.75rem;
+    }
+
+    .show-vehicle .vdp-band-row {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .show-vehicle .vdp-band-main {
+        order: 0;
+        min-width: 0;
+    }
+
+    .show-vehicle .vdp-band-title {
+        margin: 0;
+        font-size: clamp(0.9375rem, 4.2vw, 1.25rem);
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .show-vehicle .vdp-band-actions {
+        margin-left: 0;
+    }
+
+    .show-vehicle .vdp-band-btn--primary {
+        display: none;
+    }
+
+    .show-vehicle .vdp-band-back span,
+    .show-vehicle .vdp-band-btn--white span {
+        display: none;
+    }
+
+    .show-vehicle .vdp-band-back,
+    .show-vehicle .vdp-band-btn--white {
+        padding: 0.55rem 0.8rem;
+    }
+
+    .show-vehicle .vdp-price-hero .vdp-price-main {
+        font-size: 1.5rem;
+    }
+
+    /* The band's second row (QA: "it must be at the header"): the price left, I'm Interested right. It sticks
+       with the band. */
+    .show-vehicle .vdp-mobile-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        margin-top: 0.6rem;
+        padding-top: 0;
+    }
+
+    .show-vehicle .vdp-mobile-bar-price {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        line-height: 1.15;
+    }
+
+    .show-vehicle .vdp-mobile-bar-price span {
+        font-size: 0.6875rem;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: #6b6b76;
+    }
+
+    .show-vehicle .vdp-mobile-bar-price strong {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: #111118;
+        white-space: nowrap;
+    }
+
+    .show-vehicle .vdp-mobile-bar-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        margin-left: auto;
+        padding: 0.6rem 1.1rem;
+        border-radius: 0.75rem;
+        font-weight: 700;
+        color: #fff;
+        white-space: nowrap;
+        background: var(--vdp-grad, var(--company-primary-base));
+    }
+
+    .show-vehicle .vdp-mobile-bar-btn:hover {
+        color: #fff;
+        filter: brightness(1.1);
+    }
+}
+
+/* The compact band (QA: "in mobile upon scrolling it must be like this", in the site's own font and Back button):
+   below 1024px, once the page is scrolled (.is-compact, set by the script in view-vehicle-header), the band is the
+   Back button, then the title and price | miles stacked, left-aligned. Near the top it is the full band again. */
+.show-vehicle .vdp-band-compact {
+    display: none;
+}
+
+@media (max-width: 1023px) {
+    /* Full width and square (QA: it joins the header), a thin line under it. The band keeps its width in the page
+       (no 100vw, which includes a desktop browser's scrollbar and pushed I'm Interested under it); its white and its
+       line are painted out to the screen's edges by two spread shadows, clipped to its height plus the line. Its
+       content sits 16px from the screen's edges, as before. */
+    .show-vehicle .vdp-band.is-compact {
+        width: auto;
+        max-width: none;
+        padding: 0.5rem;
+        border: 0;
+        border-radius: 0;
+        background: #fff;
+        box-shadow: 0 0 0 100vmax #fff, 0 1px 0 100vmax var(--vdp-line, #e5e5ea);
+        clip-path: inset(0 -100vmax -1px -100vmax);
+    }
+
+    .show-vehicle .vdp-band.is-compact .vdp-band-row,
+    .show-vehicle .vdp-band.is-compact .vdp-mobile-bar {
+        display: none;
+    }
+
+    .show-vehicle .vdp-band.is-compact .vdp-band-compact {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        min-width: 0;
+    }
+
+    .show-vehicle .vdp-band-compact .vdp-band-back {
+        flex: none;
+    }
+
+    .show-vehicle .vdp-band-compact-text {
+        min-width: 0;
+        flex: 1 1 auto;
+    }
+
+    .show-vehicle .vdp-band-compact .vdp-band-compact-title {
+        margin: 0;
+        font-size: 1rem;
+        line-height: 1.25;
+        text-align: left;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .show-vehicle .vdp-band-compact-meta {
+        display: flex;
+        gap: 0.4rem;
+        margin-top: 0.1rem;
+        font-size: 0.8125rem;
+        line-height: 1.25;
+        color: #6b6b76;
+    }
+
+    .show-vehicle .vdp-band-compact-meta > span:first-child {
+        font-weight: 700;
+        color: var(--company-primary-base, #4f2bb8);
+    }
+
+    .show-vehicle .vdp-band-compact-sep {
+        font-weight: 400;
+        color: #c4c4cc;
+    }
+
+    /* Call and I'm Interested on the right, icon-only. (The rule above that hides the first row's I'm Interested
+       below 1024px doesn't apply here.) */
+    .show-vehicle .vdp-band-compact-actions {
+        display: flex;
+        flex: none;
+        gap: 0.5rem;
+        margin-left: auto;
+    }
+
+    .show-vehicle .vdp-band-compact .vdp-band-compact-actions .vdp-band-btn {
+        display: inline-flex;
+        padding: 0.55rem 0.8rem;
+    }
+}
+
+/* The band once it reaches the nav and sticks (.is-stuck, set by the script in view-vehicle-header), desktop and
+   phones: square top corners, so it joins the header (QA). */
+.show-vehicle .vdp-band.is-stuck {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    transition: border-radius 0.15s ease;
+}
+
+/* The main photo with no gray behind it (QA): a cut-out photo (transparent PNG) sits on the white card. */
+.show-vehicle .vdp-main-img-wrap,
+.show-vehicle .vdp-main-img-wrap .vdp-main-img {
+    background: transparent;
+}
+
+/* Full screen from a button at the photo's top right (QA), not from a click anywhere on the photo. It matches the
+   photo count at the top left (QA: aligned with it, same colour): same top, height, dark pill and blur. */
+.show-vehicle .vdp-main-img-wrap .vdp-main-img {
+    cursor: default;
+}
+
+.show-vehicle .vdp-main-expand {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    z-index: 4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 25.3px;
+    padding: 0;
+    border: 0;
+    border-radius: 9999px;
+    color: #fff;
+    font-size: 0.9375rem;
+    background: rgba(22, 19, 31, 0.78);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.show-vehicle .vdp-main-expand:hover,
+.show-vehicle .vdp-main-expand:focus-visible {
+    background: rgba(22, 19, 31, 0.92);
+}
+
+/* The special tag, also top right, sits under the button. */
+.show-vehicle .vdp-main-img-wrap .vdp-gallery-badge {
+    top: 2.75rem;
+}
+
+/* Phones: Stock # takes a full row too, under the VIN (QA: VIN full width with Stock # in half a row looked
+   uneven). */
+@media (max-width: 640px) {
+    .show-vehicle .vdp-vh-item:has(.vdp-copy[aria-label="Copy stock number"]) {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 1023px) {
+    /* A smaller gap between the photo and the price card (QA): 12px, was 36px (the grid's 24px row gap plus the
+       price panel's 12px top padding). */
+    .show-vehicle .vdp-main-grid {
+        row-gap: 0.75rem;
+    }
+
+    .show-vehicle .vdp-main-grid .vdp-price-panel {
+        padding-top: 0;
+    }
+}
+
+/* Phones and tablets: smaller gaps above and below the title band (QA): 8px, was 16px. */
+@media (max-width: 1023px) {
+    .show-vehicle .vdp-band {
+        margin-top: 0.5rem;
+        margin-bottom: 0.5rem;
+        /* The page-coloured layer round the band (hides content scrolling under it) stops at the margin, so it doesn't
+           cover the top of the card below: it reached 1rem, which made the 8px gap look 16px. */
+        clip-path: inset(-0.5rem -100vmax);
+    }
+}
+
+/* Phones and tablets: the price card, the specs and the form line up with the photo's edges (QA), without their own
+   side insets (12px, 20px and 16px). */
+@media (max-width: 1023px) {
+    .show-vehicle .vdp-price-panel .vdp-price-hero {
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    .show-vehicle .vdp-price-panel .vdp-vh-grid {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .show-vehicle .vdp-price-panel .vdp-contact-form {
+        padding-left: 0;
+        padding-right: 0;
+    }
+}
+
+/* Phones (QA): Vehicle Details and the trust list. */
+@media (max-width: 640px) {
+    /* Appearance & ID: two equal columns, VIN and Stock # each a full row (Interior Color was squeezed to a letter a
+       line, Stock # cut off). */
+    .show-vehicle .vdp-details-group:has(.vdp-details-row--id) .vdp-details-tiles {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+
+    .show-vehicle .vdp-details-tiles .vdp-details-row--id {
+        grid-column: 1 / -1;
+    }
+
+    /* Vehicle Details: less side padding, so the groups use the card's width. */
+    .show-vehicle .vdp-details-panel {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+    }
+
+}
+
+/* Phones: Vehicle Details has one border, the card's (QA: no double border). The groups lose theirs and their
+   background; each group's heading line still separates them. */
+@media (max-width: 640px) {
+    .show-vehicle .vdp-details-panel .vdp-details-group {
+        padding-left: 0;
+        padding-right: 0;
+        border: 0;
+        background: transparent;
+        box-shadow: none;
+    }
+}
+
+@media (max-width: 640px) {
+    /* About This Vehicle: less side padding, as Vehicle Details (QA). */
+    .show-vehicle .vdp-about-row {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+    }
+
+    .show-vehicle .vdp-about-row .vdp-about-panel {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    /* The compact band's price | miles stays on one line. */
+    .show-vehicle .vdp-band-compact-meta {
+        white-space: nowrap;
+        overflow: hidden;
+    }
+}
+
+/* Phones: Estimate My Monthly Payment with the same side padding as the other cards (QA): 12px. */
+@media (max-width: 640px) {
+    .show-vehicle .vdp-pay {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+    }
+}
+
+/* Phones: About This Vehicle's three highlight cards without a border (QA); their light background stays. */
+@media (max-width: 640px) {
+    .show-vehicle .vdp-about-tiles .vdp-about-tile {
+        border: 0;
+        box-shadow: none;
+    }
+}
+
+/* Phones: Ready to drive it? without its own card (QA): no border, shadow or side inset, so it lines up with the
+   rest of About This Vehicle; its buttons span the width. */
+@media (max-width: 640px) {
+    .show-vehicle .vdp-about-row .vdp-drive-cta {
+        width: auto;
+        max-width: none;
+        margin-left: 0;
+        margin-right: 0;
+        padding-left: 0;
+        padding-right: 0;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+        box-shadow: none;
+    }
+}
+
+/* Phones: the trust list (Transparent Pricing, ...) lines up with the other cards (QA): left-aligned, 12px side
+   padding, full width. Replaces the earlier centring. */
+@media (max-width: 640px) {
+    .show-vehicle .vdp-footer-cta {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: flex-start;
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
     }
 }

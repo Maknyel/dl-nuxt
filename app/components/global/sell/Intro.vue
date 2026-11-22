@@ -7,7 +7,7 @@
 
 <template>
   <section class="sell-intro">
-    <span class="sell-pill"><Icon name="ion:logo-usd" aria-hidden="true" /> GET TOP DOLLAR</span>
+    <UiPagePill icon="logo-usd">GET TOP DOLLAR</UiPagePill>
     <h1 id="register" class="sell-title">Sell My <span>Car</span></h1>
     <p class="sell-lead">Get an instant cash offer online in under 2 minutes. Free appraisal — we buy all makes &amp; models.</p>
     <div class="sell-perks">

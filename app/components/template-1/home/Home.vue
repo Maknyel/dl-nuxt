@@ -45,11 +45,11 @@ useHead({ bodyAttrs: { class: 't1-home' } })
  * template-1/theme/layout-4.blade.php, on the home only: under `body.t1-home` (set above), through :where() so every
  * selector keeps the Blade's specificity.
  *
- * --t1-primary: the Blade sets it on :root as var(--company-primary-base, #6d28d9), but the dealer's colour is set on
- * <body>, so on the Laravel site it always resolves to the fallback #6d28d9. Kept, so the page matches.
+ * --t1-primary: on body, where the dealer's --company-primary-base is set (the Blade moved it off :root, where it
+ * always fell back to #6d28d9).
  */
 :where(body.t1-home) {
-  --t1-primary: #6d28d9;
+  --t1-primary: var(--company-primary-base, #6d28d9);
   --t1-primary-light: color-mix(in srgb, var(--t1-primary) 62%, #ffffff);
   --t1-primary-soft: color-mix(in srgb, var(--t1-primary) 78%, #ffffff);
   --t1-page: color-mix(in srgb, var(--t1-primary) 3%, #f6f6f8);
@@ -163,14 +163,15 @@ body.t1-home {
   color: #fff;
 }
 
+/* White button on the dark cards: Get Pre-Approved. Black text (on request), not the primary. */
 :where(body.t1-home) .t1-btn--white {
-  color: var(--t1-primary);
+  color: #000;
   background: #fff;
   box-shadow: 0 10px 24px -10px rgba(0, 0, 0, 0.45), 0 0 0 3px rgba(255, 255, 255, 0.14);
 }
 
 :where(body.t1-home) .t1-btn--white:hover {
-  color: var(--t1-primary);
+  color: #000;
 }
 
 :where(body.t1-home) .t1-btn--outline {

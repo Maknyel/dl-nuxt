@@ -58,7 +58,7 @@ const onPhotoError = (e: Event) => {
 <template>
   <div class="ab-page">
     <section class="ab-hero">
-      <span class="ab-badge"><Icon name="ion:people-outline" aria-hidden="true" /> ABOUT US</span>
+      <UiPagePill icon="people-outline">ABOUT US</UiPagePill>
       <h1 class="ab-title"><span>Welcome</span> to {{ company.name }}</h1>
       <div class="ab-lead" v-html="company.aboutus ?? ''" />
     </section>
@@ -180,23 +180,7 @@ body:has(.ab-page) {
   padding-bottom: 1.5rem;
 }
 
-.ab-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.4rem 0.9rem;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  color: color-mix(in srgb, var(--ab-p) 80%, #000000);
-  background: color-mix(in srgb, var(--ab-p) 9%, #ffffff);
-  border: 1px solid color-mix(in srgb, var(--ab-p) 18%, #ffffff);
-}
-
-.ab-badge .ion-icon {
-  color: #f59e0b;
-}
+/* The pill itself is the page-pill component (UiPagePill): one class and look on every page. */
 
 .ab-page .ab-title {
   margin: 1rem 0 0;

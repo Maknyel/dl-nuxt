@@ -159,6 +159,14 @@ function onSubmit() {
   if (window.innerWidth < 992) search.setMobileOpen(false)
   search.applyFilters()
 }
+const SORTS = [
+  ['price_desc', 'Price: High to Low'],
+  ['price_asc', 'Price: Low to High'],
+  ['year_desc', 'Year: New to Old'],
+  ['year_asc', 'Year: Old to New'],
+  ['make_asc', 'Make: A to Z'],
+  ['make_desc', 'Make: Z to A'],
+] as const
 defineExpose({ root })
 </script>
 
@@ -167,7 +175,8 @@ defineExpose({ root })
     id="main-sidebar"
     ref="root"
     class="sidebar-side"
-    :class="{ 'sidebar-mobile-open': search.mobileOpen.value }"
+    :class="{ 'sidebar-mobile-open': search.mobileOpen.value, 'srp-filters-open': search.filtersOpen.value }"
+    :style="search.filtersOpen.value ? search.filtersStyle : undefined"
   >
     <div class="sidebar-refine">
       <div class="sf-hd">
@@ -189,6 +198,29 @@ defineExpose({ root })
       </div>
 
       <form id="submitFilter" action="/pre-owned-cars" method="get" @submit.prevent="onSubmit">
+        <!-- The filters' top, pinned while the filters under it scroll (ADR-0185, QA): Sort by, then Clear Filter. -->
+        <div class="sf-top">
+          <!-- Sort by, at the top of the filters (ADR-0184): the sort moved here from the results' toolbar; picking one
+               sorts at once. -->
+          <div class="sf-sort">
+            <label class="sf-sort-lbl" for="sf_sort_by">Sort by</label>
+            <select
+              id="sf_sort_by"
+              name="sort_by"
+              class="sf-sort-select"
+              :value="q('sort_by') || 'make_asc'"
+              @change="search.changeSort(($event.target as HTMLSelectElement).value)"
+            >
+              <option v-for="[value, label] in SORTS" :key="value" :value="value">{{ label }}</option>
+            </select>
+          </div>
+
+          <!-- Clear Filter (ADR-0185, QA): every filter off. One Clear; phone panel and desktop dropdown alike. -->
+          <a href="/pre-owned-cars" class="sf-clear-top" @click.prevent="search.clearAll()">
+            <span>Clear Filter</span>
+            <Icon name="ion:close-outline" aria-hidden="true" />
+          </a>
+        </div>
         <!-- Store Location -->
         <div
           v-if="companies.length > 1"

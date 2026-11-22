@@ -147,19 +147,7 @@ body:has(.fin-page) {
   gap: 0.6rem;
 }
 
-.fin-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.4rem 0.9rem;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  color: color-mix(in srgb, var(--fin-p) 80%, #000000);
-  background: color-mix(in srgb, var(--fin-p) 9%, #ffffff);
-  border: 1px solid color-mix(in srgb, var(--fin-p) 18%, #ffffff);
-}
+/* The pill itself is the page-pill component (UiPagePill): one class and look on every page. */
 
 .fin-page .fin-title {
   margin: 0.75rem 0 1rem;

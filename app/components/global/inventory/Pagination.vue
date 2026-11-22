@@ -3,13 +3,13 @@
  * The pagination bar (global/cars/pagination-live.blade.php): ‹ 1 … 4 5 6 … 9 › and "Show N per page". The links keep
  * the Laravel URLs (for a new tab); a click searches in place.
  */
-import type { InventoryResponse } from '~/composables/useInventorySearch'
+import { INVENTORY_PER_PAGE, type InventoryResponse } from '~/composables/useInventorySearch'
 
 const props = defineProps<{ data: InventoryResponse }>()
 const search = useInventorySearch()
 const { q, qa } = search
 
-const perPage = computed(() => Math.trunc(Number(q('per_page'))) || 12)
+const perPage = computed(() => Math.trunc(Number(q('per_page'))) || INVENTORY_PER_PAGE)
 const total = computed(() => props.data.inventory_data_count)
 const totalPages = computed(() => (total.value > 0 ? Math.ceil(total.value / perPage.value) : 1))
 const current = computed(() => props.data.paging.current_page || Math.trunc(Number(q('page'))) || 1)
@@ -74,7 +74,8 @@ const pages = computed<(number | '…')[]>(() => {
     <form class="pg-perpage" action="/pre-owned-cars" method="get" @submit.prevent>
       <span>Show</span>
       <select name="per_page" :value="perPage" @change="search.changePerPage(($event.target as HTMLSelectElement).value)">
-        <option v-for="opt in [12, 24, 48, 96]" :key="opt" :value="opt">{{ opt }}</option>
+        <!-- 100 in place of 96: the inventory's default page size (ADR-0187). -->
+        <option v-for="opt in [12, 24, 48, 100]" :key="opt" :value="opt">{{ opt }}</option>
       </select>
       <span>per page</span>
     </form>

@@ -11,6 +11,7 @@ declare global {
   const $fetch: typeof import('./app/shims/nuxt').$fetch
   const DEALER_LION_LOGO: typeof import('./app/utils/format').DEALER_LION_LOGO
   const EffectScope: typeof import('vue').EffectScope
+  const INVENTORY_PER_PAGE: typeof import('./app/composables/useInventorySearch').INVENTORY_PER_PAGE
   const INVENTORY_SEARCH: typeof import('./app/composables/useInventorySearch').INVENTORY_SEARCH
   const MULTI_FIELDS: typeof import('./app/composables/useInventorySearch').MULTI_FIELDS
   const SiteError: typeof import('./app/site-api/runtime/h3').SiteError
@@ -153,6 +154,7 @@ declare module 'vue' {
     readonly $fetch: UnwrapRef<typeof import('./app/shims/nuxt')['$fetch']>
     readonly DEALER_LION_LOGO: UnwrapRef<typeof import('./app/utils/format')['DEALER_LION_LOGO']>
     readonly EffectScope: UnwrapRef<typeof import('vue')['EffectScope']>
+    readonly INVENTORY_PER_PAGE: UnwrapRef<typeof import('./app/composables/useInventorySearch')['INVENTORY_PER_PAGE']>
     readonly INVENTORY_SEARCH: UnwrapRef<typeof import('./app/composables/useInventorySearch')['INVENTORY_SEARCH']>
     readonly MULTI_FIELDS: UnwrapRef<typeof import('./app/composables/useInventorySearch')['MULTI_FIELDS']>
     readonly SiteError: UnwrapRef<typeof import('./app/site-api/runtime/h3')['SiteError']>

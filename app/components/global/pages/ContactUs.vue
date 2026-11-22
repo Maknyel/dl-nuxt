@@ -82,8 +82,8 @@ function submit() {
 <template>
   <div class="ct-page">
     <div class="ct-badges">
-      <span class="ct-badge"><Icon name="ion:checkmark-circle-outline" aria-hidden="true" /> WE'RE HERE TO HELP</span>
-      <span class="ct-badge"><Icon name="ion:shield-checkmark-outline" aria-hidden="true" /> REAL PEOPLE. REAL HELP.</span>
+      <UiPagePill icon="checkmark-circle-outline">WE'RE HERE TO HELP</UiPagePill>
+      <UiPagePill icon="shield-checkmark-outline">REAL PEOPLE. REAL HELP.</UiPagePill>
     </div>
     <h1 class="ct-title">Contact Us</h1>
     <div class="grid grid-cols-12 gap-4">
@@ -398,19 +398,7 @@ body:has(.ct-page) {
   gap: 0.6rem;
 }
 
-.ct-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.4rem 0.9rem;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  color: color-mix(in srgb, var(--ct-p) 80%, #000000);
-  background: color-mix(in srgb, var(--ct-p) 9%, #ffffff);
-  border: 1px solid color-mix(in srgb, var(--ct-p) 18%, #ffffff);
-}
+/* The pills themselves are the page-pill component (UiPagePill): the same class and look as About Us's pill. */
 
 .ct-page .ct-title {
   margin: 0.75rem 0 1rem;
@@ -481,14 +469,173 @@ body:has(.ct-page) {
   box-shadow: 0 12px 24px -14px color-mix(in srgb, var(--ct-p) 80%, transparent);
 }
 
-/* Get Directions lives on the showroom card here; the company card doesn't repeat it. */
+/* Get Directions lives on the showroom card here; the Company Information card doesn't repeat it. */
 .ct-page :deep(.lp-company .lp-directions) {
   display: none;
 }
 
+/* With Get Directions hidden, Follow us takes the spare space itself and sits at the card's bottom (the shared
+   ".lp-directions + .lp-follow" reset still matches a hidden button, so undo it here). */
+.ct-page :deep(.lp-company .lp-follow) {
+  margin-top: auto;
+}
+
+/* ── Responsive (scoped to this page; the lp-* cards are shared with About Us) ─────────────────────────────── */
+
+/* The hours' Sales / Service boxes: side by side only when each is wide enough for a row; side by side, they're the
+   same height. */
+.ct-page :deep(.lp-depts) {
+  grid-template-columns: repeat(auto-fit, minmax(min(16rem, 100%), 1fr));
+  align-items: stretch;
+}
+
+.ct-page :deep(.lp-dept) {
+  padding: 1rem 1.15rem 0.5rem;
+}
+
+.ct-page :deep(.lp-row) {
+  gap: 0.7rem;
+}
+
+.ct-page :deep(.lp-fill) {
+  min-width: 0.75rem;
+}
+
+.ct-page :deep(.lp-open),
+.ct-page :deep(.lp-time) {
+  white-space: nowrap;
+}
+
+/* Visit Our Showroom: the address and phone / hours / email sit side by side only when the card has room
+   (not in the half-width card at 1024px, nor in the multi-location thirds). */
+.ct-page :deep(.lp-map) {
+  container-type: inline-size;
+  --ct-ico-w: 2.75rem; /* the header's .lp-ico */
+  --ct-ico-gap: 0.85rem; /* the header's .lp-h gap */
+}
+
+/* Side by side, the address and phone / hours / email split the card 50/50, on three shared rows (subgrid):
+   the street beside the phone, the city beside today's hours, "USA" beside the email. */
+.ct-page :deep(.lp-map-info) {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(3, auto);
+  gap: 0.5rem 1.25rem;
+}
+
+.ct-page :deep(.lp-map-addr),
+.ct-page :deep(.lp-map-quick) {
+  display: grid;
+  grid-template-rows: subgrid;
+  grid-row: span 3;
+  gap: 0.5rem;
+}
+
+/* The pin is the address's first child; it stays hidden here, so it takes no row. */
+.ct-page :deep(.lp-map-addr > :not(.lp-map-addr-ico)),
+.ct-page :deep(.lp-map-quick > *) {
+  align-self: center;
+}
+
+@container (max-width: 34rem) {
+  .ct-page :deep(.lp-map-info) {
+    grid-template-columns: 1fr;
+    grid-template-rows: none;
+    gap: 0.5rem;
+  }
+
+  /* Stacked: no shared rows; the address is one line, the phone / hours / email a column under it. */
+  .ct-page :deep(.lp-map-addr),
+  .ct-page :deep(.lp-map-quick) {
+    grid-row: auto;
+  }
+
+  .ct-page :deep(.lp-map-quick) {
+    display: flex;
+  }
+
+  .ct-page :deep(.lp-map-quick > *) {
+    align-self: auto;
+  }
+
+  /* Stacked, the address takes the full row on one line: "811 Ridge Rd, Webster, NY 14580, USA", with a pin.
+     The pin, phone, clock and mail icons are centred under the header's icon box, and their text starts where
+     the "Visit Our Showroom" title does (--ct-ico-w / --ct-ico-gap, the header's box and gap). */
+  .ct-page :deep(.lp-map-addr) {
+    display: block;
+    position: relative;
+    padding-left: calc(var(--ct-ico-w) + var(--ct-ico-gap));
+    padding-right: 0;
+    border-right: 0;
+  }
+
+  .ct-page :deep(.lp-map-addr .lp-map-addr-ico) {
+    display: block;
+    position: absolute;
+    top: 0.2rem;
+    left: calc((var(--ct-ico-w) - 1.05rem) / 2);
+    font-size: 1.05rem;
+  }
+
+  .ct-page :deep(.lp-map-quick > * > .ion-icon) {
+    margin-left: calc((var(--ct-ico-w) - 1.05rem) / 2);
+    margin-right: calc((var(--ct-ico-w) - 1.05rem) / 2 + var(--ct-ico-gap) - 0.6rem); /* less the row's 0.6rem gap */
+  }
+
+  .ct-page :deep(.lp-map-addr strong),
+  .ct-page :deep(.lp-map-addr span) {
+    display: inline;
+  }
+
+  .ct-page :deep(.lp-map-addr strong::after) {
+    content: ', ';
+  }
+
+  .ct-page :deep(.lp-map-addr span) {
+    font-size: 1.0625rem;
+  }
+
+  .ct-page :deep(.lp-map-quick > span) {
+    flex-wrap: wrap;
+  }
+}
+
 @media (max-width: 640px) {
+  .ct-page {
+    padding-top: 24px;
+    padding-bottom: 32px;
+  }
+
   .ct-page .ct-title {
     font-size: 2.25rem;
+  }
+
+  /* The cards' phone sizes (padding, titles, rows) are in the shared lp-cards.css. The map card's icon column
+     follows the smaller header icon. */
+  .ct-page :deep(.lp-map) {
+    --ct-ico-w: 2.5rem;
+    --ct-ico-gap: 0.7rem;
+  }
+
+  /* Map card: buttons stacked, the map a little shorter. */
+  .ct-page :deep(.lp-map-ctas) {
+    grid-template-columns: 1fr;
+  }
+
+  .ct-page :deep(.lp-map-frame),
+  .ct-page :deep(.lp-map-frame iframe) {
+    min-height: 11rem;
+  }
+
+  /* Send Message spans the form on a phone. */
+  .ct-form button.company-primary-base-background {
+    flex: 1;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 360px) {
+  .ct-page .ct-title {
+    font-size: 2rem;
   }
 }
 </style>

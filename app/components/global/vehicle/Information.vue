@@ -203,11 +203,26 @@ onBeforeUnmount(() => {
           :src="images[current] || firstImage"
           :alt="`${vehicle.year} ${vehicle.make} ${vehicle.model}`"
           @error="onImgError"
-          @click="openFull(current)"
         />
 
+        <!-- Full screen: this button at the top right opens the viewer (QA: not a click anywhere on the photo). -->
+        <button type="button" class="vdp-main-expand" aria-label="View photos full screen" @click="openFull(current)">
+          <Icon name="ion:scan-outline" />
+        </button>
+
+        <!-- Previous / next on the photo itself, on a dark round background so they show on any photo. They step the
+             photo without opening the full-screen viewer. -->
+        <template v-if="total > 1">
+          <button type="button" class="vdp-main-nav vdp-main-nav--prev" aria-label="Previous photo" @click.stop="nav(-1)">
+            <Icon name="ion:chevron-back-outline" />
+          </button>
+          <button type="button" class="vdp-main-nav vdp-main-nav--next" aria-label="Next photo" @click.stop="nav(1)">
+            <Icon name="ion:chevron-forward-outline" />
+          </button>
+        </template>
+
+        <!-- Top-left tag: the photo count. -->
         <div class="vdp-gallery-tags">
-          <span class="vdp-gallery-tag"><Icon name="ion:shield-checkmark-outline" /> Inspected</span>
           <!-- prettier-ignore -->
           <span class="vdp-gallery-tag"><Icon name="ion:images-outline" /> <span id="vdp-counter" class="vdp-gallery-counter">{{ current + 1 }} / {{ total }}</span></span>
         </div>

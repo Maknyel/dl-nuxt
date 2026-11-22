@@ -41,9 +41,10 @@
   height: 2.75rem;
   border-radius: 0.75rem;
   font-size: 1.25rem;
-  color: var(--lp-ink);
-  background: #f6f6f8;
-  border: 1px solid var(--lp-line);
+  /* The dealer's primary (on request): the icon in it, on a pale tint of it. */
+  color: var(--lp-p);
+  background: color-mix(in srgb, var(--lp-p) 8%, #ffffff);
+  border: 1px solid color-mix(in srgb, var(--lp-p) 16%, #ffffff);
 }
 
 .lp-ico--sm {
@@ -53,15 +54,18 @@
   font-size: 1rem;
 }
 
+/* The Sales / Service boxes: side by side only when each is wide enough for a row (day, a short line,
+   "10:00 AM – 10:00 PM") with room to spare at its right edge; otherwise stacked. Side by side, they're the same
+   height. The same on every page (About Us, Contact Us). */
 .lp-depts {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(16rem, 100%), 1fr));
   gap: 1rem;
-  align-items: start;
+  align-items: stretch;
 }
 
 .lp-dept {
-  padding: 1rem 1.25rem 0.5rem;
+  padding: 1rem 1.15rem 0.5rem;
   border-radius: 1rem;
   border: 1px solid var(--lp-line);
 }
@@ -92,7 +96,7 @@
 .lp-row {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.7rem;
   padding: 0.65rem 0;
   font-size: 0.9375rem;
   border-bottom: 1px solid #f1f1f4;
@@ -110,6 +114,7 @@
 
 .lp-fill {
   flex: 1;
+  min-width: 0.75rem;
   height: 0.3rem;
   border-radius: 9999px;
   background: #f1f1f4;
@@ -211,6 +216,16 @@
   filter: brightness(1.08);
 }
 
+/* Company Information's Get Directions: pushed to the card's bottom, right on top of Follow us (which then doesn't
+   take the spare space itself). */
+.lp-directions {
+  margin-top: auto;
+}
+
+.lp-directions + .lp-follow {
+  margin-top: 0;
+}
+
 .lp-follow {
   display: flex;
   align-items: center;
@@ -244,13 +259,16 @@
   height: 2.75rem;
   border-radius: 0.75rem;
   font-size: 1.1rem;
-  color: var(--lp-ink);
-  background: #f6f6f8;
-  border: 1px solid var(--lp-line);
+  /* As the icon tiles (.lp-ico): the dealer's primary on a pale tint of it; a deeper tint on hover. */
+  color: var(--lp-p);
+  background: color-mix(in srgb, var(--lp-p) 8%, #ffffff);
+  border: 1px solid color-mix(in srgb, var(--lp-p) 16%, #ffffff);
+  transition: background-color 0.15s ease;
 }
 
 .lp-socials a:hover {
   color: var(--lp-p);
+  background: color-mix(in srgb, var(--lp-p) 16%, #ffffff);
 }
 
 /* Visit Our Showroom (company-map) */
@@ -275,6 +293,11 @@
 
 .lp-map-addr span {
   color: var(--lp-muted);
+}
+
+/* The address pin: shown only when the address is one line (Contact Us, stacked). */
+.lp-map-addr .lp-map-addr-ico {
+  display: none;
 }
 
 .lp-map-quick {
@@ -349,5 +372,75 @@
   .lp-map-addr {
     padding-right: 0;
     border-right: 0;
+  }
+}
+
+/* ── Phones (every page with these cards) ── */
+@media (max-width: 640px) {
+  /* Cards: less padding, smaller titles, so the content keeps its width. */
+  .lp-card {
+    gap: 1rem;
+    padding: 1.25rem;
+    border-radius: 1rem;
+  }
+
+  .lp-h {
+    gap: 0.7rem;
+    font-size: 1.25rem;
+  }
+
+  .lp-h .lp-ico {
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 1.1rem;
+  }
+
+  /* Company Information rows. */
+  .lp-item {
+    gap: 0.75rem;
+    padding: 0.75rem 0.85rem;
+  }
+
+  .lp-item .lp-ico {
+    width: 2.25rem;
+    height: 2.25rem;
+    font-size: 1rem;
+  }
+
+  .lp-item-txt strong {
+    font-size: 0.875rem;
+    overflow-wrap: anywhere;
+  }
+
+  .lp-follow {
+    flex-wrap: wrap;
+  }
+
+  /* Hours rows. */
+  .lp-dept {
+    padding: 0.85rem 1rem 0.35rem;
+  }
+
+  .lp-row {
+    gap: 0.75rem;
+    font-size: 0.875rem;
+  }
+
+  .lp-note {
+    font-size: 0.8125rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .lp-card {
+    padding: 1rem;
+  }
+
+  .lp-fill {
+    display: none;
+  }
+
+  .lp-time {
+    margin-left: auto;
   }
 }

@@ -1,12 +1,15 @@
 <script setup lang="ts">
 /**
- * Browse Inventory (index-live's head card): the title and the stock, the keyword search, and the Popular chips
- * (All, Under $20K, SUVs, Trucks, Sedans) with their counts. The stock and counts are the page load's (this card was
- * outside the Laravel page's swapped regions); the chips' active state follows every search.
+ * Browse Inventory (index-live's head card): the title and the stock, the keyword search, the pagination (ADR-0186)
+ * and the Filters & Sort button (ADR-0183 / ADR-0188), pinned under the nav while scrolling (ADR-0187). The Popular
+ * chips (All, Under $20K, SUVs, Trucks, Sedans) are hidden (ADR-0181) but kept in the markup. The stock and counts are
+ * the page load's (`data`: this card was outside the Laravel page's swapped regions); the pagination and the Filters
+ * badge follow every search (`current`).
  */
 import type { InventoryResponse } from '~/composables/useInventorySearch'
+import InventoryPagination from './Pagination.vue'
 
-const props = defineProps<{ data: InventoryResponse }>()
+const props = defineProps<{ data: InventoryResponse; current?: InventoryResponse | null }>()
 const search = useInventorySearch()
 const route = useRoute()
 
@@ -42,6 +45,59 @@ const sedanActive = computed(() => bodyTypes.value.includes('sedan'))
 const underActive = computed(() => search.q('max_price') === '20000')
 
 const term = ref(search.q('search'))
+
+// Phones (ADR-0188): a shorter placeholder, so it isn't cut off in the narrower field.
+const placeholder = ref('Search by make, model, body style, or keyword')
+
+// How many filters are on (sidebar-live's $sfActiveCount): the Filters & Sort button's badge.
+const activeCount = computed(() => {
+  const { q, qa } = search
+  const any = (k: string) => qa(k).length > 0 || q(k) !== ''
+  let n = 0
+  for (const k of ['make', 'model', 'trim', 'body_type', 'drivetrain']) if (any(k)) n++
+  if (q('year_from') || q('year_to')) n++
+  if (q('mileage_from') || q('mileage_to')) n++
+  if (q('internet_price_from') || q('internet_price_to')) n++
+  for (const k of ['transmission', 'exterior_color', 'interior_color', 'company_id']) if (any(k)) n++
+  return n
+})
+
+// ── Filters & Sort (index-live's srpFiltersToggle) ─────────────────────────────────────────────────────
+const DESKTOP = 992
+function toggleFilters() {
+  // Phones and tablets (ADR-0188): the full-screen filter panel, as the toolbar's own Filters button did. The click
+  // stops here (@click.stop), or the toolbar's outside-click handler would close the panel straight away.
+  if (window.innerWidth < DESKTOP) {
+    search.setMobileOpen(!search.mobileOpen.value)
+    return
+  }
+  search.setFiltersOpen(!search.filtersOpen.value)
+}
+// A click outside the dropdown, or Esc, closes it.
+function onDocClick(e: MouseEvent) {
+  if (!search.filtersOpen.value) return
+  const t = e.target as Element | null
+  if (t?.closest?.('#main-sidebar, #srp-filters-btn')) return
+  search.setFiltersOpen(false)
+}
+function onKey(e: KeyboardEvent) {
+  if (e.key === 'Escape') search.setFiltersOpen(false)
+}
+const onResize = () => {
+  if (search.filtersOpen.value) search.placeFilters()
+}
+onMounted(() => {
+  if (window.matchMedia('(max-width: 767px)').matches) placeholder.value = 'Search make, model, keyword'
+  document.addEventListener('click', onDocClick)
+  document.addEventListener('keydown', onKey)
+  window.addEventListener('resize', onResize, { passive: true })
+})
+onBeforeUnmount(() => {
+  document.removeEventListener('click', onDocClick)
+  document.removeEventListener('keydown', onKey)
+  window.removeEventListener('resize', onResize)
+  search.setFiltersOpen(false)
+})
 </script>
 
 <template>
@@ -53,9 +109,31 @@ const term = ref(search.q('search'))
           <p class="srp-head-sub"><b>{{ fmt(srpStock) }}</b> quality pre-owned vehicles in stock</p>
         </div>
         <form class="srp-head-search" action="/pre-owned-cars" method="get" @submit.prevent="search.submitSearch(term)">
-          <input v-model="term" type="text" name="search" placeholder="Search by make, model, body style, or keyword" />
+          <input v-model="term" type="text" name="search" :placeholder="placeholder" />
           <button type="submit" class="srp-head-search-btn"><Icon name="ion:search-outline" /> Search</button>
         </form>
+        <!-- The pagination, in the Browse card between the search and Filters & Sort (ADR-0186, QA): the page numbers and
+             Show N per page. It was its own card under the cards. -->
+        <div id="pagination-wrapper" class="srp-head-pagination">
+          <InventoryPagination v-if="current" :data="current" />
+        </div>
+        <!-- Filters & Sort (ADR-0183 / ADR-0184): on a desktop it opens Refine Your Search (#main-sidebar) as a dropdown
+             under the card; below 992px the full-screen panel (ADR-0188). The badge is how many filters are on. -->
+        <button
+          id="srp-filters-btn"
+          type="button"
+          class="srp-filters-btn"
+          :class="{ 'is-open': search.filtersOpen.value }"
+          aria-haspopup="true"
+          :aria-expanded="search.filtersOpen.value ? 'true' : 'false'"
+          aria-controls="main-sidebar"
+          @click.stop="toggleFilters"
+        >
+          <Icon name="ion:options-outline" aria-hidden="true" />
+          <span>Filters &amp; Sort</span>
+          <span v-show="activeCount > 0" id="srp-filters-count" class="srp-filters-count">{{ activeCount }}</span>
+          <Icon name="ion:chevron-down-outline" class="srp-filters-chevron" aria-hidden="true" />
+        </button>
       </div>
       <div id="bt-quickbar-inner" class="srp-head-chips bt-quickbar-inner">
         <div id="bt-chips-container" class="flex flex-row items-center gap-2">

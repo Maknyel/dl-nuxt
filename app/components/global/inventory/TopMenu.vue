@@ -68,7 +68,7 @@ const activeFilterCount = computed(() => {
 // "Showing 1–12 of 30", from the page and its size.
 const showing = computed(() => {
   const count = props.data.inventory_data_count
-  const perPage = Math.trunc(Number(q('per_page'))) || 12
+  const perPage = Math.trunc(Number(q('per_page'))) || 100
   const page = props.data.paging.current_page || Math.trunc(Number(q('page'))) || 1
   return { from: count > 0 ? (page - 1) * perPage + 1 : 0, to: Math.min(page * perPage, count), count }
 })

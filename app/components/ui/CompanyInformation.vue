@@ -74,8 +74,10 @@ const socials = computed(() =>
       </li>
     </ul>
 
+    <!-- The same Get Directions button as the showroom map card (CompanyMap): the label, then the arrow. It sits at
+         the card's bottom, right on top of Follow us (margin-top: auto — lp-directions). -->
     <a v-if="v.street_address" target="_blank" :href="mapUrl" class="lp-btn lp-directions">
-      <Icon name="ion:location-outline" aria-hidden="true" /> Get Directions
+      Get Directions <Icon name="ion:arrow-forward-outline" aria-hidden="true" />
     </a>
 
     <!-- Social Links -->

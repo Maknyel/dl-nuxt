@@ -3140,3 +3140,562 @@ body:has(#car-search-page) {
   background: #141226;
   border-color: #141226;
 }
+
+/* ══ Ported from srp-theme (ADR-0181 – ADR-0188): no chips, the title at the card top, Filters & Sort, the pagination
+   in the Browse card, the card pinned while scrolling, the phone layout. ══ */
+
+/* ══ No quick-filter chips (ADR-0181, QA) ════════════════════════════════════════════════════════════════════════
+   The Browse card is the title and the search only: the All · Under $20K · SUVs · Trucks · Sedans row is hidden
+   (kept in the markup, where the page's scripts look it up). The search keeps a set width, up to 32rem (its whole
+   placeholder, as ADR-0157 sized it), at the card's right, the title at its left, so it doesn't stretch across
+   the row on a wide screen (QA). Phones: the title over the search, full width. Last in the theme, so it wins over
+   the card's earlier layouts. */
+#car-search-page .srp-head-chips {
+    display: none !important;
+}
+
+.srp-head-card {
+    grid-template-columns: auto minmax(18rem, 32rem);
+    grid-template-areas: "title search";
+    justify-content: space-between;
+}
+
+@media (max-width: 767px) {
+    .srp-head-card {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-areas: "title" "search";
+    }
+}
+
+/* ══ The card's title at its top (ADR-0182, QA: "so the user can see that title immediately") ════════════════════
+   Above the photo, on one line (QA): the year, make and model bold (Outfit, the page's heading face), then the trim,
+   body and drive after them, smaller, in a muted primary. A name too long for the card ends in an ellipsis; the
+   whole name is the link's tooltip (title attribute). One line on every card, so the photos start level across a
+   row. It replaces the earlier in-body title's clamp and two-line height. */
+#car-search-page #car-grid:not(.list-view) .car-card-title {
+    display: block;
+    min-height: 0;
+    padding: 0.3rem 0.4rem 0.7rem;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: unset;
+    line-height: 1.6rem;
+    text-decoration: none;
+}
+
+#car-search-page #car-grid .car-card-title-main {
+    font-family: 'Outfit', 'Inter', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--srp-ink);
+    transition: color 0.15s;
+}
+
+#car-search-page #car-grid .car-card-title-sub {
+    margin-left: 0.35rem;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: color-mix(in srgb, var(--srp-primary) 70%, #6b6880) !important;
+}
+
+#car-search-page #car-grid .car-card:hover .car-card-title-main {
+    color: var(--srp-primary);
+}
+
+/* ══ Filters: a dropdown beside the search (ADR-0183, the mock-up) ════════════════════════════════════════════════
+   On a desktop (from 992px) the Refine Your Search column becomes a dropdown: the Filters button beside the search
+   (its badge, how many filters are on) opens #main-sidebar under it, at the card's right, over the results. The
+   cards take the page's full width. Below 992px nothing changes: the toolbar's own Filters button and the
+   full-screen panel. */
+.srp-filters-btn {
+    display: none;
+}
+
+@media (min-width: 992px) {
+    .srp-head-card {
+        grid-template-columns: auto minmax(0, 1fr) minmax(18rem, 32rem) auto;
+        grid-template-areas: "title . search filters";
+        justify-content: normal;
+    }
+
+    .srp-filters-btn {
+        grid-area: filters;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        height: 2.75rem;
+        padding: 0 1rem;
+        border-radius: 9999px;
+        border: 1.5px solid var(--srp-ink);
+        background: #fff;
+        color: var(--srp-ink);
+        font-size: 0.875rem;
+        font-weight: 600;
+        white-space: nowrap;
+        transition: background-color 0.15s, border-color 0.15s;
+    }
+
+    .srp-filters-btn:hover,
+    .srp-filters-btn.is-open {
+        background: var(--srp-soft);
+        border-color: var(--srp-primary);
+    }
+
+    .srp-filters-count {
+        min-width: 1.35rem;
+        padding: 0 0.4rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        line-height: 1.35rem;
+        text-align: center;
+        color: var(--srp-primary);
+        background: var(--srp-soft);
+    }
+
+    .srp-filters-chevron {
+        transition: transform 0.15s;
+    }
+
+    .srp-filters-btn.is-open .srp-filters-chevron {
+        transform: rotate(180deg);
+    }
+
+    /* The dropdown: the sidebar, out of the page's flow, under the button at the right. */
+    #car-search-page .vehicles-layout {
+        position: relative;
+    }
+
+    #car-search-page .vehicles-layout .sidebar-side {
+        display: none;
+        /* Fixed to the window (ADR-0187): the Filters script places it just under the Browse card at the card's
+           right edge each time it opens and while it's open (srpFiltersPlace), so it stays under the card once the
+           card is pinned. top / right here are only a fallback. */
+        position: fixed;
+        top: 9rem;
+        right: 1rem;
+        /* Under the sticky site header (z-index 50 in every template), so a scrolled page slides the open dropdown
+           beneath the header instead of over it; still above the cards (their highest layer is 2). */
+        z-index: 40;
+        width: 22rem;
+        /* A fixed height (ADR-0183, QA): at most 34rem, and never past the window's bottom; longer filters scroll
+           inside, with a thin scrollbar. It was 100vh - 9rem, which ran below the window under the Browse card. */
+        max-height: min(34rem, calc(100vh - 12rem));
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        border-radius: 1rem;
+        scrollbar-width: thin;
+        scrollbar-color: color-mix(in srgb, var(--srp-ink) 30%, transparent) transparent;
+    }
+
+    #car-search-page .vehicles-layout .sidebar-side::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    #car-search-page .vehicles-layout .sidebar-side::-webkit-scrollbar-thumb {
+        border-radius: 9999px;
+        background: color-mix(in srgb, var(--srp-ink) 30%, transparent);
+    }
+
+    #car-search-page .vehicles-layout .sidebar-side.srp-filters-open {
+        display: block;
+    }
+
+    #car-search-page .vehicles-layout .sidebar-side .sidebar-refine {
+        box-shadow: 0 24px 48px -20px rgba(22, 19, 31, 0.35);
+    }
+
+    /* No View N Vehicles in the dropdown (QA): Clear and Show N vehicles, side by side, are its footer. The row also
+       holds the phone panel's Apply Filters, hidden on a desktop anyway. Show N vehicles is gone too (QA), and Clear
+       is at the top now. */
+    #car-search-page .vehicles-layout .sidebar-side .sf-mobile-btn-row {
+        display: none;
+    }
+}
+
+/* ══ Sort in the filters; no "Showing x–y of N" (ADR-0184, QA) ═══════════════════════════════════════════════════════
+   Sort by is the filters' first field (sidebar-live). The results' toolbar loses "Showing x–y of N" and its own Sort
+   By everywhere; on a desktop the whole toolbar goes (its filter count and Clear All are the Filters button's badge
+   and the dropdown's Clear), and on a phone it keeps its Filters button. */
+#car-search-page .sf-sort {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--srp-line);
+}
+
+#car-search-page .sf-sort-lbl {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--srp-ink);
+}
+
+#car-search-page .sf-sort-select {
+    width: 100%;
+    height: 2.5rem;
+    padding: 0 2rem 0 0.8rem;
+    border: 1px solid var(--srp-ink);
+    border-radius: 0.625rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--srp-ink);
+    background-color: #fff;
+}
+
+#car-search-page .srp-results-head .inventory-count,
+#car-search-page .srp-results-head div:has(> .sort-label) {
+    display: none !important;
+}
+
+@media (min-width: 992px) {
+    #car-search-page .srp-results-head {
+        display: none !important;
+    }
+}
+
+/* ══ Each open filter list scrolls on its own (ADR-0183, QA: as the reference site) ══════════════════════════════════
+   Body Type, Make, Model and the other list filters (See More's too) open to at most 12rem, with their own thin
+   scrollbar, so one long list (Make, Model) doesn't push the rest of the filters out of the dropdown. Price and
+   Store Location aren't lists and keep their height. Desktop dropdown and phone panel alike. */
+#car-search-page .sf-dd-grid .sf-acc-body {
+    max-height: 12rem;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--srp-ink) 30%, transparent) transparent;
+}
+
+#car-search-page .sf-dd-grid .sf-acc-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+#car-search-page .sf-dd-grid .sf-acc-body::-webkit-scrollbar-thumb {
+    border-radius: 9999px;
+    background: color-mix(in srgb, var(--srp-ink) 30%, transparent);
+}
+
+/* ══ Clear Filter at the top of the filters (ADR-0185, QA, as the reference site) ════════════════════════════════════
+   A full-width dark button above Sort by: every filter off. Desktop dropdown and phone panel alike. */
+#car-search-page .sf-clear-top {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    height: 2.5rem;
+    margin: 0.75rem 1rem 0;
+    border-radius: 0.625rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #fff;
+    background: var(--srp-ink);
+    text-decoration: none;
+    transition: background-color 0.15s;
+}
+
+#car-search-page .sf-clear-top:hover {
+    color: #fff;
+    background: color-mix(in srgb, var(--srp-ink) 85%, #ffffff);
+}
+
+#car-search-page .sf-clear-top .ion-icon {
+    font-size: 1.1rem;
+}
+
+/* No "Refine Your Search / Filter N vehicles" header in the desktop dropdown (ADR-0185, QA): it opens on Clear Filter.
+   The phone panel keeps its header, which holds the panel's close button. */
+@media (min-width: 992px) {
+    #car-search-page .vehicles-layout .sidebar-side .sf-hd {
+        display: none;
+    }
+}
+
+/* ══ The filters' top, pinned (ADR-0185, QA) ═════════════════════════════════════════════════════════════════════════
+   Sort by, then Clear Filter, in one block that stays at the top of the dropdown (and of the phone panel's
+   scrolling form) while the filters under it scroll: sticky, on white, with a line under it. */
+#car-search-page .sf-top {
+    position: sticky;
+    top: 0;
+    /* Above the price slider's handles (z-index 4–6, priceRangeLive.js), which scrolled over the block. */
+    z-index: 10;
+    padding: 0.75rem 1rem;
+    background: #fff;
+    border-bottom: 1px solid var(--srp-line);
+}
+
+#car-search-page .sf-top .sf-sort {
+    padding: 0;
+    border-bottom: 0;
+}
+
+#car-search-page .sf-top .sf-clear-top {
+    margin: 0.6rem 0 0;
+}
+
+/* ══ The pagination in the Browse card (ADR-0186, QA) ════════════════════════════════════════════════════════════════
+   Between the search and Filters & Sort: the page numbers, then Show N per page, in one row, with no card of its
+   own (the card under the cards is gone). The search gives up width to make room (14–28rem). Below 992px it takes
+   its own row under the title and search; on a phone it stacks under the search. */
+#car-search-page .srp-head-pagination {
+    grid-area: pagination;
+    /* Never narrower than its row, so the page numbers and the next arrow stay on one line (QA). */
+    min-width: max-content;
+}
+
+#car-search-page .srp-head-pagination .pg-row {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: nowrap;
+    gap: 1rem;
+    width: auto;
+    margin: 0;
+    padding: 0;
+}
+
+/* The row's empty first cell only centred the page numbers in the old full-width card. */
+#car-search-page .srp-head-pagination .pg-row > div:empty {
+    display: none;
+}
+
+#car-search-page .srp-head-pagination .pg-perpage {
+    justify-self: auto;
+    white-space: nowrap;
+}
+
+.srp-head-card {
+    grid-template-areas: "title search" "pagination pagination";
+}
+
+@media (min-width: 992px) {
+    .srp-head-card {
+        grid-template-columns: auto minmax(0, 1fr) minmax(14rem, 28rem) auto auto;
+        grid-template-areas: "title . search pagination filters";
+    }
+}
+
+@media (max-width: 767px) {
+    .srp-head-card {
+        grid-template-areas: "title" "search" "pagination";
+    }
+
+    #car-search-page .srp-head-pagination .pg-row {
+        flex-direction: column;
+        justify-content: center;
+        gap: 0.6rem;
+    }
+}
+
+/* The header's pagination, compact (ADR-0186, QA, as the reference site): one row, the page buttons joined into one
+   strip ("‹ 1 2 3 … 11 12 ›"), the outer ends rounded, the current page filled; Show N per page smaller beside it. */
+#car-search-page .srp-head-pagination .pg-list {
+    flex-wrap: nowrap;
+    gap: 0;
+}
+
+#car-search-page .srp-head-pagination .pg-list li a,
+#car-search-page .srp-head-pagination .pg-list li span {
+    min-width: 2rem;
+    height: 2rem;
+    margin-left: -1px;
+    border-radius: 0;
+    border: 1px solid var(--srp-line);
+    font-size: 0.8125rem;
+}
+
+#car-search-page .srp-head-pagination .pg-list li:first-child a,
+#car-search-page .srp-head-pagination .pg-list li:first-child span {
+    margin-left: 0;
+    border-radius: 0.5rem 0 0 0.5rem;
+}
+
+#car-search-page .srp-head-pagination .pg-list li:last-child a,
+#car-search-page .srp-head-pagination .pg-list li:last-child span {
+    border-radius: 0 0.5rem 0.5rem 0;
+}
+
+#car-search-page .srp-head-pagination .pg-list li.pg-active a {
+    position: relative;
+    z-index: 1;
+}
+
+#car-search-page .srp-head-pagination .pg-list li.pg-dots span {
+    border: 1px solid var(--srp-line);
+    background: #fff;
+}
+
+#car-search-page .srp-head-pagination .pg-perpage {
+    gap: 0.35rem;
+    font-size: 0.8125rem;
+}
+
+/* The number centred in its box (QA): no vertical padding, a line height that fills the 2rem, and centred in the
+   space left of the arrow; at least 3.75rem, so 12 and 100 sit the same. */
+#car-search-page .srp-head-pagination .pg-perpage select {
+    height: 2rem;
+    min-width: 3.75rem;
+    padding: 0 1.6rem 0 0.6rem;
+    line-height: calc(2rem - 2px);
+    text-align: center;
+    text-align-last: center;
+}
+
+/* ══ The Browse card stays at the top while scrolling (ADR-0187, QA) ══════════════════════════════════════════════════
+   The card (title, search, pagination, Filters & Sort) is pinned right under the site header: its row
+   is sticky at the nav's measured bottom (--srp-nav-bottom), on the page's grey, so the cards scroll out of sight
+   under it. It was desktop only at first (the phone card was tall); see below. */
+/* Every width now (ADR-0188, QA): on phones the card is two compact rows, so it's pinned there too. */
+#car-search-page .srp-head {
+    position: sticky;
+    top: var(--srp-nav-bottom, 4rem);
+    z-index: 30;
+    padding-bottom: 0.625rem;
+    background: var(--srp-page, #f6f6f8);
+}
+
+#car-search-page .vehicles-layout {
+    margin-top: 0;
+}
+
+/* ══ Phones and tablets: the Browse card holds Filters & Sort too (ADR-0188, QA) ══════════════════════════════════════
+   Below 992px the Filters & Sort button is in the Browse card (it opens the full-screen panel), so the results'
+   toolbar, which only held the phone's Filters button by then, goes everywhere. Phones: the title, the search,
+   Filters & Sort full width, then the pagination in one row (page numbers left, Show N per page right). Tablets:
+   the title and search, then Filters & Sort beside the pagination. */
+#car-search-page .srp-results-head {
+    display: none !important;
+}
+
+@media (max-width: 991px) {
+    .srp-filters-btn {
+        grid-area: filters;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.45rem;
+        height: 2.75rem;
+        padding: 0 1rem;
+        border-radius: 9999px;
+        border: 1.5px solid var(--srp-ink);
+        background: #fff;
+        color: var(--srp-ink);
+        font-size: 0.875rem;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .srp-filters-count {
+        min-width: 1.35rem;
+        padding: 0 0.4rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        line-height: 1.35rem;
+        text-align: center;
+        color: var(--srp-primary);
+        background: var(--srp-soft);
+    }
+
+    .srp-head-card {
+        grid-template-areas: "title search" "filters pagination";
+    }
+}
+
+/* Phones (under 768px, ADR-0188, QA: "make it more presentable"; the search fits the screen):
+   - the title a little smaller, the stock line under it;
+   - the search full width, its button the icon alone, so the field has the room (a shorter placeholder on
+     phones, index-live);
+   - Filters & Sort, then the page size beside it, on one row;
+   - the page numbers centred under them, and hidden when there is only one page.
+   The pagination's wrapper and row step aside (display: contents), so its two parts, the page numbers and Show N
+   per page, take their own places in the card; the search still swaps #pagination-wrapper by id. */
+@media (max-width: 767px) {
+    .srp-head-card {
+        /* The page size at the left, Filters & Sort filling the rest at the right (QA: switched). */
+        grid-template-columns: auto minmax(0, 1fr);
+        /* No title row on phones (ADR-0188, QA: "remove the browse inventory"): the card opens on the search. */
+        grid-template-areas:
+            "search search"
+            "perpage filters"
+            "pages pages";
+        gap: 0.65rem 0.6rem;
+        /* Tighter (QA: "decrease spacing"). */
+        padding: 0.75rem;
+    }
+
+    /* One page only: no page-numbers row at all, so its gap goes too. */
+    .srp-head-card:not(:has(.pg-list li:nth-child(4))) {
+        grid-template-areas:
+            "search search"
+            "perpage filters";
+    }
+
+    /* Less space above the card and under it; the space under it is inside the pinned area, so the cards scroll
+       out of sight under the card. */
+    #car-search-page .srp-head {
+        padding-top: 0.4rem;
+        padding-bottom: 0.4rem;
+    }
+
+    /* "Browse Inventory" and the stock line: hidden on phones. */
+    .srp-head-top > div:first-child {
+        display: none;
+    }
+
+    /* The search: the field takes the row, the button is a round icon. */
+    .srp-head-search {
+        padding: 0.25rem 0.25rem 0.25rem 0.9rem;
+    }
+
+    .srp-head-search input {
+        font-size: 0.875rem;
+    }
+
+    /* The icon centred (QA): no gap (it was the space between the icon and the hidden word "Search", which pushed
+       the icon left), and the icon a plain block. */
+    .srp-head-search-btn {
+        align-items: center;
+        justify-content: center;
+        gap: 0;
+        width: 2.5rem;
+        height: 2.5rem;
+        padding: 0;
+        font-size: 0;
+        line-height: 0;
+    }
+
+    .srp-head-search-btn .ion-icon {
+        display: block;
+        margin: 0;
+        font-size: 1.1rem;
+    }
+
+    .srp-filters-btn {
+        width: 100%;
+        height: 2.5rem;
+    }
+
+    #car-search-page .srp-head-pagination,
+    #car-search-page .srp-head-pagination .pg-row {
+        display: contents;
+    }
+
+    #car-search-page .srp-head-pagination .pg-list {
+        grid-area: pages;
+        justify-content: center;
+        margin: 0;
+    }
+
+    #car-search-page .srp-head-pagination .pg-perpage {
+        grid-area: perpage;
+        align-self: center;
+    }
+
+    /* One page only (Previous, 1, Next): no page numbers to show. */
+    #car-search-page .srp-head-pagination .pg-list:not(:has(li:nth-child(4))) {
+        display: none;
+    }
+}
